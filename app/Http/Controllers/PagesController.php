@@ -14,4 +14,21 @@ class PagesController extends Controller
       return view('about');
   }
 
+  public function client() {
+      return view('client.index');
+      // return view('welcome');
+  }
+
+  public function hall() {
+      return view('client.hall');
+  }
+
+  public function payment() {
+      return view('client.payment');
+  }
+
+  public function ticket() {
+      return view('client.ticket');
+  }
+
 }

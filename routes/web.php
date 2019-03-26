@@ -13,6 +13,10 @@
 
 Route::get('/', 'PagesController@home');
 Route::get('/about', 'PagesController@about');
+Route::get('/client', 'PagesController@client');
+Route::get('/client/hall', 'PagesController@hall');
+Route::get('/client/payment', 'PagesController@payment');
+Route::get('/client/ticket', 'PagesController@ticket');
 
 Route::get('/admin', 'AdminsController@index');
 
@@ -25,3 +29,7 @@ Route::get('/admin', 'AdminsController@index');
 // Route::get('/about', function () {
 //     return view('about');
 // });
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
