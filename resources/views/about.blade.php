@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
@@ -5,7 +7,7 @@
     <title></title>
   </head>
   <body>
-
+    <?php dd("$movies");  ?>
     <h1>about</h1>
 
   </body>

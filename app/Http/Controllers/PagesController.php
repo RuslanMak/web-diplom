@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Movie;
 
 class PagesController extends Controller
 {
@@ -11,6 +12,9 @@ class PagesController extends Controller
   }
 
   public function about() {
+      $movies = Movie::all();
+      return $movies;
+      
       return view('about');
   }
 
