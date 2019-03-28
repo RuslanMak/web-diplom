@@ -17,7 +17,7 @@ class CreateConnectionsTable extends Migration
             $table->increments('id');
             $table->integer('id_movie');
             $table->integer('id_hall');
-            $table->integer('start_time');
+            $table->datetime('start_time');
         });
     }
 

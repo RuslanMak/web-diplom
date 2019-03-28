@@ -9,8 +9,11 @@
   <body>
 <?php //echo("$movies[0].description");  ?>
     {{--{{$movies[0]->description}}--}}
-    {{$movies}}
+    {{--{{$movies}}--}}
+{{$timesOfMovie}}
+    {{--{{$hall}}--}}
     <h1>about</h1>
+
 
   </body>
 </html>
