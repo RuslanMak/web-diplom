@@ -1,13 +1,15 @@
 
 
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ru" dir="ltr">
   <head>
     <meta charset="utf-8">
     <title></title>
   </head>
   <body>
-    <?php dd("$movies");  ?>
+<?php //echo("$movies[0].description");  ?>
+    {{--{{$movies[0]->description}}--}}
+    {{$movies}}
     <h1>about</h1>
 
   </body>

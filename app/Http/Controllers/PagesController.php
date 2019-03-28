@@ -13,14 +13,15 @@ class PagesController extends Controller
 
   public function about() {
       $movies = Movie::all();
-      return $movies;
+//      return $movies;
       
-      return view('about');
+      return view('about', compact('movies'));
   }
 
   public function client() {
-      return view('client.index');
-      // return view('welcome');
+      $movies = Movie::all();
+
+      return view('client.index', compact('movies'));
   }
 
   public function hall() {
