@@ -55,7 +55,7 @@
             <ul class="movie-seances__list">
               @foreach ($timesOfMovie as $time)
                 @if($time->id_movie === $movie->id && $time->id_hall === $hall->id)
-                  <li class="movie-seances__time-block"><a class="movie-seances__time" href="client/hall">{{$time->start_time}}</a></li>
+                  <li class="movie-seances__time-block"><a class="movie-seances__time" href="client/hall/{{$time->id}}">{{$time->start_time}}</a></li>
                 @endif
               @endforeach
             </ul>

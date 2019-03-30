@@ -38,7 +38,14 @@ class PagesController extends Controller
           ->with('halls', $halls);
   }
 
-  public function hall() {
+  public function hall($id) {
+      $reservation = Connection::find($id);
+      $movie = Movie::find($reservation->id_movie);
+      $movieName = $movie->name;
+//      dd($reservation->id);
+      dd($reservation);
+//      dd($movieName);
+
       return view('client.hall');
   }
 
