@@ -33,3 +33,5 @@ Route::get('/admin', 'AdminsController@index');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/start/get-json/{id}', 'PagesController@getJson');
