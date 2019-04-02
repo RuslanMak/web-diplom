@@ -49010,26 +49010,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: [
@@ -49039,7 +49019,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             halldata: [],
             is_refresh: false,
-            id: 0
+            totalPlaces: 0
         };
     },
     mounted: function mounted() {
@@ -49055,23 +49035,35 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 // console.log(response)
                 _this.halldata = response.data;
                 _this.is_refresh = false;
-                _this.id++;
-                console.log(_this.id);
             });
         },
 
         classObj: function classObj(row, n) {
-
             var index = this.halldata.places.filter(function (x) {
                 return x["num_row"] == row;
             }).filter(function (x) {
                 return x["num_place_in_row"] == n;
             });
-
             if (index[0]) {
-                return index[0].type;
+                if (index[0].status == 'selected' || index[0].status == 'taken') {
+                    return index[0].status;
+                } else {
+                    return index[0].type;
+                }
             } else {
                 return 'standart';
+            }
+        },
+
+        classAction: function classAction(row, n) {
+            var index = this.halldata.places.filter(function (x) {
+                return x["num_row"] == row;
+            }).filter(function (x) {
+                return x["num_place_in_row"] == n;
+            });
+            if (index[0]) {
+                console.log(index[0].id);
+                return index[0].id;
             }
         }
 
@@ -49094,11 +49086,19 @@ var render = function() {
         "div",
         { staticClass: "buying-scheme__row" },
         _vm._l(_vm.halldata.hall.places_in_row, function(n) {
-          return _c("span", {
-            staticClass: "buying-scheme__chair",
-            class: "buying-scheme__chair_" + _vm.classObj(row, n),
-            on: { click: _vm.update }
-          })
+          return _c(
+            "span",
+            {
+              staticClass: "buying-scheme__chair",
+              class: "buying-scheme__chair_" + _vm.classObj(row, n),
+              on: {
+                click: function($event) {
+                  return _vm.classAction(row, n)
+                }
+              }
+            },
+            [_vm._v("\n            " + _vm._s(_vm.totalPlaces) + "\n        ")]
+          )
         }),
         0
       )
