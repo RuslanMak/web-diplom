@@ -6,6 +6,7 @@ use App\Connection;
 use Illuminate\Http\Request;
 use App\Movie;
 use App\Hall;
+use App\Place;
 
 class PagesController extends Controller
 {
@@ -45,6 +46,7 @@ class PagesController extends Controller
 
       $movieName = $movie->name;
       $startTime = $reservation->start_time;
+      $connectionid = $reservation->id;
 
 //      dd($reservation);
 //      dd($startTime);
@@ -56,7 +58,8 @@ class PagesController extends Controller
       return view('client.hall')
           ->with('movieName', $movieName)
           ->with('startTime', $startTime)
-          ->with('hall', $hall);
+          ->with('hall', $hall)
+          ->with('connectionid', $connectionid);
   }
 
   public function payment() {
@@ -71,18 +74,27 @@ class PagesController extends Controller
     {
         $reservation = Connection::find($id);
         $hall = Hall::find($reservation->id_hall);
-        return $hall;
+        $palces = Place::where('id_connections', '=', $id)->get();
+
+//        return $palces;
+//        return $reservation;
+//        return $hall;
 
         return [
-            array(
-                'title' => 'Google',
-                'url' => 'https://google.com'
-            ),
-            array(
-                'title' => 'Yandex',
-                'url' => 'http://ya.ru'
-            )
+            'hall' => $hall,
+            'places' => $palces
         ];
+
+//        return [
+//            array(
+//                'title' => 'Google',
+//                'url' => 'https://google.com'
+//            ),
+//            array(
+//                'title' => 'Yandex',
+//                'url' => 'http://ya.ru'
+//            )
+//        ];
     }
 
 }

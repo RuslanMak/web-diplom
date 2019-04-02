@@ -24,8 +24,12 @@
     <!--</div>-->
 
     <div class="buying-scheme__wrapper">
-        <div v-for="n in halldata.rows" class="buying-scheme__row">
-            <span v-for="n in halldata.places_in_row" class="buying-scheme__chair buying-scheme__chair_vip"></span>
+        <div v-for="row in halldata.hall.rows" class="buying-scheme__row">
+            <span v-for="n in halldata.hall.places_in_row"
+                  class="buying-scheme__chair"
+                  v-bind:class="'buying-scheme__chair_' + classObj(row, n)"
+                  @click="update">
+            </span>
         </div>
     </div>
 
@@ -34,7 +38,8 @@
 <script>
     export default {
         props: [
-            'hallid'
+            //get data form Blade
+            'connectionid'
         ],
         data: function() {
             return {
@@ -48,18 +53,28 @@
         },
         methods: {
             update: function () {
-                // console.log(this.hallid)
-
                 this.is_refresh = true
-                axios.get('/start/get-json/' + this.hallid).then((response) => {
+                axios.get('/start/get-json/' + this.connectionid).then((response) => {
                     // console.log(response)
                     this.halldata = response.data
                     this.is_refresh = false
                     this.id++
-                    console.log(this.halldata)
+                    console.log(this.id)
                 });
 
+            },
+            
+            classObj: function (row, n) {
+
+                let index = this.halldata.places.filter(x => x["num_row"] == row).filter(x => x["num_place_in_row"] == n);
+
+                if (index[0]) {
+                    return index[0].type;
+                } else {
+                    return 'standart';
+                }
             }
+
         }
     }
 </script>

@@ -49026,9 +49026,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['hallid'],
+    props: [
+    //get data form Blade
+    'connectionid'],
     data: function data() {
         return {
             halldata: [],
@@ -49044,17 +49050,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         update: function update() {
             var _this = this;
 
-            // console.log(this.hallid)
-
             this.is_refresh = true;
-            axios.get('/start/get-json/' + this.hallid).then(function (response) {
+            axios.get('/start/get-json/' + this.connectionid).then(function (response) {
                 // console.log(response)
                 _this.halldata = response.data;
                 _this.is_refresh = false;
                 _this.id++;
-                console.log(_this.halldata);
+                console.log(_this.id);
             });
+        },
+
+        classObj: function classObj(row, n) {
+
+            var index = this.halldata.places.filter(function (x) {
+                return x["num_row"] == row;
+            }).filter(function (x) {
+                return x["num_place_in_row"] == n;
+            });
+
+            if (index[0]) {
+                return index[0].type;
+            } else {
+                return 'standart';
+            }
         }
+
     }
 });
 
@@ -49069,13 +49089,15 @@ var render = function() {
   return _c(
     "div",
     { staticClass: "buying-scheme__wrapper" },
-    _vm._l(_vm.halldata.rows, function(n) {
+    _vm._l(_vm.halldata.hall.rows, function(row) {
       return _c(
         "div",
         { staticClass: "buying-scheme__row" },
-        _vm._l(_vm.halldata.places_in_row, function(n) {
+        _vm._l(_vm.halldata.hall.places_in_row, function(n) {
           return _c("span", {
-            staticClass: "buying-scheme__chair buying-scheme__chair_vip"
+            staticClass: "buying-scheme__chair",
+            class: "buying-scheme__chair_" + _vm.classObj(row, n),
+            on: { click: _vm.update }
           })
         }),
         0
