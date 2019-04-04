@@ -49035,6 +49035,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 // console.log(response)
                 _this.halldata = response.data;
                 _this.is_refresh = false;
+                console.log("updated");
             });
         },
 
@@ -49062,9 +49063,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 return x["num_place_in_row"] == n;
             });
             if (index[0]) {
-                console.log(index[0].id);
-                return index[0].id;
+                axios.get('/start/update-ajax/' + index[0].id);
             }
+            this.update();
         }
 
     }

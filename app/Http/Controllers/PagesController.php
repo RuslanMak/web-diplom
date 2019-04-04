@@ -70,31 +70,6 @@ class PagesController extends Controller
       return view('client.ticket');
   }
 
-    public function getJson($id)
-    {
-        $reservation = Connection::find($id);
-        $hall = Hall::find($reservation->id_hall);
-        $palces = Place::where('id_connections', '=', $id)->get();
 
-//        return $palces;
-//        return $reservation;
-//        return $hall;
-
-        return [
-            'hall' => $hall,
-            'places' => $palces
-        ];
-
-//        return [
-//            array(
-//                'title' => 'Google',
-//                'url' => 'https://google.com'
-//            ),
-//            array(
-//                'title' => 'Yandex',
-//                'url' => 'http://ya.ru'
-//            )
-//        ];
-    }
 
 }

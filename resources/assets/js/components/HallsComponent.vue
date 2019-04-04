@@ -38,6 +38,7 @@
                     // console.log(response)
                     this.halldata = response.data
                     this.is_refresh = false
+                    console.log("updated");
                 });
 
             },
@@ -58,9 +59,9 @@
             classAction: function(row, n) {
                 let index = this.halldata.places.filter(x => x["num_row"] == row).filter(x => x["num_place_in_row"] == n);
                 if (index[0]) {
-                    console.log(index[0].id)
-                    return index[0].id;
+                    axios.get('/start/update-ajax/' + index[0].id);
                 }
+                this.update();
             }
 
         }

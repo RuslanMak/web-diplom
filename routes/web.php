@@ -34,4 +34,7 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/start/get-json/{id}', 'PagesController@getJson');
+Route::get('/start/get-json/{id}', 'HallController@getJson');
+Route::get('/start/update-ajax/{id}', 'HallController@updateStatus');
+
+//Route::resource('/client/hall', 'HallController');
