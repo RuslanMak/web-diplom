@@ -14,7 +14,11 @@
 Route::get('/', 'PagesController@home');
 Route::get('/about', 'PagesController@about');
 Route::get('/client', 'PagesController@client');
-Route::get('/client/hall/{reservation}', 'PagesController@hall');
+
+Route::get('/client/hall/{reservation}', 'HallController@hall')->middleware('auth');
+Route::get('/start/get-json/{id}', 'HallController@getJson');
+Route::get('/start/update-ajax/{id}', 'HallController@updateStatus');
+
 Route::get('/client/payment', 'PagesController@payment');
 Route::get('/client/ticket', 'PagesController@ticket');
 
@@ -33,8 +37,5 @@ Route::get('/admin', 'AdminsController@index');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-
-Route::get('/start/get-json/{id}', 'HallController@getJson');
-Route::get('/start/update-ajax/{id}', 'HallController@updateStatus');
 
 //Route::resource('/client/hall', 'HallController');

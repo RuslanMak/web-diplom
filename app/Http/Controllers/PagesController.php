@@ -6,7 +6,6 @@ use App\Connection;
 use Illuminate\Http\Request;
 use App\Movie;
 use App\Hall;
-use App\Place;
 
 class PagesController extends Controller
 {
@@ -37,29 +36,6 @@ class PagesController extends Controller
           ->with('movies', $movies)
           ->with('timesOfMovie', $timesOfMovie)
           ->with('halls', $halls);
-  }
-
-  public function hall($id) {
-      $reservation = Connection::find($id);
-      $movie = Movie::find($reservation->id_movie);
-      $hall = Hall::find($reservation->id_hall);
-
-      $movieName = $movie->name;
-      $startTime = $reservation->start_time;
-      $connectionid = $reservation->id;
-
-//      dd($reservation);
-//      dd($startTime);
-//      dd($movieName);
-//      dd($hall);
-//      $hall = [$hall];
-//      dd(json_encode($hall));
-
-      return view('client.hall')
-          ->with('movieName', $movieName)
-          ->with('startTime', $startTime)
-          ->with('hall', $hall)
-          ->with('connectionid', $connectionid);
   }
 
   public function payment() {

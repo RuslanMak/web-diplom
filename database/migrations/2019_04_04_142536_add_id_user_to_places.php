@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTicketsTable extends Migration
+class AddIdUserToPlaces extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class CreateTicketsTable extends Migration
      */
     public function up()
     {
-        Schema::create('tickets', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::table('places', function (Blueprint $table) {
             $table->integer('id_user');
-            $table->integer('id_place');
-            $table->timestamps();
         });
     }
 
@@ -28,6 +25,9 @@ class CreateTicketsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tickets');
+        Schema::table('places', function (Blueprint $table) {
+            // for rollback
+            $table->dropColumn('id_user');
+        });
     }
 }

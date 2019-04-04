@@ -38,18 +38,23 @@
                     // console.log(response)
                     this.halldata = response.data
                     this.is_refresh = false
-                    console.log("updated");
+                    // console.log("updated");
+                    // console.log(this.halldata.user_id);
                 });
 
             },
             
             classObj: function(row, n) {
-                let index = this.halldata.places.filter(x => x["num_row"] == row).filter(x => x["num_place_in_row"] == n);
-                if (index[0]) {
-                    if (index[0].status == 'selected' || index[0].status == 'taken') {
-                        return index[0].status;
+                let place = this.halldata.places.filter(x => x["num_row"] === row).filter(x => x["num_place_in_row"] === n);
+                if (place[0]) {
+                    if (place[0].status === 'taken' || place[0].status === 'selected') {
+                        //проверка или другой пользователь вибрал данное место, если да показивать как забронированое
+                        if (place[0].id_user !== this.halldata.auth_user_id) {
+                            return 'taken'
+                        }
+                        return place[0].status;
                     } else {
-                        return index[0].type;
+                        return place[0].type;
                     }
                 } else {
                     return 'standart';
@@ -57,9 +62,9 @@
             },
 
             classAction: function(row, n) {
-                let index = this.halldata.places.filter(x => x["num_row"] == row).filter(x => x["num_place_in_row"] == n);
-                if (index[0]) {
-                    axios.get('/start/update-ajax/' + index[0].id);
+                let place = this.halldata.places.filter(x => x["num_row"] === row).filter(x => x["num_place_in_row"] === n);
+                if (place[0]) {
+                    axios.get('/start/update-ajax/' + place[0].id);
                 }
                 this.update();
             }

@@ -49035,21 +49035,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 // console.log(response)
                 _this.halldata = response.data;
                 _this.is_refresh = false;
-                console.log("updated");
+                // console.log("updated");
+                // console.log(this.halldata.user_id);
             });
         },
 
         classObj: function classObj(row, n) {
-            var index = this.halldata.places.filter(function (x) {
-                return x["num_row"] == row;
+            var place = this.halldata.places.filter(function (x) {
+                return x["num_row"] === row;
             }).filter(function (x) {
-                return x["num_place_in_row"] == n;
+                return x["num_place_in_row"] === n;
             });
-            if (index[0]) {
-                if (index[0].status == 'selected' || index[0].status == 'taken') {
-                    return index[0].status;
+            if (place[0]) {
+                if (place[0].status === 'taken' || place[0].status === 'selected') {
+                    //проверка или другой пользователь вибрал данное место, если да показивать как забронированое
+                    if (place[0].id_user !== this.halldata.auth_user_id) {
+                        return 'taken';
+                    }
+                    return place[0].status;
                 } else {
-                    return index[0].type;
+                    return place[0].type;
                 }
             } else {
                 return 'standart';
@@ -49057,13 +49062,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
 
         classAction: function classAction(row, n) {
-            var index = this.halldata.places.filter(function (x) {
-                return x["num_row"] == row;
+            var place = this.halldata.places.filter(function (x) {
+                return x["num_row"] === row;
             }).filter(function (x) {
-                return x["num_place_in_row"] == n;
+                return x["num_place_in_row"] === n;
             });
-            if (index[0]) {
-                axios.get('/start/update-ajax/' + index[0].id);
+            if (place[0]) {
+                axios.get('/start/update-ajax/' + place[0].id);
             }
             this.update();
         }
