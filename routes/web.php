@@ -19,7 +19,7 @@ Route::get('/client/hall/{reservation}', 'HallController@hall')->middleware('aut
 Route::get('/start/get-json/{id}', 'HallController@getJson');
 Route::get('/start/update-ajax/{id}', 'HallController@updateStatus');
 
-Route::get('/client/payment', 'PagesController@payment');
+Route::get('/client/payment/{id}', 'PagesController@payment');
 Route::get('/client/ticket', 'PagesController@ticket');
 
 Route::get('/admin', 'AdminsController@index');

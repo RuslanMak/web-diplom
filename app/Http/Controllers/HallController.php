@@ -41,6 +41,10 @@ class HallController extends Controller
 
     public function getJson($id)
     {
+        if ( !isset(request()->user()->id) ) {
+            return redirect('/');
+        }
+
         $reservation = Connection::find($id);
         $hall = Hall::find($reservation->id_hall);
         $palces = Place::where('id_connections', '=', $id)->get();
@@ -71,6 +75,9 @@ class HallController extends Controller
     public function updateStatus($id)
     {
 //        dd(request()->user()->id);
+        if ( !isset(request()->user()->id) ) {
+            return redirect('/');
+        }
 
         $place = Place::findOrFail($id);
 
@@ -91,5 +98,6 @@ class HallController extends Controller
 
         $place->save();
 
+        return redirect('/');
     }
 }
