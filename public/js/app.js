@@ -14068,6 +14068,15 @@ var app = new Vue({
   el: '#app'
 });
 
+//тогл клик на админку
+var headers = Array.from(document.querySelectorAll('.conf-step__header'));
+headers.forEach(function (header) {
+  return header.addEventListener('click', function () {
+    header.classList.toggle('conf-step__header_closed');
+    header.classList.toggle('conf-step__header_opened');
+  });
+});
+
 /***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {

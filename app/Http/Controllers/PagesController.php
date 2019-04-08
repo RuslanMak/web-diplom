@@ -10,11 +10,11 @@ use App\Place;
 
 class PagesController extends Controller
 {
-    //    проверку на аудентыфикацию добавил в web.php
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+//    //    проверку на аудентыфикацию добавил в web.php
+//    public function __construct()
+//    {
+//        $this->middleware('auth');
+//    }
 
   public function home() {
       return view('welcome');
@@ -69,11 +69,37 @@ class PagesController extends Controller
           ->with('hallName', $hallName)
           ->with('startTime', $startTime)
           ->with('totalPrice', $totalPrice)
-          ->with('places', $places);
+          ->with('places', $places)
+          ->with('connectionid', $id);
   }
 
-  public function ticket() {
-      return view('client.ticket');
+  public function ticket($id) {
+      if ( !isset(request()->user()->id) ) {
+          return redirect('/');
+      }
+
+      $userId = request()->user()->id;
+      $connect = Connection::find($id);
+      $movie = Movie::find($connect->id_movie)->name;
+      $hallName = Hall::find($connect->id_hall)->hall_name;
+      $startTime = $connect->start_time;
+
+      $places = Place::where('id_connections', '=', $id)
+          ->where('id_user', '=', $userId)->get();
+
+      foreach ($places as $place) {
+          if ($place->status == 'selected') {
+              $place->status = 'taken';
+              $place->save();
+          }
+      }
+
+      return view('client.ticket')
+          ->with('movie', $movie)
+          ->with('hallName', $hallName)
+          ->with('startTime', $startTime)
+          ->with('places', $places)
+          ->with('connectionid', $id);
   }
 
 

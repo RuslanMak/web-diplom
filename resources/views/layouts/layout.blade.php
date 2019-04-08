@@ -19,7 +19,7 @@
 <body>
 
   <header class="page-header">
-    <h1 class="page-header__title">Идём<span>в</span>кино</h1>
+    <h1 class="page-header__title"><a href="/" style="all:inherit; cursor:pointer;">Идём<span>в</span>кино</a></h1>
     @yield('header')
   </header>
 
@@ -27,5 +27,6 @@
     @yield('content')
   </div>
 
+  @yield('scripts')
 </body>
 </html>

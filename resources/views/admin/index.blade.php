@@ -252,5 +252,5 @@
       </div>
     </section>
   </main>
-  <script src="{{ asset('admin-style/js/accordeon.js') }}"></script>
+  {{--<script src="{{ asset('admin-style/js/accordeon.js') }}"></script>--}}
 @endsection

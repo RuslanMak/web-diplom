@@ -14,10 +14,16 @@
       </header>
 
       <div class="ticket__info-wrapper">
-        <p class="ticket__info">На фильм: <span class="ticket__details ticket__title">Звёздные войны XXIII: Атака клонированных клонов</span></p>
-        <p class="ticket__info">Места: <span class="ticket__details ticket__chairs">6, 7</span></p>
-        <p class="ticket__info">В зале: <span class="ticket__details ticket__hall">1</span></p>
-        <p class="ticket__info">Начало сеанса: <span class="ticket__details ticket__start">18:30</span></p>
+        <p class="ticket__info">На фильм: <span class="ticket__details ticket__title">{{ $movie }}</span></p>
+        <p class="ticket__info">Места:
+            @foreach($places as $place)
+              <span class="ticket__details ticket__chairs">
+                  {{ $place->num_row }}-ряд {{ $place->num_place_in_row }}-место;
+              </span>
+            @endforeach
+        </p>
+        <p class="ticket__info">В зале: <span class="ticket__details ticket__hall">{{ $hallName }}</span></p>
+        <p class="ticket__info">Начало сеанса: <span class="ticket__details ticket__start">{{ $startTime }}</span></p>
 
         <img class="ticket__info-qr" src="{{ asset('client-style/i/qr-code.png') }}">
 

@@ -21,3 +21,10 @@ Vue.component('halls-component', require('./components/HallsComponent.vue'));
 const app = new Vue({
     el: '#app'
 });
+
+//тогл клик на админку
+const headers = Array.from(document.querySelectorAll('.conf-step__header'));
+headers.forEach(header => header.addEventListener('click', () => {
+    header.classList.toggle('conf-step__header_closed');
+    header.classList.toggle('conf-step__header_opened');
+}));

@@ -18,7 +18,7 @@
         <p class="ticket__info">Места:
             @foreach($places as $place)
               <span class="ticket__details ticket__chairs">
-                {{ $place->num_row }} ряд, {{ $place->num_place_in_row }} место;
+                {{ $place->num_row }}-ряд {{ $place->num_place_in_row }}-место;
               </span>
             @endforeach
         </p>
@@ -26,7 +26,7 @@
         <p class="ticket__info">Начало сеанса: <span class="ticket__details ticket__start">{{ $startTime }}</span></p>
         <p class="ticket__info">Стоимость: <span class="ticket__details ticket__cost">{{ $totalPrice }}</span> рублей</p>
 
-        <button class="acceptin-button" onclick="location.href='/client/ticket'" >Получить код бронирования</button>
+        <button class="acceptin-button" onclick="location.href='/client/ticket/{{ $connectionid }}'" >Получить код бронирования</button>
 
         <p class="ticket__hint">После оплаты билет будет доступен в этом окне, а также придёт вам на почту. Покажите QR-код нашему контроллёру у входа в зал.</p>
         <p class="ticket__hint">Приятного просмотра!</p>

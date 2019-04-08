@@ -25,13 +25,6 @@ class HallController extends Controller
         $startTime = $reservation->start_time;
         $connectionid = $reservation->id;
 
-//      dd($reservation);
-//      dd($startTime);
-//      dd($movieName);
-//      dd($hall);
-//      $hall = [$hall];
-//      dd(json_encode($hall));
-
         return view('client.hall')
             ->with('movieName', $movieName)
             ->with('startTime', $startTime)
@@ -50,26 +43,11 @@ class HallController extends Controller
         $palces = Place::where('id_connections', '=', $id)->get();
         $userId = request()->user()->id;
 
-//        return $palces;
-//        return $reservation;
-//        return $hall;
-
         return [
             'auth_user_id' => $userId,
             'hall' => $hall,
             'places' => $palces
         ];
-
-//        return [
-//            array(
-//                'title' => 'Google',
-//                'url' => 'https://google.com'
-//            ),
-//            array(
-//                'title' => 'Yandex',
-//                'url' => 'http://ya.ru'
-//            )
-//        ];
     }
 
     public function updateStatus($id)
