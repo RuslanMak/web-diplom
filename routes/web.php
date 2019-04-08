@@ -22,7 +22,10 @@ Route::get('/start/update-ajax/{id}', 'HallController@updateStatus');
 Route::get('/client/payment/{id}', 'PagesController@payment')->middleware('auth');
 Route::get('/client/ticket/{id}', 'PagesController@ticket')->middleware('auth');
 
-Route::get('/admin', 'AdminsController@index');
+Route::get('/admin', 'AdminsController@index')->middleware('auth');
+Route::get('/admin/create', 'AdminsController@create')->middleware('auth');
+Route::post('/admin/hall', 'AdminsController@save')->middleware('auth');
+Route::delete('/admin/hall/{id}', 'AdminsController@delete')->middleware('auth');
 
 
 // Route::get('/', function () {

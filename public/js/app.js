@@ -14063,6 +14063,7 @@ window.Vue = __webpack_require__(37);
 
 Vue.component('example-component', __webpack_require__(41));
 Vue.component('halls-component', __webpack_require__(44));
+Vue.component('admin-hall-places-component', __webpack_require__(52));
 
 var app = new Vue({
   el: '#app'
@@ -49136,6 +49137,368 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(11)
+/* script */
+var __vue_script__ = __webpack_require__(53)
+/* template */
+var __vue_template__ = __webpack_require__(54)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/AdminHallPlacesComponent.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-35c07900", Component.options)
+  } else {
+    hotAPI.reload("data-v-35c07900", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 53 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: [
+    //get data from Blade
+    // 'connectionid'
+    'halls'],
+    data: function data() {
+        return {
+            halldata: [],
+            rows: 0,
+            places_in_row: 0,
+            is_refresh: false,
+            totalPlaces: 0
+        };
+    },
+    mounted: function mounted() {
+        this.update();
+    },
+
+    methods: {
+        update: function update() {
+            var _this = this;
+
+            this.is_refresh = true;
+            // axios.get('/start/get-json/' + this.connectionid).then((response) => {
+            axios.get('/start/get-json/' + 1).then(function (response) {
+                // console.log(response)
+                _this.halldata = response.data;
+                _this.is_refresh = false;
+                // console.log(this.halls);
+                // console.log(this.halldata.hall.rows);
+                _this.rows = _this.halldata.hall.rows;
+                _this.places_in_row = _this.halldata.hall.places_in_row;
+            });
+        },
+
+        classObj: function classObj(row, n) {
+            var place = this.halldata.places.filter(function (x) {
+                return x["num_row"] === row;
+            }).filter(function (x) {
+                return x["num_place_in_row"] === n;
+            });
+            if (place[0]) {
+                if (place[0].status === 'taken' || place[0].status === 'selected') {
+                    //проверка или другой пользователь вибрал данное место, если да показивать как забронированое
+                    if (place[0].id_user !== this.halldata.auth_user_id) {
+                        return 'taken';
+                    }
+                    return place[0].status;
+                } else {
+                    return place[0].type;
+                }
+            } else {
+                return 'standart';
+            }
+        },
+
+        classAction: function classAction(row, n) {
+            // let place = this.halldata.places.filter(x => x["num_row"] === row).filter(x => x["num_place_in_row"] === n);
+            // if (place[0]) {
+            //     axios.get('/start/update-ajax/' + place[0].id);
+            // }
+            // this.update();
+        }
+
+    }
+});
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "conf-step__wrapper" }, [
+    _c("p", { staticClass: "conf-step__paragraph" }, [
+      _vm._v("Выберите зал для конфигурации:")
+    ]),
+    _vm._v(" "),
+    _c("ul", { staticClass: "conf-step__selectors-box" }, [
+      _c(
+        "li",
+        {
+          on: {
+            click: function($event) {
+              return _vm.update()
+            }
+          }
+        },
+        [
+          _c("input", {
+            staticClass: "conf-step__radio",
+            attrs: {
+              type: "radio",
+              name: "chairs-hall",
+              value: "Зал 1",
+              checked: ""
+            }
+          }),
+          _c("span", { staticClass: "conf-step__selector" }, [_vm._v("Зал 1")])
+        ]
+      ),
+      _vm._v(" "),
+      _vm._m(0)
+    ]),
+    _vm._v(" "),
+    _c("p", { staticClass: "conf-step__paragraph" }, [
+      _vm._v(
+        "Укажите количество рядов и максимальное количество кресел в ряду:"
+      )
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "conf-step__legend" }, [
+      _c("label", { staticClass: "conf-step__label" }, [
+        _vm._v("Рядов, шт"),
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.rows,
+              expression: "rows"
+            }
+          ],
+          staticClass: "conf-step__input",
+          attrs: { type: "number", placeholder: "0" },
+          domProps: { value: _vm.rows },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.rows = $event.target.value
+            }
+          }
+        })
+      ]),
+      _vm._v(" "),
+      _c("span", { staticClass: "multiplier" }, [_vm._v("x")]),
+      _vm._v(" "),
+      _c("label", { staticClass: "conf-step__label" }, [
+        _vm._v("Мест, шт"),
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.places_in_row,
+              expression: "places_in_row"
+            }
+          ],
+          staticClass: "conf-step__input",
+          attrs: { type: "number", placeholder: "8" },
+          domProps: { value: _vm.places_in_row },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.places_in_row = $event.target.value
+            }
+          }
+        })
+      ])
+    ]),
+    _vm._v(" "),
+    _c("p", { staticClass: "conf-step__paragraph" }, [
+      _vm._v(
+        "Теперь вы можете указать типы кресел на схеме зала: " +
+          _vm._s(_vm.rows)
+      )
+    ]),
+    _vm._v(" "),
+    _vm._m(1),
+    _vm._v(" "),
+    _vm._m(2),
+    _vm._v(" "),
+    _vm._m(3)
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", [
+      _c("input", {
+        staticClass: "conf-step__radio",
+        attrs: { type: "radio", name: "chairs-hall", value: "Зал 2" }
+      }),
+      _c("span", { staticClass: "conf-step__selector" }, [_vm._v("Зал 2")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "conf-step__legend" }, [
+      _c("span", { staticClass: "conf-step__chair conf-step__chair_standart" }),
+      _vm._v(" — обычные кресла\n        "),
+      _c("span", { staticClass: "conf-step__chair conf-step__chair_vip" }),
+      _vm._v(" — VIP кресла\n        "),
+      _c("span", { staticClass: "conf-step__chair conf-step__chair_disabled" }),
+      _vm._v(" — заблокированные (нет кресла)\n        "),
+      _c("p", { staticClass: "conf-step__hint" }, [
+        _vm._v("Чтобы изменить вид кресла, нажмите по нему левой кнопкой мыши")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "conf-step__hall" }, [
+      _c("div", { staticClass: "conf-step__hall-wrapper" })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("fieldset", { staticClass: "conf-step__buttons text-center" }, [
+      _c(
+        "button",
+        { staticClass: "conf-step__button conf-step__button-regular" },
+        [_vm._v("Отмена")]
+      ),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "conf-step__button conf-step__button-accent",
+        attrs: { type: "submit", value: "Сохранить" }
+      })
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-35c07900", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);
