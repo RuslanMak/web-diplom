@@ -18,7 +18,8 @@
       <div class="conf-step__wrapper">
         <p class="conf-step__paragraph">Доступные залы:</p>
         <ul class="conf-step__list">
-          {{ $halls }}
+          {{--{{ $halls }}--}}
+          {{--{{ $hallss }}--}}
           @foreach($halls as $hall)
               <li>{{ $hall->hall_name }}
                 <form method="POST" action="/admin/hall/{{ $hall->id }}" style="display:inline;">
@@ -39,8 +40,7 @@
         <h2 class="conf-step__title">Конфигурация залов</h2>
       </header>
 {{--{{ $halls }}--}}
-      {{--<admin-hall-places-component :halls={{ json_encode($halls) }}></admin-hall-places-component>--}}
-      {{--<admin-hall-places-component :halls={{ $halls }}></admin-hall-places-component>--}}
+      <admin-hall-places-component halls_string='{{ json_encode($halls) }}'></admin-hall-places-component>
 
       {{--<div class="conf-step__wrapper">--}}
 

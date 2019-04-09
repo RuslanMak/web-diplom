@@ -49242,34 +49242,63 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: [
     //get data from Blade
     // 'connectionid'
-    'halls'],
+    'halls_string'],
     data: function data() {
         return {
             halldata: [],
             rows: 0,
             places_in_row: 0,
             is_refresh: false,
-            totalPlaces: 0
+            totalPlaces: 0,
+            selected_hall: 1,
+            halls: [],
+            url: {
+                updateRowNum: '/admin/post-api-row/',
+                updatePlaceInRowNum: '/admin/get-update-place-in-row/'
+            },
+            mypost: [{ 'title': 4 }, { 'car': 3 }]
         };
     },
+
+    watch: {
+        selected_hall: function selected_hall() {
+            this.update();
+        },
+
+        rows: function rows(newRows, oldRows) {
+            this.debouncedUpdate(this.url.updateRowNum, this.rows);
+            // this.updateRowsOrPlace(this.url.updateRowNum, this.rows)
+        },
+
+        places_in_row: function places_in_row() {
+            this.debouncedUpdate(this.url.updatePlaceInRowNum, this.places_in_row);
+            // this.updateRowsOrPlace(this.url.updatePlaceInRowNum, this.places_in_row)
+        }
+    },
+
+    beforeUpdate: function beforeUpdate() {
+        // this.rows;
+        // console.log('ddddd');
+    },
+
+
+    created: function created() {
+        // _.debounce — это функция lodash, позволяющая ограничить то,
+        // насколько часто может выполняться определённая операция.
+        // В данном случае мы ограничиваем частоту обращений к yesno.wtf/api,
+        // дожидаясь завершения печати вопроса перед отправкой ajax-запроса.
+        // Узнать больше о функции _.debounce (и её родственнице _.throttle),
+        // можно в документации: https://lodash.com/docs#debounce
+        this.debouncedUpdate = _.debounce(this.updateRowsOrPlace, 400);
+    },
+
     mounted: function mounted() {
+        this.halls = JSON.parse(this.halls_string);
         this.update();
     },
 
@@ -49278,15 +49307,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this = this;
 
             this.is_refresh = true;
-            // axios.get('/start/get-json/' + this.connectionid).then((response) => {
-            axios.get('/start/get-json/' + 1).then(function (response) {
-                // console.log(response)
+
+            axios.get('/admin/get-api-places/' + this.selected_hall).then(function (response) {
                 _this.halldata = response.data;
                 _this.is_refresh = false;
-                // console.log(this.halls);
-                // console.log(this.halldata.hall.rows);
-                _this.rows = _this.halldata.hall.rows;
-                _this.places_in_row = _this.halldata.hall.places_in_row;
+                // console.dir(this.selected_hall);
+                if (_this.halldata.hall.admin_doing_rows > 0) {
+                    _this.rows = _this.halldata.hall.admin_doing_rows;
+                } else {
+                    _this.rows = _this.halldata.hall.rows;
+                }
+
+                if (_this.halldata.hall.admin_doing_places > 0) {
+                    _this.places_in_row = _this.halldata.hall.admin_doing_places;
+                } else {
+                    _this.places_in_row = _this.halldata.hall.places_in_row;
+                }
             });
         },
 
@@ -49296,18 +49332,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }).filter(function (x) {
                 return x["num_place_in_row"] === n;
             });
+
             if (place[0]) {
-                if (place[0].status === 'taken' || place[0].status === 'selected') {
-                    //проверка или другой пользователь вибрал данное место, если да показивать как забронированое
-                    if (place[0].id_user !== this.halldata.auth_user_id) {
-                        return 'taken';
-                    }
-                    return place[0].status;
-                } else {
-                    return place[0].type;
-                }
-            } else {
-                return 'standart';
+                return place[0].type;
             }
         },
 
@@ -49317,6 +49344,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             //     axios.get('/start/update-ajax/' + place[0].id);
             // }
             // this.update();
+        },
+
+        updateRowsOrPlace: function updateRowsOrPlace(url, row_or_place) {
+            // console.log(url);
+            // axios.post('/admin/post-api-row/' + 1, this.mypost);
+            axios.get(url + this.selected_hall + '/' + row_or_place);
+            this.update();
         }
 
     }
@@ -49335,36 +49369,45 @@ var render = function() {
       _vm._v("Выберите зал для конфигурации:")
     ]),
     _vm._v(" "),
-    _c("ul", { staticClass: "conf-step__selectors-box" }, [
-      _c(
-        "li",
-        {
-          on: {
-            click: function($event) {
-              return _vm.update()
-            }
-          }
-        },
-        [
+    _c(
+      "ul",
+      { staticClass: "conf-step__selectors-box" },
+      _vm._l(_vm.halls, function(hall) {
+        return _c("li", [
           _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.selected_hall,
+                expression: "selected_hall"
+              }
+            ],
             staticClass: "conf-step__radio",
-            attrs: {
-              type: "radio",
-              name: "chairs-hall",
-              value: "Зал 1",
-              checked: ""
+            attrs: { type: "radio", name: "chairs-hall" },
+            domProps: {
+              value: hall.id,
+              checked: _vm._q(_vm.selected_hall, hall.id)
+            },
+            on: {
+              change: function($event) {
+                _vm.selected_hall = hall.id
+              }
             }
           }),
-          _c("span", { staticClass: "conf-step__selector" }, [_vm._v("Зал 1")])
-        ]
-      ),
-      _vm._v(" "),
-      _vm._m(0)
-    ]),
+          _vm._v(" "),
+          _c("span", { staticClass: "conf-step__selector" }, [
+            _vm._v(_vm._s(hall.hall_name))
+          ])
+        ])
+      }),
+      0
+    ),
     _vm._v(" "),
     _c("p", { staticClass: "conf-step__paragraph" }, [
       _vm._v(
-        "Укажите количество рядов и максимальное количество кресел в ряду:"
+        "Укажите количество рядов и максимальное количество кресел в ряду: " +
+          _vm._s(_vm.selected_hall)
       )
     ]),
     _vm._v(" "),
@@ -49423,32 +49466,51 @@ var render = function() {
     ]),
     _vm._v(" "),
     _c("p", { staticClass: "conf-step__paragraph" }, [
-      _vm._v(
-        "Теперь вы можете указать типы кресел на схеме зала: " +
-          _vm._s(_vm.rows)
+      _vm._v("Теперь вы можете указать типы кресел на схеме зала:")
+    ]),
+    _vm._v(" "),
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "conf-step__hall" }, [
+      _c(
+        "div",
+        { staticClass: "conf-step__hall-wrapper" },
+        _vm._l(_vm.rows, function(row) {
+          return _c(
+            "div",
+            { key: row, staticClass: "conf-step__row" },
+            _vm._l(_vm.places_in_row, function(place) {
+              return _c(
+                "span",
+                {
+                  staticClass: "conf-step__chair",
+                  class: "conf-step__chair_" + _vm.classObj(row, place),
+                  on: {
+                    click: function($event) {
+                      return _vm.classAction(row, place)
+                    }
+                  }
+                },
+                [
+                  _vm._v(
+                    "\n                    " +
+                      _vm._s(_vm.totalPlaces) +
+                      "\n                "
+                  )
+                ]
+              )
+            }),
+            0
+          )
+        }),
+        0
       )
     ]),
     _vm._v(" "),
-    _vm._m(1),
-    _vm._v(" "),
-    _vm._m(2),
-    _vm._v(" "),
-    _vm._m(3)
+    _vm._m(1)
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", [
-      _c("input", {
-        staticClass: "conf-step__radio",
-        attrs: { type: "radio", name: "chairs-hall", value: "Зал 2" }
-      }),
-      _c("span", { staticClass: "conf-step__selector" }, [_vm._v("Зал 2")])
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -49463,14 +49525,6 @@ var staticRenderFns = [
       _c("p", { staticClass: "conf-step__hint" }, [
         _vm._v("Чтобы изменить вид кресла, нажмите по нему левой кнопкой мыши")
       ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "conf-step__hall" }, [
-      _c("div", { staticClass: "conf-step__hall-wrapper" })
     ])
   },
   function() {

@@ -40,13 +40,13 @@ class HallController extends Controller
 
         $reservation = Connection::find($id);
         $hall = Hall::find($reservation->id_hall);
-        $palces = Place::where('id_connections', '=', $id)->get();
+        $places = Place::where('id_connections', '=', $id)->get();
         $userId = request()->user()->id;
 
         return [
             'auth_user_id' => $userId,
             'hall' => $hall,
-            'places' => $palces
+            'places' => $places
         ];
     }
 

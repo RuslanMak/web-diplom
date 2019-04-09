@@ -1,32 +1,20 @@
 <template>
 
-    <!--<div class="buying-scheme__wrapper">-->
-        <!--<div v-for="row in halldata.hall.rows" class="buying-scheme__row">-->
-            <!--&lt;!&ndash;v-bind:class="'buying-scheme__chair_' + classObj(halldata.places[totalPlaces].id)"&ndash;&gt;-->
-            <!--<span v-for="n in halldata.hall.places_in_row"-->
-                  <!--class="buying-scheme__chair"-->
-                  <!--v-bind:class="'buying-scheme__chair_' + classObj(row, n)"-->
-                  <!--@click="classAction(row, n)">-->
-                <!--&lt;!&ndash;{{ halldata.places[n-1] }}&ndash;&gt;-->
-                <!--{{totalPlaces}}-->
-            <!--</span>-->
-        <!--</div>-->
-    <!--</div>-->
-
-
     <div class="conf-step__wrapper">
         <p class="conf-step__paragraph">Выберите зал для конфигурации:</p>
         <ul class="conf-step__selectors-box">
-            <li v-on:click="update()"><input type="radio" class="conf-step__radio" name="chairs-hall" value="Зал 1" checked><span class="conf-step__selector">Зал 1</span></li>
-            <li><input type="radio" class="conf-step__radio" name="chairs-hall" value="Зал 2"><span class="conf-step__selector">Зал 2</span></li>
+            <li v-for="hall in halls">
+                <input type="radio" class="conf-step__radio" name="chairs-hall" :value="hall.id" v-model="selected_hall">
+                <span class="conf-step__selector">{{ hall.hall_name }}</span>
+            </li>
         </ul>
-        <p class="conf-step__paragraph">Укажите количество рядов и максимальное количество кресел в ряду:</p>
+        <p class="conf-step__paragraph">Укажите количество рядов и максимальное количество кресел в ряду: {{ selected_hall }}</p>
         <div class="conf-step__legend">
             <label class="conf-step__label">Рядов, шт<input type="number" class="conf-step__input" placeholder="0" v-model="rows" ></label>
             <span class="multiplier">x</span>
             <label class="conf-step__label">Мест, шт<input type="number" class="conf-step__input" placeholder="8" v-model="places_in_row"></label>
         </div>
-        <p class="conf-step__paragraph">Теперь вы можете указать типы кресел на схеме зала: {{rows}}</p>
+        <p class="conf-step__paragraph">Теперь вы можете указать типы кресел на схеме зала:</p>
         <div class="conf-step__legend">
             <span class="conf-step__chair conf-step__chair_standart"></span> — обычные кресла
             <span class="conf-step__chair conf-step__chair_vip"></span> — VIP кресла
@@ -37,14 +25,14 @@
         <div class="conf-step__hall">
             <div class="conf-step__hall-wrapper">
 
-                <!--<div v-for="row in halldata.hall.rows" class="conf-step__row">-->
-                    <!--<span v-for="n in halldata.hall.places_in_row"-->
-                          <!--class="conf-step__chair"-->
-                          <!--v-bind:class="'conf-step__chair_' + classObj(row, n)"-->
-                          <!--@click="classAction(row, n)">-->
-                        <!--{{totalPlaces}}-->
-                    <!--</span>-->
-                <!--</div>-->
+                <div v-for="row in rows" class="conf-step__row" v-bind:key="row">
+                    <span v-for="place in places_in_row"
+                          class="conf-step__chair"
+                          v-bind:class="'conf-step__chair_' + classObj(row, place)"
+                          @click="classAction(row, place)">
+                        {{totalPlaces}}
+                    </span>
+                </div>
 
             </div>
         </div>
@@ -62,7 +50,7 @@
         props: [
             //get data from Blade
             // 'connectionid'
-            'halls'
+            'halls_string'
         ],
         data: function() {
             return {
@@ -70,42 +58,81 @@
                 rows: 0,
                 places_in_row: 0,
                 is_refresh: false,
-                totalPlaces: 0
+                totalPlaces: 0,
+                selected_hall: 1,
+                halls: [],
+                url: {
+                    updateRowNum: '/admin/post-api-row/',
+                    updatePlaceInRowNum: '/admin/get-update-place-in-row/'
+                },
+                mypost: [{'title':4}, {'car':3}]
             }
         },
+
+        watch: {
+            selected_hall: function () {
+                this.update();
+            },
+
+            rows: function (newRows, oldRows) {
+                this.debouncedUpdate(this.url.updateRowNum, this.rows);
+                // this.updateRowsOrPlace(this.url.updateRowNum, this.rows)
+            },
+
+            places_in_row: function () {
+                this.debouncedUpdate(this.url.updatePlaceInRowNum, this.places_in_row);
+                // this.updateRowsOrPlace(this.url.updatePlaceInRowNum, this.places_in_row)
+            }
+        },
+
+        beforeUpdate() {
+            // this.rows;
+            // console.log('ddddd');
+        },
+
+        created: function () {
+            // _.debounce — это функция lodash, позволяющая ограничить то,
+            // насколько часто может выполняться определённая операция.
+            // В данном случае мы ограничиваем частоту обращений к yesno.wtf/api,
+            // дожидаясь завершения печати вопроса перед отправкой ajax-запроса.
+            // Узнать больше о функции _.debounce (и её родственнице _.throttle),
+            // можно в документации: https://lodash.com/docs#debounce
+            this.debouncedUpdate = _.debounce(this.updateRowsOrPlace, 400)
+        },
+
         mounted() {
+            this.halls = JSON.parse(this.halls_string);
             this.update()
         },
         methods: {
             update: function() {
-                this.is_refresh = true
-                // axios.get('/start/get-json/' + this.connectionid).then((response) => {
-                axios.get('/start/get-json/' + 1).then((response) => {
-                    // console.log(response)
-                    this.halldata = response.data
-                    this.is_refresh = false
-                    // console.log(this.halls);
-                    // console.log(this.halldata.hall.rows);
-                    this.rows = this.halldata.hall.rows;
-                    this.places_in_row = this.halldata.hall.places_in_row;
+                this.is_refresh = true;
+
+                axios.get('/admin/get-api-places/' + this.selected_hall).then((response) => {
+                    this.halldata = response.data;
+                    this.is_refresh = false;
+                    // console.dir(this.selected_hall);
+                    if (this.halldata.hall.admin_doing_rows > 0) {
+                        this.rows = this.halldata.hall.admin_doing_rows;
+                    } else {
+                        this.rows = this.halldata.hall.rows;
+                    }
+
+                    if (this.halldata.hall.admin_doing_places > 0) {
+                        this.places_in_row = this.halldata.hall.admin_doing_places;
+                    } else {
+                        this.places_in_row = this.halldata.hall.places_in_row;
+                    }
+
                 });
 
             },
             
             classObj: function(row, n) {
                 let place = this.halldata.places.filter(x => x["num_row"] === row).filter(x => x["num_place_in_row"] === n);
+
                 if (place[0]) {
-                    if (place[0].status === 'taken' || place[0].status === 'selected') {
-                        //проверка или другой пользователь вибрал данное место, если да показивать как забронированое
-                        if (place[0].id_user !== this.halldata.auth_user_id) {
-                            return 'taken'
-                        }
-                        return place[0].status;
-                    } else {
-                        return place[0].type;
-                    }
-                } else {
-                    return 'standart';
+                    return place[0].type;
                 }
             },
 
@@ -115,6 +142,13 @@
                 //     axios.get('/start/update-ajax/' + place[0].id);
                 // }
                 // this.update();
+            },
+
+            updateRowsOrPlace: function (url, row_or_place) {
+                // console.log(url);
+                // axios.post('/admin/post-api-row/' + 1, this.mypost);
+                axios.get(url + this.selected_hall + '/' + row_or_place);
+                this.update();
             }
 
         }

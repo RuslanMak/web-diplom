@@ -26,6 +26,9 @@ Route::get('/admin', 'AdminsController@index')->middleware('auth');
 Route::get('/admin/create', 'AdminsController@create')->middleware('auth');
 Route::post('/admin/hall', 'AdminsController@save')->middleware('auth');
 Route::delete('/admin/hall/{id}', 'AdminsController@delete')->middleware('auth');
+Route::get('/admin/get-api-places/{id_hall}', 'AdminsController@getApi')->middleware('auth');
+Route::get('/admin/post-api-row/{id_hall}/{num}', 'AdminsController@postApiRow')->middleware('auth');
+Route::get('/admin/get-update-place-in-row/{id_hall}/{num}', 'AdminsController@updatePlaceInRow')->middleware('auth');
 
 
 // Route::get('/', function () {
