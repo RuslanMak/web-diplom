@@ -76,34 +76,14 @@ class AdminsController extends Controller
         }
     }
 
-    public function postApiRow($id_hall, $num)
+    public function updateNumRow($id_hall, $num)
     {
-//        $input = request()->all();
-//        dd($num);
-//        dd($input);
-
         if ( !isset($id_hall) &&  !isset($num)) {
             return redirect('/');
         }
 
         $hall = Hall::findOrFail($id_hall);
 
-//        $placeUserId = $place->id_user;
-//        $userAuthorizedId = request()->user()->id;
-
-//        if ($place->status == 'taken' || $place->type == 'disabled') {
-//            die();
-//        }
-//
-//        if ($place->status == 'selected' && $placeUserId === $userAuthorizedId) {
-//            $place->status = '';
-//            $place->id_user = 0;
-//        } elseif ($placeUserId == 0) {
-//            $place->status = 'selected';
-//            $place->id_user = $userAuthorizedId;
-//        }
-//        $hall->rows;
-//        dd($hall->rows);
         $hall->admin_doing_rows = $num;
 
         $hall->save();
@@ -111,7 +91,7 @@ class AdminsController extends Controller
 //        return redirect('/');
     }
 
-    public function updatePlaceInRow($id_hall, $num)
+    public function updateNumPlaceInRow($id_hall, $num)
     {
         if ( !isset($id_hall) &&  !isset($num)) {
             return redirect('/');
@@ -121,6 +101,93 @@ class AdminsController extends Controller
         $hall->admin_doing_places = $num;
 
         $hall->save();
+
+//        return redirect('/');
+    }
+
+    public function updateTypePlace($row, $num, $type, $id_hall)
+    {
+// $place = DB::select("SELECT * FROM places WHERE id_hall = $id_hall AND num_row = $row AND num_place_in_row = $num");
+
+//        $place = DB::table('places')
+//            ->where('id_hall', '=', $id_hall)
+//            ->where('num_row', '=', $row)
+//            ->where('num_place_in_row', '=', $num)
+//            ->get();
+
+        $place = Place::where('id_hall', '=', $id_hall)
+            ->where('num_row', '=', $row)
+            ->where('num_place_in_row', '=', $num)
+            ->get();
+
+        if (isset($place[0])) {
+//            dd($place[0]->type);
+            $place[0]->admin_doing_type = $type;
+            $place[0]->save();
+        } else {
+            $newPlace = new Place();
+            $newPlace->id_hall = $id_hall;
+            $newPlace->num_row = $row;
+            $newPlace->num_place_in_row = $num;
+            $newPlace->type = '';
+            $newPlace->price = 0;
+            $newPlace->id_connections = 0;
+            $newPlace->status = '';
+            $newPlace->id_user = 0;
+            $newPlace->admin_doing_type = $type;
+//            dd($newPlace);
+            $newPlace->save();
+        }
+
+//        return redirect('/');
+    }
+
+    public function cancelChange($pass, $id_hall)
+    {
+        if ($pass != 'herePassword') {
+            return redirect('/');
+        }
+
+        $hall = Hall::findOrFail($id_hall);
+        $hall->admin_doing_rows = 0;
+        $hall->admin_doing_places = 0;
+//        dd($hall);
+        $hall->save();
+
+        Place::where('admin_doing_type', '!=', '')
+            ->update(array('admin_doing_type' => ''));
+
+        Place::where('type', '=', '')
+            ->delete();
+
+//        return redirect('/');
+    }
+
+    public function saveChange($id_hall)
+    {
+        $hall = Hall::findOrFail($id_hall);
+
+        if ($hall->admin_doing_rows != 0) {
+            $hall->rows = $hall->admin_doing_rows;
+            $hall->admin_doing_rows = 0;
+        }
+        if ($hall->admin_doing_places != 0) {
+            $hall->places_in_row = $hall->admin_doing_places;
+            $hall->admin_doing_places = 0;
+        }
+        $hall->save();
+
+        $places = Place::where('id_hall', '=', $id_hall)
+            ->where('admin_doing_type', '!=', '')
+            ->get();
+
+        if (count($places) > 0) {
+            foreach ($places as $place) {
+                $place->type = $place->admin_doing_type;
+                $place->admin_doing_type = '';
+                $place->save();
+            }
+        }
 
 //        return redirect('/');
     }

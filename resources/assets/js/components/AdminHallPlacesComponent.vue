@@ -10,9 +10,9 @@
         </ul>
         <p class="conf-step__paragraph">Укажите количество рядов и максимальное количество кресел в ряду: {{ selected_hall }}</p>
         <div class="conf-step__legend">
-            <label class="conf-step__label">Рядов, шт<input type="number" class="conf-step__input" placeholder="0" v-model="rows" ></label>
+            <label class="conf-step__label">Рядов, шт<input type="text" class="conf-step__input" placeholder="0" v-model="rows" ></label>
             <span class="multiplier">x</span>
-            <label class="conf-step__label">Мест, шт<input type="number" class="conf-step__input" placeholder="8" v-model="places_in_row"></label>
+            <label class="conf-step__label">Мест, шт<input type="text" class="conf-step__input" placeholder="8" v-model="places_in_row"></label>
         </div>
         <p class="conf-step__paragraph">Теперь вы можете указать типы кресел на схеме зала:</p>
         <div class="conf-step__legend">
@@ -38,8 +38,8 @@
         </div>
 
         <fieldset class="conf-step__buttons text-center">
-            <button class="conf-step__button conf-step__button-regular">Отмена</button>
-            <input type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">
+            <button v-on:click="cancel" class="conf-step__button conf-step__button-regular">Отмена</button>
+            <input v-on:click="saveAll" type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">
         </fieldset>
     </div>
 
@@ -63,9 +63,12 @@
                 halls: [],
                 url: {
                     updateRowNum: '/admin/post-api-row/',
-                    updatePlaceInRowNum: '/admin/get-update-place-in-row/'
+                    updatePlaceInRowNum: '/admin/get-update-place-in-row/',
+                    doingTypePlace: '/admin/get-update-type-place-doing/',
+                    cancelUrl: '/admin/get-cancel-change/',
+                    saveUrl: '/admin/get-save-change/'
                 },
-                mypost: [{'title':4}, {'car':3}]
+                doing_type_place: 'disabled'
             }
         },
 
@@ -93,7 +96,7 @@
         created: function () {
             // _.debounce — это функция lodash, позволяющая ограничить то,
             // насколько часто может выполняться определённая операция.
-            // В данном случае мы ограничиваем частоту обращений к yesno.wtf/api,
+            // В данном случае мы ограничиваем частоту обращений к api,
             // дожидаясь завершения печати вопроса перед отправкой ajax-запроса.
             // Узнать больше о функции _.debounce (и её родственнице _.throttle),
             // можно в документации: https://lodash.com/docs#debounce
@@ -127,28 +130,55 @@
                 });
 
             },
-            
+
+            //добавление класса месту
             classObj: function(row, n) {
                 let place = this.halldata.places.filter(x => x["num_row"] === row).filter(x => x["num_place_in_row"] === n);
 
                 if (place[0]) {
-                    return place[0].type;
+                    if (place[0].admin_doing_type.length > 1) {
+                        return place[0].admin_doing_type;
+                    } else {
+                        return place[0].type;
+                    }
                 }
             },
 
-            classAction: function(row, n) {
-                // let place = this.halldata.places.filter(x => x["num_row"] === row).filter(x => x["num_place_in_row"] === n);
-                // if (place[0]) {
-                //     axios.get('/start/update-ajax/' + place[0].id);
-                // }
-                // this.update();
+            //при клике менять класс места
+            classAction: function(row, num) {
+                switch (this.doing_type_place) {
+                    case 'disabled':
+                        this.doing_type_place = 'standart';
+                        break;
+                    case 'standart':
+                        this.doing_type_place = 'vip';
+                        break;
+                    case 'vip':
+                        this.doing_type_place = 'disabled';
+                        break;
+                    default:
+                        alert( 'Перебор' );
+                }
+
+                axios.get(this.url.doingTypePlace + row + '/' + num + '/' + this.doing_type_place + '/' + this.selected_hall)
+                    .then(this.update());
             },
 
             updateRowsOrPlace: function (url, row_or_place) {
-                // console.log(url);
                 // axios.post('/admin/post-api-row/' + 1, this.mypost);
-                axios.get(url + this.selected_hall + '/' + row_or_place);
-                this.update();
+                axios.get(url + this.selected_hall + '/' + row_or_place)
+                    .then(this.update());
+            },
+
+            cancel: function () {
+                const PASS = 'herePassword';
+                axios.get(this.url.cancelUrl + PASS + '/' + this.selected_hall)
+                    .then(this.update());
+            },
+
+            saveAll: function () {
+                axios.get(this.url.saveUrl + this.selected_hall)
+                    .then(this.update());
             }
 
         }

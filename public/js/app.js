@@ -49259,9 +49259,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             halls: [],
             url: {
                 updateRowNum: '/admin/post-api-row/',
-                updatePlaceInRowNum: '/admin/get-update-place-in-row/'
+                updatePlaceInRowNum: '/admin/get-update-place-in-row/',
+                doingTypePlace: '/admin/get-update-type-place-doing/',
+                cancelUrl: '/admin/get-cancel-change/',
+                saveUrl: '/admin/get-save-change/'
             },
-            mypost: [{ 'title': 4 }, { 'car': 3 }]
+            doing_type_place: 'disabled'
         };
     },
 
@@ -49290,7 +49293,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     created: function created() {
         // _.debounce — это функция lodash, позволяющая ограничить то,
         // насколько часто может выполняться определённая операция.
-        // В данном случае мы ограничиваем частоту обращений к yesno.wtf/api,
+        // В данном случае мы ограничиваем частоту обращений к api,
         // дожидаясь завершения печати вопроса перед отправкой ajax-запроса.
         // Узнать больше о функции _.debounce (и её родственнице _.throttle),
         // можно в документации: https://lodash.com/docs#debounce
@@ -49326,6 +49329,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         },
 
+        //добавление класса месту
         classObj: function classObj(row, n) {
             var place = this.halldata.places.filter(function (x) {
                 return x["num_row"] === row;
@@ -49334,23 +49338,45 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
 
             if (place[0]) {
-                return place[0].type;
+                if (place[0].admin_doing_type.length > 1) {
+                    return place[0].admin_doing_type;
+                } else {
+                    return place[0].type;
+                }
             }
         },
 
-        classAction: function classAction(row, n) {
-            // let place = this.halldata.places.filter(x => x["num_row"] === row).filter(x => x["num_place_in_row"] === n);
-            // if (place[0]) {
-            //     axios.get('/start/update-ajax/' + place[0].id);
-            // }
-            // this.update();
+        //при клике менять класс места
+        classAction: function classAction(row, num) {
+            switch (this.doing_type_place) {
+                case 'disabled':
+                    this.doing_type_place = 'standart';
+                    break;
+                case 'standart':
+                    this.doing_type_place = 'vip';
+                    break;
+                case 'vip':
+                    this.doing_type_place = 'disabled';
+                    break;
+                default:
+                    alert('Перебор');
+            }
+
+            axios.get(this.url.doingTypePlace + row + '/' + num + '/' + this.doing_type_place + '/' + this.selected_hall).then(this.update());
         },
 
         updateRowsOrPlace: function updateRowsOrPlace(url, row_or_place) {
-            // console.log(url);
             // axios.post('/admin/post-api-row/' + 1, this.mypost);
-            axios.get(url + this.selected_hall + '/' + row_or_place);
-            this.update();
+            axios.get(url + this.selected_hall + '/' + row_or_place).then(this.update());
+        },
+
+        cancel: function cancel() {
+            var PASS = 'herePassword';
+            axios.get(this.url.cancelUrl + PASS + '/' + this.selected_hall).then(this.update());
+        },
+
+        saveAll: function saveAll() {
+            axios.get(this.url.saveUrl + this.selected_hall).then(this.update());
         }
 
     }
@@ -49424,7 +49450,7 @@ var render = function() {
             }
           ],
           staticClass: "conf-step__input",
-          attrs: { type: "number", placeholder: "0" },
+          attrs: { type: "text", placeholder: "0" },
           domProps: { value: _vm.rows },
           on: {
             input: function($event) {
@@ -49451,7 +49477,7 @@ var render = function() {
             }
           ],
           staticClass: "conf-step__input",
-          attrs: { type: "number", placeholder: "8" },
+          attrs: { type: "text", placeholder: "8" },
           domProps: { value: _vm.places_in_row },
           on: {
             input: function($event) {
@@ -49507,7 +49533,22 @@ var render = function() {
       )
     ]),
     _vm._v(" "),
-    _vm._m(1)
+    _c("fieldset", { staticClass: "conf-step__buttons text-center" }, [
+      _c(
+        "button",
+        {
+          staticClass: "conf-step__button conf-step__button-regular",
+          on: { click: _vm.cancel }
+        },
+        [_vm._v("Отмена")]
+      ),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "conf-step__button conf-step__button-accent",
+        attrs: { type: "submit", value: "Сохранить" },
+        on: { click: _vm.saveAll }
+      })
+    ])
   ])
 }
 var staticRenderFns = [
@@ -49525,23 +49566,6 @@ var staticRenderFns = [
       _c("p", { staticClass: "conf-step__hint" }, [
         _vm._v("Чтобы изменить вид кресла, нажмите по нему левой кнопкой мыши")
       ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("fieldset", { staticClass: "conf-step__buttons text-center" }, [
-      _c(
-        "button",
-        { staticClass: "conf-step__button conf-step__button-regular" },
-        [_vm._v("Отмена")]
-      ),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "conf-step__button conf-step__button-accent",
-        attrs: { type: "submit", value: "Сохранить" }
-      })
     ])
   }
 ]
