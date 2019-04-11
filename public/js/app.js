@@ -50100,7 +50100,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             url: {
                 movies_connect: '/admin/get-all-movie'
             },
-            moviesTime: []
+            moviesTime: [],
+            moviesMargLeft: []
         };
     },
 
@@ -50124,7 +50125,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this.all_data.connections.forEach(function (el) {
                     var normTime = _this.timeOnly(el.start_time);
                     _this.moviesTime[el.id] = normTime;
-                    _this.timeToPx(el.start_time);
+                    _this.moviesMargLeft[el.id] = _this.timeToPx(el.start_time);
                 });
             }).catch(function (error) {
                 console.log(error);
@@ -50156,9 +50157,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
 
         timeToPx: function timeToPx(date) {
-            var d = new Date(date).setUTCFullYear(1970, 1, 1);
-            console.log(Math.round(d / 1000000));
-            // console.log(d/1000000);
+            var d = new Date(date).setFullYear(1970, 1, 1);
+            // console.log(Math.round(d/100000));
+            // let nnew = new Date(d);
+            var procentTine = (d - 2667601000) * 100 / 79199000;
+
+            var marginLeft = Math.round(procentTine * 660 / 100);
+            // console.log(d, nnew, procentTine, marginLeft);
+            return marginLeft;
         }
 
     }
@@ -50219,9 +50225,9 @@ var render = function() {
                     staticClass: "conf-step__seances-movie",
                     staticStyle: {
                       width: "60px",
-                      "background-color": "rgb(133, 255, 137)",
-                      left: "0"
-                    }
+                      "background-color": "rgb(133, 255, 137)"
+                    },
+                    style: { left: _vm.moviesMargLeft[movieDate.id] }
                   },
                   [
                     _c("p", { staticClass: "conf-step__seances-movie-title" }, [

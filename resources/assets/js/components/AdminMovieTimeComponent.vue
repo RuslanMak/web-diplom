@@ -23,7 +23,7 @@
                     <h3 class="conf-step__seances-title">{{ hall.hall_name }}</h3>
                     <div class="conf-step__seances-timeline">
 
-                        <div v-for="movieDate in moviesInHall(hall.id)" class="conf-step__seances-movie" style="width: 60px; background-color: rgb(133, 255, 137); left: 0;">
+                        <div v-for="movieDate in moviesInHall(hall.id)" class="conf-step__seances-movie" style="width: 60px; background-color: rgb(133, 255, 137);" v-bind:style="{ left: moviesMargLeft[movieDate.id] }">
                             <p class="conf-step__seances-movie-title">{{ movieName(movieDate.id_movie) }}</p>
                             <p class="conf-step__seances-movie-start">{{ moviesTime[movieDate.id]}}</p>
                         </div>
@@ -55,7 +55,8 @@
                 url: {
                     movies_connect: '/admin/get-all-movie'
                 },
-                moviesTime: []
+                moviesTime: [],
+                moviesMargLeft: []
             }
         },
 
@@ -76,7 +77,7 @@
                     this.all_data.connections.forEach(el => {
                         let normTime = this.timeOnly(el.start_time);
                         this.moviesTime[el.id] = normTime;
-                        this.timeToPx(el.start_time);
+                        this.moviesMargLeft[el.id] = this.timeToPx(el.start_time);
                     });
 
                 }).catch((error) => {
@@ -106,9 +107,14 @@
             },
 
             timeToPx: function (date) {
-                let d = new Date(date).setUTCFullYear(1970, 1, 1);
-                console.log(Math.round(d/1000000));
-                // console.log(d/1000000);
+                let d = new Date(date).setFullYear(1970, 1, 1);
+                // console.log(Math.round(d/100000));
+                // let nnew = new Date(d);
+                let procentTine = (d-2667601000) * 100 / 79199000;
+
+                let marginLeft = Math.round(procentTine * 660 / 100);
+                // console.log(d, nnew, procentTine, marginLeft);
+                return marginLeft;
             }
 
         }
