@@ -14064,6 +14064,8 @@ window.Vue = __webpack_require__(37);
 Vue.component('example-component', __webpack_require__(41));
 Vue.component('halls-component', __webpack_require__(44));
 Vue.component('admin-hall-places-component', __webpack_require__(52));
+Vue.component('admin-prices-component', __webpack_require__(60));
+Vue.component('admin-movie-time-component', __webpack_require__(66));
 
 var app = new Vue({
   el: '#app'
@@ -49242,6 +49244,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: [
@@ -49275,12 +49301,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         rows: function rows(newRows, oldRows) {
             this.debouncedUpdate(this.url.updateRowNum, this.rows);
-            // this.updateRowsOrPlace(this.url.updateRowNum, this.rows)
         },
 
         places_in_row: function places_in_row() {
             this.debouncedUpdate(this.url.updatePlaceInRowNum, this.places_in_row);
-            // this.updateRowsOrPlace(this.url.updatePlaceInRowNum, this.places_in_row)
         }
     },
 
@@ -49390,164 +49414,176 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "conf-step__wrapper" }, [
-    _c("p", { staticClass: "conf-step__paragraph" }, [
-      _vm._v("Выберите зал для конфигурации:")
-    ]),
+  return _c("section", { staticClass: "conf-step" }, [
+    _vm.is_refresh
+      ? _c("div", { staticClass: "my-update-sign" }, [
+          _c("h2", { staticStyle: { "font-size": "25px" } }, [
+            _vm._v("Пожалуйста подождите!!!")
+          ])
+        ])
+      : _vm._e(),
     _vm._v(" "),
-    _c(
-      "ul",
-      { staticClass: "conf-step__selectors-box" },
-      _vm._l(_vm.halls, function(hall) {
-        return _c("li", [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "conf-step__wrapper" }, [
+      _c("p", { staticClass: "conf-step__paragraph" }, [
+        _vm._v("Выберите зал для конфигурации:")
+      ]),
+      _vm._v(" "),
+      _c(
+        "ul",
+        { staticClass: "conf-step__selectors-box" },
+        _vm._l(_vm.halls, function(hall) {
+          return _c("li", [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.selected_hall,
+                  expression: "selected_hall"
+                }
+              ],
+              staticClass: "conf-step__radio",
+              attrs: { type: "radio", name: "chairs-hall" },
+              domProps: {
+                value: hall.id,
+                checked: _vm._q(_vm.selected_hall, hall.id)
+              },
+              on: {
+                change: function($event) {
+                  _vm.selected_hall = hall.id
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("span", { staticClass: "conf-step__selector" }, [
+              _vm._v(_vm._s(hall.hall_name))
+            ])
+          ])
+        }),
+        0
+      ),
+      _vm._v(" "),
+      _c("p", { staticClass: "conf-step__paragraph" }, [
+        _vm._v(
+          "Укажите количество рядов и максимальное количество кресел в ряду: " +
+            _vm._s(_vm.selected_hall)
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "conf-step__legend" }, [
+        _c("label", { staticClass: "conf-step__label" }, [
+          _vm._v("Рядов, шт"),
           _c("input", {
             directives: [
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.selected_hall,
-                expression: "selected_hall"
+                value: _vm.rows,
+                expression: "rows"
               }
             ],
-            staticClass: "conf-step__radio",
-            attrs: { type: "radio", name: "chairs-hall" },
-            domProps: {
-              value: hall.id,
-              checked: _vm._q(_vm.selected_hall, hall.id)
-            },
+            staticClass: "conf-step__input",
+            attrs: { type: "text", placeholder: "0" },
+            domProps: { value: _vm.rows },
             on: {
-              change: function($event) {
-                _vm.selected_hall = hall.id
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.rows = $event.target.value
               }
             }
-          }),
-          _vm._v(" "),
-          _c("span", { staticClass: "conf-step__selector" }, [
-            _vm._v(_vm._s(hall.hall_name))
-          ])
+          })
+        ]),
+        _vm._v(" "),
+        _c("span", { staticClass: "multiplier" }, [_vm._v("x")]),
+        _vm._v(" "),
+        _c("label", { staticClass: "conf-step__label" }, [
+          _vm._v("Мест, шт"),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.places_in_row,
+                expression: "places_in_row"
+              }
+            ],
+            staticClass: "conf-step__input",
+            attrs: { type: "text", placeholder: "8" },
+            domProps: { value: _vm.places_in_row },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.places_in_row = $event.target.value
+              }
+            }
+          })
         ])
-      }),
-      0
-    ),
-    _vm._v(" "),
-    _c("p", { staticClass: "conf-step__paragraph" }, [
-      _vm._v(
-        "Укажите количество рядов и максимальное количество кресел в ряду: " +
-          _vm._s(_vm.selected_hall)
-      )
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "conf-step__legend" }, [
-      _c("label", { staticClass: "conf-step__label" }, [
-        _vm._v("Рядов, шт"),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.rows,
-              expression: "rows"
-            }
-          ],
-          staticClass: "conf-step__input",
-          attrs: { type: "text", placeholder: "0" },
-          domProps: { value: _vm.rows },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.rows = $event.target.value
-            }
-          }
-        })
       ]),
       _vm._v(" "),
-      _c("span", { staticClass: "multiplier" }, [_vm._v("x")]),
+      _c("p", { staticClass: "conf-step__paragraph" }, [
+        _vm._v("Теперь вы можете указать типы кресел на схеме зала:")
+      ]),
       _vm._v(" "),
-      _c("label", { staticClass: "conf-step__label" }, [
-        _vm._v("Мест, шт"),
+      _vm._m(1),
+      _vm._v(" "),
+      _c("div", { staticClass: "conf-step__hall" }, [
+        _c(
+          "div",
+          { staticClass: "conf-step__hall-wrapper" },
+          _vm._l(_vm.rows, function(row) {
+            return _c(
+              "div",
+              { key: row, staticClass: "conf-step__row" },
+              _vm._l(_vm.places_in_row, function(place) {
+                return _c(
+                  "span",
+                  {
+                    staticClass: "conf-step__chair",
+                    class: "conf-step__chair_" + _vm.classObj(row, place),
+                    on: {
+                      click: function($event) {
+                        return _vm.classAction(row, place)
+                      }
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(_vm.totalPlaces) +
+                        "\n                "
+                    )
+                  ]
+                )
+              }),
+              0
+            )
+          }),
+          0
+        )
+      ]),
+      _vm._v(" "),
+      _c("fieldset", { staticClass: "conf-step__buttons text-center" }, [
+        _c(
+          "button",
+          {
+            staticClass: "conf-step__button conf-step__button-regular",
+            on: { click: _vm.cancel }
+          },
+          [_vm._v("Отмена")]
+        ),
+        _vm._v(" "),
         _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.places_in_row,
-              expression: "places_in_row"
-            }
-          ],
-          staticClass: "conf-step__input",
-          attrs: { type: "text", placeholder: "8" },
-          domProps: { value: _vm.places_in_row },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.places_in_row = $event.target.value
-            }
-          }
+          staticClass: "conf-step__button conf-step__button-accent",
+          attrs: { type: "submit", value: "Сохранить" },
+          on: { click: _vm.saveAll }
         })
       ])
-    ]),
-    _vm._v(" "),
-    _c("p", { staticClass: "conf-step__paragraph" }, [
-      _vm._v("Теперь вы можете указать типы кресел на схеме зала:")
-    ]),
-    _vm._v(" "),
-    _vm._m(0),
-    _vm._v(" "),
-    _c("div", { staticClass: "conf-step__hall" }, [
-      _c(
-        "div",
-        { staticClass: "conf-step__hall-wrapper" },
-        _vm._l(_vm.rows, function(row) {
-          return _c(
-            "div",
-            { key: row, staticClass: "conf-step__row" },
-            _vm._l(_vm.places_in_row, function(place) {
-              return _c(
-                "span",
-                {
-                  staticClass: "conf-step__chair",
-                  class: "conf-step__chair_" + _vm.classObj(row, place),
-                  on: {
-                    click: function($event) {
-                      return _vm.classAction(row, place)
-                    }
-                  }
-                },
-                [
-                  _vm._v(
-                    "\n                    " +
-                      _vm._s(_vm.totalPlaces) +
-                      "\n                "
-                  )
-                ]
-              )
-            }),
-            0
-          )
-        }),
-        0
-      )
-    ]),
-    _vm._v(" "),
-    _c("fieldset", { staticClass: "conf-step__buttons text-center" }, [
-      _c(
-        "button",
-        {
-          staticClass: "conf-step__button conf-step__button-regular",
-          on: { click: _vm.cancel }
-        },
-        [_vm._v("Отмена")]
-      ),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "conf-step__button conf-step__button-accent",
-        attrs: { type: "submit", value: "Сохранить" },
-        on: { click: _vm.saveAll }
-      })
     ])
   ])
 }
@@ -49556,13 +49592,27 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
+    return _c(
+      "header",
+      { staticClass: "conf-step__header conf-step__header_opened" },
+      [
+        _c("h2", { staticClass: "conf-step__title" }, [
+          _vm._v("Конфигурация залов")
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
     return _c("div", { staticClass: "conf-step__legend" }, [
       _c("span", { staticClass: "conf-step__chair conf-step__chair_standart" }),
-      _vm._v(" — обычные кресла\n        "),
+      _vm._v(" — обычные кресла\n            "),
       _c("span", { staticClass: "conf-step__chair conf-step__chair_vip" }),
-      _vm._v(" — VIP кресла\n        "),
+      _vm._v(" — VIP кресла\n            "),
       _c("span", { staticClass: "conf-step__chair conf-step__chair_disabled" }),
-      _vm._v(" — заблокированные (нет кресла)\n        "),
+      _vm._v(" — заблокированные (нет кресла)\n            "),
       _c("p", { staticClass: "conf-step__hint" }, [
         _vm._v("Чтобы изменить вид кресла, нажмите по нему левой кнопкой мыши")
       ])
@@ -49575,6 +49625,746 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-35c07900", module.exports)
+  }
+}
+
+/***/ }),
+/* 55 */,
+/* 56 */,
+/* 57 */,
+/* 58 */,
+/* 59 */,
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(11)
+/* script */
+var __vue_script__ = __webpack_require__(63)
+/* template */
+var __vue_template__ = __webpack_require__(65)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/AdminPricesComponent.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-8726358a", Component.options)
+  } else {
+    hotAPI.reload("data-v-8726358a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 61 */,
+/* 62 */,
+/* 63 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: [
+    //get data from Blade
+    'halls_string'],
+    data: function data() {
+        return {
+            halldata: [],
+            is_refresh: false,
+            selected_hall: 1,
+            halls: [],
+            url: {
+                saveUrl: '/admin/post-save-prices'
+            },
+            csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            standart_price: 0,
+            vip_price: 20,
+            id_standart_place: 0,
+            id_vip_place: 0
+        };
+    },
+
+    watch: {
+        // selected_hall: function () {
+        //     this.update();
+        // }
+    },
+
+    mounted: function mounted() {
+        this.halls = JSON.parse(this.halls_string);
+        this.update();
+    },
+
+    methods: {
+        update: function update() {
+            var _this = this;
+
+            this.is_refresh = true;
+
+            axios.get('/admin/get-api-places/' + this.selected_hall).then(function (response) {
+                _this.halldata = response.data;
+                _this.is_refresh = false;
+
+                // console.dir(this.halldata.hall.id_prices);
+                //добавление цены and ID
+                if (_this.halldata.prices.vip) {
+                    _this.vip_price = _this.halldata.prices.vip.price;
+                    _this.id_vip_place = _this.halldata.prices.vip.id;
+                } else {
+                    _this.vip_price = 0;
+                    _this.id_vip_place = 0;
+                }
+
+                if (_this.halldata.prices.standart) {
+                    _this.standart_price = _this.halldata.prices.standart.price;
+                    _this.id_standart_place = _this.halldata.prices.standart.id;
+                } else {
+                    _this.standart_price = 0;
+                    _this.id_standart_place = 0;
+                }
+            });
+        },
+
+        saveBtn: function saveBtn() {
+            axios.post(this.url.saveUrl).then(this.update()).catch(function (error) {
+                console.log(error);
+            });
+        }
+
+    }
+});
+
+/***/ }),
+/* 64 */,
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("section", { staticClass: "conf-step" }, [
+    _vm.is_refresh
+      ? _c("div", { staticClass: "my-update-sign" }, [
+          _c("h2", { staticStyle: { "font-size": "25px" } }, [
+            _vm._v("Пожалуйста подождите!!!")
+          ])
+        ])
+      : _vm._e(),
+    _vm._v(" "),
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "conf-step__wrapper" }, [
+      _c(
+        "form",
+        { attrs: { action: "/admin/post-save-prices", method: "post" } },
+        [
+          _c("input", {
+            attrs: { type: "hidden", name: "_token" },
+            domProps: { value: _vm.csrf }
+          }),
+          _vm._v(" "),
+          _c("p", { staticClass: "conf-step__paragraph" }, [
+            _vm._v("Выберите зал для конфигурации:")
+          ]),
+          _vm._v(" "),
+          _c(
+            "ul",
+            { staticClass: "conf-step__selectors-box" },
+            _vm._l(_vm.halls, function(hall) {
+              return _c("li", [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.selected_hall,
+                      expression: "selected_hall"
+                    }
+                  ],
+                  staticClass: "conf-step__radio",
+                  attrs: { type: "radio", name: "id_hall" },
+                  domProps: {
+                    value: hall.id,
+                    checked: _vm._q(_vm.selected_hall, hall.id)
+                  },
+                  on: {
+                    change: function($event) {
+                      _vm.selected_hall = hall.id
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("span", { staticClass: "conf-step__selector" }, [
+                  _vm._v(_vm._s(hall.hall_name))
+                ])
+              ])
+            }),
+            0
+          ),
+          _vm._v(" "),
+          _c("p", { staticClass: "conf-step__paragraph" }, [
+            _vm._v("Установите цены для типов кресел:")
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "conf-step__legend" }, [
+            _c("input", {
+              attrs: { type: "hidden", name: "id_standart_place" },
+              domProps: { value: _vm.id_standart_place }
+            }),
+            _vm._v(" "),
+            _c("label", { staticClass: "conf-step__label" }, [
+              _vm._v("Цена, рублей"),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.standart_price,
+                    expression: "standart_price"
+                  }
+                ],
+                staticClass: "conf-step__input",
+                attrs: {
+                  type: "text",
+                  name: "standart_place",
+                  placeholder: "0"
+                },
+                domProps: { value: _vm.standart_price },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.standart_price = $event.target.value
+                  }
+                }
+              })
+            ]),
+            _vm._v("\n                за "),
+            _c("span", {
+              staticClass: "conf-step__chair conf-step__chair_standart"
+            }),
+            _vm._v(" обычные кресла\n            ")
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "conf-step__legend" }, [
+            _c("input", {
+              attrs: { type: "hidden", name: "id_vip_place" },
+              domProps: { value: _vm.id_vip_place }
+            }),
+            _vm._v(" "),
+            _c("label", { staticClass: "conf-step__label" }, [
+              _vm._v("Цена, рублей"),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.vip_price,
+                    expression: "vip_price"
+                  }
+                ],
+                staticClass: "conf-step__input",
+                attrs: { type: "text", name: "vip_place", placeholder: "0" },
+                domProps: { value: _vm.vip_price },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.vip_price = $event.target.value
+                  }
+                }
+              })
+            ]),
+            _vm._v("\n                за "),
+            _c("span", {
+              staticClass: "conf-step__chair conf-step__chair_vip"
+            }),
+            _vm._v(" VIP кресла\n            ")
+          ]),
+          _vm._v(" "),
+          _c("fieldset", { staticClass: "conf-step__buttons text-center" }, [
+            _c(
+              "button",
+              {
+                staticClass: "conf-step__button conf-step__button-regular",
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    return _vm.update($event)
+                  }
+                }
+              },
+              [_vm._v("Отмена")]
+            ),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "conf-step__button conf-step__button-accent",
+              attrs: { type: "submit", value: "Сохранить" }
+            })
+          ])
+        ]
+      )
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "header",
+      { staticClass: "conf-step__header conf-step__header_opened" },
+      [
+        _c("h2", { staticClass: "conf-step__title" }, [
+          _vm._v("Конфигурация цен")
+        ])
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-8726358a", module.exports)
+  }
+}
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(11)
+/* script */
+var __vue_script__ = __webpack_require__(67)
+/* template */
+var __vue_template__ = __webpack_require__(68)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/AdminMovieTimeComponent.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-f31638b0", Component.options)
+  } else {
+    hotAPI.reload("data-v-f31638b0", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 67 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: [
+    //get data from Blade
+    'halls_string'],
+    data: function data() {
+        return {
+            movies_all: [],
+            is_refresh: false,
+            selected_hall: 1,
+            halls: [],
+            url: {
+                allMovies: '/admin/get-all-movie'
+            }
+        };
+    },
+
+    watch: {
+        // selected_hall: function () {
+        //     this.update();
+        // }
+    },
+
+    mounted: function mounted() {
+        this.halls = JSON.parse(this.halls_string);
+        this.update();
+    },
+
+    methods: {
+        update: function update() {
+            var _this = this;
+
+            this.is_refresh = true;
+
+            axios.get(this.url.allMovies).then(function (response) {
+                _this.movies_all = response.data;
+                _this.is_refresh = false;
+
+                // console.dir(this.halldata.hall.id_prices);
+            });
+        },
+
+        saveBtn: function saveBtn() {
+            axios.post(this.url.saveUrl).then(this.update()).catch(function (error) {
+                console.log(error);
+            });
+        }
+
+    }
+});
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm._m(0)
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("section", { staticClass: "conf-step" }, [
+      _c(
+        "header",
+        { staticClass: "conf-step__header conf-step__header_opened" },
+        [
+          _c("h2", { staticClass: "conf-step__title" }, [
+            _vm._v("Сетка сеансов")
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "conf-step__wrapper" }, [
+        _c("p", { staticClass: "conf-step__paragraph" }, [
+          _c(
+            "button",
+            { staticClass: "conf-step__button conf-step__button-accent" },
+            [_vm._v("Добавить фильм")]
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "conf-step__movies" }, [
+          _c("div", { staticClass: "conf-step__movie" }, [
+            _c("h3", { staticClass: "conf-step__movie-title" }, [
+              _vm._v("Звёздные войны XXIII: Атака клонированных клонов")
+            ]),
+            _vm._v(" "),
+            _c("p", { staticClass: "conf-step__movie-duration" }, [
+              _vm._v("130 минут")
+            ])
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "conf-step__seances" }, [
+          _c("div", { staticClass: "conf-step__seances-hall" }, [
+            _c("h3", { staticClass: "conf-step__seances-title" }, [
+              _vm._v("Зал 1")
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "conf-step__seances-timeline" }, [
+              _c(
+                "div",
+                {
+                  staticClass: "conf-step__seances-movie",
+                  staticStyle: {
+                    width: "60px",
+                    "background-color": "rgb(133, 255, 137)",
+                    left: "0"
+                  }
+                },
+                [
+                  _c("p", { staticClass: "conf-step__seances-movie-title" }, [
+                    _vm._v("Миссия выполнима")
+                  ]),
+                  _vm._v(" "),
+                  _c("p", { staticClass: "conf-step__seances-movie-start" }, [
+                    _vm._v("00:00")
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "conf-step__seances-movie",
+                  staticStyle: {
+                    width: "60px",
+                    "background-color": "rgb(133, 255, 137)",
+                    left: "360px"
+                  }
+                },
+                [
+                  _c("p", { staticClass: "conf-step__seances-movie-title" }, [
+                    _vm._v("Миссия выполнима")
+                  ]),
+                  _vm._v(" "),
+                  _c("p", { staticClass: "conf-step__seances-movie-start" }, [
+                    _vm._v("12:00")
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "conf-step__seances-movie",
+                  staticStyle: {
+                    width: "65px",
+                    "background-color": "rgb(202, 255, 133)",
+                    left: "420px"
+                  }
+                },
+                [
+                  _c("p", { staticClass: "conf-step__seances-movie-title" }, [
+                    _vm._v("Звёздные войны XXIII: Атака клонированных клонов")
+                  ]),
+                  _vm._v(" "),
+                  _c("p", { staticClass: "conf-step__seances-movie-start" }, [
+                    _vm._v("14:00")
+                  ])
+                ]
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "conf-step__seances-hall" }, [
+            _c("h3", { staticClass: "conf-step__seances-title" }, [
+              _vm._v("Зал 2")
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "conf-step__seances-timeline" }, [
+              _c(
+                "div",
+                {
+                  staticClass: "conf-step__seances-movie",
+                  staticStyle: {
+                    width: "65px",
+                    "background-color": "rgb(202, 255, 133)",
+                    left: "595px"
+                  }
+                },
+                [
+                  _c("p", { staticClass: "conf-step__seances-movie-title" }, [
+                    _vm._v("Звёздные войны XXIII: Атака клонированных клонов")
+                  ]),
+                  _vm._v(" "),
+                  _c("p", { staticClass: "conf-step__seances-movie-start" }, [
+                    _vm._v("19:50")
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "conf-step__seances-movie",
+                  staticStyle: {
+                    width: "60px",
+                    "background-color": "rgb(133, 255, 137)",
+                    left: "660px"
+                  }
+                },
+                [
+                  _c("p", { staticClass: "conf-step__seances-movie-title" }, [
+                    _vm._v("Миссия выполнима")
+                  ]),
+                  _vm._v(" "),
+                  _c("p", { staticClass: "conf-step__seances-movie-start" }, [
+                    _vm._v("22:00")
+                  ])
+                ]
+              )
+            ])
+          ])
+        ]),
+        _vm._v(" "),
+        _c("fieldset", { staticClass: "conf-step__buttons text-center" }, [
+          _c(
+            "button",
+            { staticClass: "conf-step__button conf-step__button-regular" },
+            [_vm._v("Отмена")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "conf-step__button conf-step__button-accent",
+            attrs: { type: "submit", value: "Сохранить" }
+          })
+        ])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-f31638b0", module.exports)
   }
 }
 

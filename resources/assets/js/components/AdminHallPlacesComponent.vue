@@ -1,48 +1,72 @@
+<!--<style scoped>-->
+    <!--.my-update-sign {-->
+        <!--width: 50%;-->
+        <!--position: fixed;-->
+        <!--top: 50%;-->
+        <!--left: 0;-->
+        <!--background: rgba(256, 256, 0, 0.75);-->
+        <!--text-align: center;-->
+        <!--margin: 0 25%;-->
+        <!--z-index: 99;-->
+        <!--padding: 30px;-->
+    <!--}-->
+<!--</style>-->
+
 <template>
-
-    <div class="conf-step__wrapper">
-        <p class="conf-step__paragraph">Выберите зал для конфигурации:</p>
-        <ul class="conf-step__selectors-box">
-            <li v-for="hall in halls">
-                <input type="radio" class="conf-step__radio" name="chairs-hall" :value="hall.id" v-model="selected_hall">
-                <span class="conf-step__selector">{{ hall.hall_name }}</span>
-            </li>
-        </ul>
-        <p class="conf-step__paragraph">Укажите количество рядов и максимальное количество кресел в ряду: {{ selected_hall }}</p>
-        <div class="conf-step__legend">
-            <label class="conf-step__label">Рядов, шт<input type="text" class="conf-step__input" placeholder="0" v-model="rows" ></label>
-            <span class="multiplier">x</span>
-            <label class="conf-step__label">Мест, шт<input type="text" class="conf-step__input" placeholder="8" v-model="places_in_row"></label>
-        </div>
-        <p class="conf-step__paragraph">Теперь вы можете указать типы кресел на схеме зала:</p>
-        <div class="conf-step__legend">
-            <span class="conf-step__chair conf-step__chair_standart"></span> — обычные кресла
-            <span class="conf-step__chair conf-step__chair_vip"></span> — VIP кресла
-            <span class="conf-step__chair conf-step__chair_disabled"></span> — заблокированные (нет кресла)
-            <p class="conf-step__hint">Чтобы изменить вид кресла, нажмите по нему левой кнопкой мыши</p>
+    <section class="conf-step">
+        <div v-if="is_refresh" class="my-update-sign">
+            <h2 style="font-size: 25px;">Пожалуйста подождите!!!</h2>
         </div>
 
-        <div class="conf-step__hall">
-            <div class="conf-step__hall-wrapper">
+        <header class="conf-step__header conf-step__header_opened">
+            <h2 class="conf-step__title">Конфигурация залов</h2>
+        </header>
 
-                <div v-for="row in rows" class="conf-step__row" v-bind:key="row">
+        <div class="conf-step__wrapper">
+
+            <p class="conf-step__paragraph">Выберите зал для конфигурации:</p>
+
+            <ul class="conf-step__selectors-box">
+                <li v-for="hall in halls">
+                    <input type="radio" class="conf-step__radio" name="chairs-hall" :value="hall.id" v-model="selected_hall">
+                    <span class="conf-step__selector">{{ hall.hall_name }}</span>
+                </li>
+            </ul>
+            <p class="conf-step__paragraph">Укажите количество рядов и максимальное количество кресел в ряду: {{ selected_hall }}</p>
+            <div class="conf-step__legend">
+                <label class="conf-step__label">Рядов, шт<input type="text" class="conf-step__input" placeholder="0" v-model="rows" ></label>
+                <span class="multiplier">x</span>
+                <label class="conf-step__label">Мест, шт<input type="text" class="conf-step__input" placeholder="8" v-model="places_in_row"></label>
+            </div>
+            <p class="conf-step__paragraph">Теперь вы можете указать типы кресел на схеме зала:</p>
+            <div class="conf-step__legend">
+                <span class="conf-step__chair conf-step__chair_standart"></span> — обычные кресла
+                <span class="conf-step__chair conf-step__chair_vip"></span> — VIP кресла
+                <span class="conf-step__chair conf-step__chair_disabled"></span> — заблокированные (нет кресла)
+                <p class="conf-step__hint">Чтобы изменить вид кресла, нажмите по нему левой кнопкой мыши</p>
+            </div>
+
+            <div class="conf-step__hall">
+                <div class="conf-step__hall-wrapper">
+
+                    <div v-for="row in rows" class="conf-step__row" v-bind:key="row">
                     <span v-for="place in places_in_row"
                           class="conf-step__chair"
                           v-bind:class="'conf-step__chair_' + classObj(row, place)"
                           @click="classAction(row, place)">
                         {{totalPlaces}}
                     </span>
+                    </div>
+
                 </div>
-
             </div>
+
+            <fieldset class="conf-step__buttons text-center">
+                <button v-on:click="cancel" class="conf-step__button conf-step__button-regular">Отмена</button>
+                <input v-on:click="saveAll" type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">
+            </fieldset>
         </div>
-
-        <fieldset class="conf-step__buttons text-center">
-            <button v-on:click="cancel" class="conf-step__button conf-step__button-regular">Отмена</button>
-            <input v-on:click="saveAll" type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">
-        </fieldset>
-    </div>
-
+    </section>
 </template>
 
 <script>
@@ -79,12 +103,10 @@
 
             rows: function (newRows, oldRows) {
                 this.debouncedUpdate(this.url.updateRowNum, this.rows);
-                // this.updateRowsOrPlace(this.url.updateRowNum, this.rows)
             },
 
             places_in_row: function () {
                 this.debouncedUpdate(this.url.updatePlaceInRowNum, this.places_in_row);
-                // this.updateRowsOrPlace(this.url.updatePlaceInRowNum, this.places_in_row)
             }
         },
 

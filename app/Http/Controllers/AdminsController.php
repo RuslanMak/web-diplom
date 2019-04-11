@@ -8,6 +8,8 @@ use App\Connection;
 use App\Movie;
 use App\Hall;
 use App\Place;
+use App\Price;
+use phpDocumentor\Reflection\Types\Object_;
 
 
 class AdminsController extends Controller
@@ -53,27 +55,27 @@ class AdminsController extends Controller
 
     public function getApi($id_hall)
     {
-        if ( !isset(request()->user()->id) ) {
-            return redirect('/');
-        }
+//        if ( !isset(request()->user()->id) ) {
+//            return redirect('/');
+//        }
 
         $places = Place::where('id_hall', '=', $id_hall)->get();
         $hall = Hall::find($id_hall);
 
-        if ( !isset($places[0]) ) {
-//            dd('LOL nothing here');
-            return [
-                'hall' => $hall,
-                'places' => $places
-            ];
-        } else {
-//            dd($places);
-//            return $places;
-            return [
-                'hall' => $hall,
-                'places' => $places
-            ];
+        $id_praces = explode(';', $hall->id_prices);
+        $prices = Price::find($id_praces);
+        $prices_arr = [];
+
+//        делаю осоциативный массив
+        foreach ($prices as $price) {
+            $prices_arr += array($price->place_type => $price);
         }
+
+        return [
+            'hall' => $hall,
+            'prices' => $prices_arr,
+            'places' => $places
+        ];
     }
 
     public function updateNumRow($id_hall, $num)
@@ -190,5 +192,49 @@ class AdminsController extends Controller
         }
 
 //        return redirect('/');
+    }
+
+    public function savePrices()
+    {
+//         return request()->all();
+//         return request('id_hall');
+
+//        основляем цены
+        Price::where('id', '=', request('id_standart_place'))
+            ->update(['price' => request('standart_place')]);
+
+        Price::where('id', '=', request('id_vip_place'))
+            ->update(['price' => request('vip_place')]);
+
+         $hall = Hall::findOrFail(request('id_hall'));
+//         проверка на отсутствие id-цен, создание и сохранение цен
+         if ( !($hall->id_prices > 0) ) {
+             $priceSt = new Price();
+             $priceSt->place_type = 'standart';
+             $priceSt->price = request('standart_place');
+             $priceSt->save();
+//             return $priceSt->id;
+
+             $priceVip = new Price();
+             $priceVip->place_type = 'vip';
+             $priceVip->price = request('vip_place');
+             $priceVip->save();
+
+//             записуем id-цен в зале
+             $hall->id_prices = $priceSt->id . ';' . $priceVip->id;
+             $hall->save();
+         }
+
+        return redirect('/admin');
+    }
+
+    public function allMoviesApi()
+    {
+//        $movies = Movie::all();
+        $movies = DB::table('movies')->select('id', 'name', 'image', 'runtime')->get()->groupBy('id');
+
+        return [
+            'movies' => $movies
+        ];
     }
 }

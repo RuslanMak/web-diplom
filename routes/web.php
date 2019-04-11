@@ -32,6 +32,9 @@ Route::get('/admin/get-update-place-in-row/{id_hall}/{num}', 'AdminsController@u
 Route::get('/admin/get-update-type-place-doing/{row}/{num}/{type}/{id_hall}', 'AdminsController@updateTypePlace')->middleware('auth');
 Route::get('/admin/get-cancel-change/{pass}/{id_hall}', 'AdminsController@cancelChange')->middleware('auth');
 Route::get('/admin/get-save-change/{id_hall}', 'AdminsController@saveChange')->middleware('auth');
+Route::post('/admin/post-save-prices', 'AdminsController@savePrices')->middleware('auth');
+
+Route::get('/admin/get-all-movie', 'AdminsController@allMoviesApi')->middleware('auth');
 
 
 // Route::get('/', function () {
