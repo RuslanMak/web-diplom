@@ -9,45 +9,28 @@
             </p>
             <div class="conf-step__movies">
 
-                <div class="conf-step__movie">
-                    <!--<img class="conf-step__movie-poster" alt="poster" src="{{ asset('admin-style/i/poster.png') }}">-->
-                    <h3 class="conf-step__movie-title">Звёздные войны XXIII: Атака клонированных клонов</h3>
-                    <p class="conf-step__movie-duration">130 минут</p>
+                <div v-for="movie in all_data.movies" class="conf-step__movie">
+                    <img class="conf-step__movie-poster" alt="poster" v-bind:src="movie.image">
+                    <h3 class="conf-step__movie-title">{{ movie.name }}</h3>
+                    <p class="conf-step__movie-duration">{{ movie.runtime }} минут</p>
                 </div>
 
             </div>
 
             <div class="conf-step__seances">
-                <div class="conf-step__seances-hall">
-                    <h3 class="conf-step__seances-title">Зал 1</h3>
+
+                <div v-for="hall in halls" class="conf-step__seances-hall">
+                    <h3 class="conf-step__seances-title">{{ hall.hall_name }}</h3>
                     <div class="conf-step__seances-timeline">
-                        <div class="conf-step__seances-movie" style="width: 60px; background-color: rgb(133, 255, 137); left: 0;">
-                            <p class="conf-step__seances-movie-title">Миссия выполнима</p>
-                            <p class="conf-step__seances-movie-start">00:00</p>
+
+                        <div v-for="movieDate in moviesInHall(hall.id)" class="conf-step__seances-movie" style="width: 60px; background-color: rgb(133, 255, 137); left: 0;">
+                            <p class="conf-step__seances-movie-title">{{ movieName(movieDate.id_movie) }}</p>
+                            <p class="conf-step__seances-movie-start">{{ moviesTime[movieDate.id]}}</p>
                         </div>
-                        <div class="conf-step__seances-movie" style="width: 60px; background-color: rgb(133, 255, 137); left: 360px;">
-                            <p class="conf-step__seances-movie-title">Миссия выполнима</p>
-                            <p class="conf-step__seances-movie-start">12:00</p>
-                        </div>
-                        <div class="conf-step__seances-movie" style="width: 65px; background-color: rgb(202, 255, 133); left: 420px;">
-                            <p class="conf-step__seances-movie-title">Звёздные войны XXIII: Атака клонированных клонов</p>
-                            <p class="conf-step__seances-movie-start">14:00</p>
-                        </div>
+
                     </div>
                 </div>
-                <div class="conf-step__seances-hall">
-                    <h3 class="conf-step__seances-title">Зал 2</h3>
-                    <div class="conf-step__seances-timeline">
-                        <div class="conf-step__seances-movie" style="width: 65px; background-color: rgb(202, 255, 133); left: 595px;">
-                            <p class="conf-step__seances-movie-title">Звёздные войны XXIII: Атака клонированных клонов</p>
-                            <p class="conf-step__seances-movie-start">19:50</p>
-                        </div>
-                        <div class="conf-step__seances-movie" style="width: 60px; background-color: rgb(133, 255, 137); left: 660px;">
-                            <p class="conf-step__seances-movie-title">Миссия выполнима</p>
-                            <p class="conf-step__seances-movie-start">22:00</p>
-                        </div>
-                    </div>
-                </div>
+
             </div>
 
             <fieldset class="conf-step__buttons text-center">
@@ -66,20 +49,14 @@
         ],
         data: function() {
             return {
-                movies_all: [],
+                all_data: [],
                 is_refresh: false,
-                selected_hall: 1,
                 halls: [],
                 url: {
-                    allMovies: '/admin/get-all-movie'
-                }
+                    movies_connect: '/admin/get-all-movie'
+                },
+                moviesTime: []
             }
-        },
-
-        watch: {
-            // selected_hall: function () {
-            //     this.update();
-            // }
         },
 
         mounted() {
@@ -90,21 +67,48 @@
             update: function() {
                 this.is_refresh = true;
 
-                axios.get(this.url.allMovies).then((response) => {
-                    this.movies_all = response.data;
+                axios.get(this.url.movies_connect).then((response) => {
+                    this.all_data = response.data;
                     this.is_refresh = false;
+                    // console.dir(this.all_data);
 
-                    // console.dir(this.halldata.hall.id_prices);
+                    //обработка времени и занесение в массив moviesTime
+                    this.all_data.connections.forEach(el => {
+                        let normTime = this.timeOnly(el.start_time);
+                        this.moviesTime[el.id] = normTime;
+                        this.timeToPx(el.start_time);
+                    });
+
+                }).catch((error) => {
+                    console.log(error);
                 });
 
             },
 
-            saveBtn: function () {
-                axios.post(this.url.saveUrl)
-                    .then(this.update())
-                    .catch((error) => {
-                        console.log(error);
-                    });
+            moviesInHall: function (id_hall) {
+                if (this.all_data.connections) {
+                    let movieData = this.all_data.connections.filter(x => x["id_hall"] === id_hall);
+                    return movieData;
+                }
+            },
+
+            movieName: function (id_movie) {
+                if (this.all_data.movies) {
+                    let nameIs = this.all_data.movies.filter(x => x["id"] === id_movie);
+                    return nameIs[0].name;
+                }
+            },
+
+            timeOnly: function (date) {
+                let d = new Date(date);
+                let datestring = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+                return datestring;
+            },
+
+            timeToPx: function (date) {
+                let d = new Date(date).setUTCFullYear(1970, 1, 1);
+                console.log(Math.round(d/1000000));
+                // console.log(d/1000000);
             }
 
         }

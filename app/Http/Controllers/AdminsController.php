@@ -230,11 +230,12 @@ class AdminsController extends Controller
 
     public function allMoviesApi()
     {
-//        $movies = Movie::all();
-        $movies = DB::table('movies')->select('id', 'name', 'image', 'runtime')->get()->groupBy('id');
+        $movies = DB::table('movies')->select('id', 'name', 'image', 'runtime')->get();
+        $connections = Connection::all();
 
         return [
-            'movies' => $movies
+            'movies' => $movies,
+            'connections' => $connections
         ];
     }
 }
