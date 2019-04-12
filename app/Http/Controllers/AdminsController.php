@@ -247,16 +247,18 @@ class AdminsController extends Controller
     public function saveNewMovie(Request $request)
     {
 //        return $request->all();
+//        return $request->file('image');
         $path = $request->file('image')->store('uploads', 'public');
-        return view('admin.create_movie', ['path' => $path]);
-//        return $request->description;
-//         return request('hall_name');
+//        return view('admin.create_movie', ['path' => $path]);
 
-//        $hall = new Hall();
-//        $hall->hall_name = request('hall_name');
-//        $hall->rows = 0;
-//        $hall->places_in_row = 0;
-//        $hall->save();
-//        return redirect('/admin');
+        $movie = new Movie();
+        $movie->name = $request->name;
+        $movie->image = 'storage/' . $path;
+        $movie->description = $request->description;
+        $movie->runtime = $request->runtime;
+        $movie->country = $request->country;
+        $movie->save();
+
+        return redirect('/admin');
     }
 }

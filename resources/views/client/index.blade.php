@@ -35,7 +35,7 @@
       <section class="movie">
         <div class="movie__info">
           <div class="movie__poster">
-            <img class="movie__poster-image" alt="Звёздные войны постер" src="{{ asset( $movie->image ) }}">
+            <img class="movie__poster-image" alt="Звёздные войны постер" src="{{ asset($movie->image) }}">
           </div>
           <div class="movie__description">
             <h2 class="movie__title">{{ $movie->name }}</h2>
