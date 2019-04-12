@@ -238,4 +238,25 @@ class AdminsController extends Controller
             'connections' => $connections
         ];
     }
+
+    public function createMovie()
+    {
+        return view('admin.create_movie');
+    }
+
+    public function saveNewMovie(Request $request)
+    {
+//        return $request->all();
+        $path = $request->file('image')->store('uploads', 'public');
+        return view('admin.create_movie', ['path' => $path]);
+//        return $request->description;
+//         return request('hall_name');
+
+//        $hall = new Hall();
+//        $hall->hall_name = request('hall_name');
+//        $hall->rows = 0;
+//        $hall->places_in_row = 0;
+//        $hall->save();
+//        return redirect('/admin');
+    }
 }

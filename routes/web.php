@@ -35,6 +35,8 @@ Route::get('/admin/get-save-change/{id_hall}', 'AdminsController@saveChange')->m
 Route::post('/admin/post-save-prices', 'AdminsController@savePrices')->middleware('auth');
 
 Route::get('/admin/get-all-movie', 'AdminsController@allMoviesApi')->middleware('auth');
+Route::get('/admin/create_movie', 'AdminsController@createMovie')->middleware('auth');
+Route::post('/admin/save-new-movie', 'AdminsController@saveNewMovie')->name('image.upload')->middleware('auth');
 
 
 // Route::get('/', function () {

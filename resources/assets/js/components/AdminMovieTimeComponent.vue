@@ -5,7 +5,7 @@
         </header>
         <div class="conf-step__wrapper">
             <p class="conf-step__paragraph">
-                <button class="conf-step__button conf-step__button-accent">Добавить фильм</button>
+                <button v-on:click="addMovieBtn" class="conf-step__button conf-step__button-accent">Добавить фильм</button>
             </p>
             <div class="conf-step__movies">
 
@@ -53,7 +53,8 @@
                 is_refresh: false,
                 halls: [],
                 url: {
-                    movies_connect: '/admin/get-all-movie'
+                    movies_connect: '/admin/get-all-movie',
+                    addFilm: '/admin/create_movie'
                 },
                 moviesTime: [],
                 moviesMargLeft: []
@@ -80,7 +81,6 @@
                         this.moviesMargLeft[el.id] = this.timeToPx(el.start_time);
                     });
 
-                    console.dir(this.moviesMargLeft[1])
                 }).catch((error) => {
                     console.log(error);
                 });
@@ -112,6 +112,10 @@
                 let procentTine = (d-2667601000) * 100 / 79199000;
                 let marginLeft = Math.round(procentTine * 660 / 100);
                 return marginLeft;
+            },
+
+            addMovieBtn: function () {
+                return location.href = this.url.addFilm;
             }
 
         }

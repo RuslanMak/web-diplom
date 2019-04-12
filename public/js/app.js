@@ -50098,7 +50098,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             is_refresh: false,
             halls: [],
             url: {
-                movies_connect: '/admin/get-all-movie'
+                movies_connect: '/admin/get-all-movie',
+                addFilm: '/admin/create_movie'
             },
             moviesTime: [],
             moviesMargLeft: []
@@ -50127,8 +50128,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     _this.moviesTime[el.id] = normTime;
                     _this.moviesMargLeft[el.id] = _this.timeToPx(el.start_time);
                 });
-
-                console.dir(_this.moviesMargLeft[1]);
             }).catch(function (error) {
                 console.log(error);
             });
@@ -50163,6 +50162,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var procentTine = (d - 2667601000) * 100 / 79199000;
             var marginLeft = Math.round(procentTine * 660 / 100);
             return marginLeft;
+        },
+
+        addMovieBtn: function addMovieBtn() {
+            return location.href = this.url.addFilm;
         }
 
     }
@@ -50180,7 +50183,16 @@ var render = function() {
     _vm._m(0),
     _vm._v(" "),
     _c("div", { staticClass: "conf-step__wrapper" }, [
-      _vm._m(1),
+      _c("p", { staticClass: "conf-step__paragraph" }, [
+        _c(
+          "button",
+          {
+            staticClass: "conf-step__button conf-step__button-accent",
+            on: { click: _vm.addMovieBtn }
+          },
+          [_vm._v("Добавить фильм")]
+        )
+      ]),
       _vm._v(" "),
       _c(
         "div",
@@ -50245,7 +50257,7 @@ var render = function() {
         0
       ),
       _vm._v(" "),
-      _vm._m(2)
+      _vm._m(1)
     ])
   ])
 }
@@ -50259,18 +50271,6 @@ var staticRenderFns = [
       { staticClass: "conf-step__header conf-step__header_opened" },
       [_c("h2", { staticClass: "conf-step__title" }, [_vm._v("Сетка сеансов")])]
     )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("p", { staticClass: "conf-step__paragraph" }, [
-      _c(
-        "button",
-        { staticClass: "conf-step__button conf-step__button-accent" },
-        [_vm._v("Добавить фильм")]
-      )
-    ])
   },
   function() {
     var _vm = this

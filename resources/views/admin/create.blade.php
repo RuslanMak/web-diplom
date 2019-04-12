@@ -23,7 +23,7 @@
            @csrf
 
           <div class="">
-            <input  class="conf-step__input" type="text" name="hall_name" value="" placeholder="Hall title" style="width:400px;">
+            <input  class="conf-step__input" type="text" name="hall_name" value="" placeholder="Hall title" style="width:400px;" required>
           </div>
 
           <div class="">
