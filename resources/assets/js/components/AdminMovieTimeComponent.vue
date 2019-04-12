@@ -23,9 +23,9 @@
                     <h3 class="conf-step__seances-title">{{ hall.hall_name }}</h3>
                     <div class="conf-step__seances-timeline">
 
-                        <div v-for="movieDate in moviesInHall(hall.id)" class="conf-step__seances-movie" style="width: 60px; background-color: rgb(133, 255, 137);" v-bind:style="{ left: moviesMargLeft[movieDate.id] }">
+                        <div v-for="movieDate in moviesInHall(hall.id)" class="conf-step__seances-movie" style="width: 60px; background-color: rgb(133, 255, 137);" v-bind:style="{ left: moviesMargLeft[movieDate.id] + 'px' }">
                             <p class="conf-step__seances-movie-title">{{ movieName(movieDate.id_movie) }}</p>
-                            <p class="conf-step__seances-movie-start">{{ moviesTime[movieDate.id]}}</p>
+                            <p class="conf-step__seances-movie-start">{{ moviesTime[movieDate.id] }}</p>
                         </div>
 
                     </div>
@@ -62,7 +62,7 @@
 
         mounted() {
             this.halls = JSON.parse(this.halls_string);
-            this.update()
+            this.update();
         },
         methods: {
             update: function() {
@@ -80,6 +80,7 @@
                         this.moviesMargLeft[el.id] = this.timeToPx(el.start_time);
                     });
 
+                    console.dir(this.moviesMargLeft[1])
                 }).catch((error) => {
                     console.log(error);
                 });
@@ -108,12 +109,8 @@
 
             timeToPx: function (date) {
                 let d = new Date(date).setFullYear(1970, 1, 1);
-                // console.log(Math.round(d/100000));
-                // let nnew = new Date(d);
                 let procentTine = (d-2667601000) * 100 / 79199000;
-
                 let marginLeft = Math.round(procentTine * 660 / 100);
-                // console.log(d, nnew, procentTine, marginLeft);
                 return marginLeft;
             }
 

@@ -50127,6 +50127,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     _this.moviesTime[el.id] = normTime;
                     _this.moviesMargLeft[el.id] = _this.timeToPx(el.start_time);
                 });
+
+                console.dir(_this.moviesMargLeft[1]);
             }).catch(function (error) {
                 console.log(error);
             });
@@ -50158,12 +50160,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         timeToPx: function timeToPx(date) {
             var d = new Date(date).setFullYear(1970, 1, 1);
-            // console.log(Math.round(d/100000));
-            // let nnew = new Date(d);
             var procentTine = (d - 2667601000) * 100 / 79199000;
-
             var marginLeft = Math.round(procentTine * 660 / 100);
-            // console.log(d, nnew, procentTine, marginLeft);
             return marginLeft;
         }
 
@@ -50227,7 +50225,7 @@ var render = function() {
                       width: "60px",
                       "background-color": "rgb(133, 255, 137)"
                     },
-                    style: { left: _vm.moviesMargLeft[movieDate.id] }
+                    style: { left: _vm.moviesMargLeft[movieDate.id] + "px" }
                   },
                   [
                     _c("p", { staticClass: "conf-step__seances-movie-title" }, [
