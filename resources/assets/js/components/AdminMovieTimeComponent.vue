@@ -72,7 +72,7 @@
                         <div class="modal-body">
                             <slot name="body">
                                 <p class="conf-step__paragraph">Заполните данные:</p>
-                                <form id="uploadForm" enctype="multipart/form-data">
+                                <form id="uploadForm" enctype="multipart/form-data" method="post">
 
                                     <input class="conf-step__input" type="text" name="name" v-model="myNewMovie.name" placeholder="Movie title" required>
                                     <textarea class="conf-step__input" name="description" v-model="myNewMovie.description" rows="4"></textarea>
@@ -128,11 +128,36 @@
             </div>
         </div>
         <!-- END Modal -->
-        <!--===========================================-->
+        <!--==================  Modal - Добавить фильм =========================-->
+        <div v-if="showModalDel">
+            <div class="modal-mask">
+                <div class="modal-wrapper">
+                    <div class="modal-container">
+                        <div class="modal-body">
+                            <slot name="body">
+                                <p class="conf-step__paragraph">Удалить с показа???</p>
+                                <form method="post">
+                                <!--<form :action="url.deleteMovieHall" method="post">-->
+                                    <!--<input type="hidden" name="_token" :value="csrf">-->
+                                    <input class="conf-step__input" type="hidden" name="id_connection" :value="deleteMovieHallId" required>
+
+                                    <button class="conf-step__button conf-step__button-accent" @click.prevent="deleteMovieInHall">Удалить</button>
+                                    <!--<button class="conf-step__button conf-step__button-accent" type="submit">Удалить</button>-->
+                                    <button class="conf-step__button conf-step__button-regular" @click="showModalDel=false">Отмена</button>
+                                </form>
+                            </slot>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END Modal -->
+
+        <!--==================  Modal - Выбор время для фильм =========================-->
         <header class="conf-step__header conf-step__header_opened">
             <h2 class="conf-step__title">Сетка сеансов</h2>
         </header>
-        <div class="conf-step__wrapper">
+        <div @dragover="moveFromHall()" class="conf-step__wrapper">
             <p class="conf-step__paragraph">
                 <!-- Modal btn -->
                 <button class="conf-step__button conf-step__button-accent" @click="showModal = true">Добавить фильм</button>
@@ -156,7 +181,13 @@
                     <h3 class="conf-step__seances-title">{{ hall.hall_name }}</h3>
                     <div class="conf-step__seances-timeline">
 
-                        <div v-for="movieDate in moviesInHall(hall.id)" class="conf-step__seances-movie" style="width: 60px; background-color: rgb(133, 255, 137);" v-bind:style="{ left: moviesMargLeft[movieDate.id] + 'px' }">
+                        <div v-for="movieDate in moviesInHall(hall.id)"
+                             class="conf-step__seances-movie"
+                             style="width: 60px; background-color: rgb(133, 255, 137);"
+                             v-bind:style="{ left: moviesMargLeft[movieDate.id] + 'px' }"
+                             draggable="true" @dragstart="dragStart(movieDate, $event)"
+                             @dragend="dragEnd"
+                        >
                             <p class="conf-step__seances-movie-title">{{ movieName(movieDate.id_movie) }}</p>
                             <p class="conf-step__seances-movie-start">{{ moviesTime[movieDate.id] }}</p>
                         </div>
@@ -189,23 +220,24 @@
                 url: {
                     movies_connect: '/admin/get-all-movie',
                     saveNewFilm: '/admin/save-new-movie',
-                    saveTimeMovie: '/admin/save-new-time-for-movie'
+                    saveTimeMovie: '/admin/save-new-time-for-movie',
+                    deleteMovieHall: '/admin/delete-movie-for-hall/'
                 },
+                // csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 moviesTime: [],
                 moviesMargLeft: [],
-
-                //add strart
                 dragging: -1,
-                //add end
                 showModal: false,
                 showModalTime: false,
+                showModalDel: false,
                 modalTimeData: {},
                 myNewMovie: {
                     'name': '',
                     'description': '',
                     'runtime': '',
                     'country': ''
-                }
+                },
+                deleteMovieHallId: 0
             }
         },
 
@@ -221,8 +253,6 @@
                 axios.get(this.url.movies_connect).then((response) => {
                     this.all_data = response.data;
                     this.is_refresh = false;
-                    // console.dir(this.all_data);
-
                     //обработка времени и занесение в массив moviesTime
                     this.all_data.connections.forEach(el => {
                         let normTime = this.timeOnly(el.start_time);
@@ -293,9 +323,23 @@
                     .then(response => {
                         console.log(response);
                         this.update();
-                        this.showModalTime=false;
+                        this.showModalTime = false;
                     })
                     .catch(error => {
+                        console.log(error.response)
+                    });
+            },
+
+            deleteMovieInHall: function () {
+                console.log(this.deleteMovieHallId);
+                axios.delete(this.url.deleteMovieHall + this.deleteMovieHallId)
+                    .then(response => {
+                        console.log(response);
+                        this.update();
+                        this.showModalDel = false;
+                    })
+                    .catch(error => {
+                        this.showModalDel = false;
                         console.log(error.response)
                     });
             },
@@ -304,18 +348,33 @@
             dragStart(which, ev) {
                 console.log('dragStart');
                 ev.dataTransfer.setData('Text', this.id);
-                ev.dataTransfer.dropEffect = 'move'
+                ev.dataTransfer.dropEffect = 'move';
                 this.dragging = which;
+                // console.dir(which);
             },
             dragFinish(to, hall) {
                 console.log('dragFinish');
-                console.dir(hall);
+                console.dir(this.dragging);
+                // console.dir(hall);
                 //переименовую id чтоб не было проблем слияния
                 let hallDate = {'id_hall': hall.id, 'hall_name': hall.hall_name};
-                //передаем выбранный элемент (фильм)
-                this.moveItem(this.dragging, hallDate, to);
+                //если выбрали фильм из списка - передаем выбранный элемент (фильм)
+                if (this.dragging.runtime) {
+                    this.moveItemToHall(this.dragging, hallDate, to);
+                }
             },
-            moveItem(movieData, hallData, to) {
+
+            moveFromHall() {
+                // проверяем или данный фильм имеет время старта, проверяем или мы выдвинули его из зала
+                if (this.dragging.start_time && event.target.className === 'conf-step__wrapper') {
+                    // console.log(this.dragging);
+                    console.log(this.dragging.id);
+                    this.deleteMovieHallId = this.dragging.id;
+                    this.dragEnd();
+                    this.showModalDel = true;
+                }
+            },
+            moveItemToHall(movieData, hallData, to) {
                 if (to === -1) {
                     console.dir('moveItem');
                     console.dir(movieData);

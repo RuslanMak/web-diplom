@@ -267,4 +267,10 @@ class AdminsController extends Controller
         $connections->start_time = $request->start_time;
         $connections->save();
     }
+
+    public function deleteMovieFromHall(Request $request)
+    {
+//        return $request;
+        Connection::findOrFail($request->id_connection)->delete();
+    }
 }

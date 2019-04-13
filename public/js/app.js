@@ -50225,6 +50225,37 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: [
@@ -50238,23 +50269,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             url: {
                 movies_connect: '/admin/get-all-movie',
                 saveNewFilm: '/admin/save-new-movie',
-                saveTimeMovie: '/admin/save-new-time-for-movie'
+                saveTimeMovie: '/admin/save-new-time-for-movie',
+                deleteMovieHall: '/admin/delete-movie-for-hall/'
             },
+            // csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             moviesTime: [],
             moviesMargLeft: [],
-
-            //add strart
             dragging: -1,
-            //add end
             showModal: false,
             showModalTime: false,
+            showModalDel: false,
             modalTimeData: {},
             myNewMovie: {
                 'name': '',
                 'description': '',
                 'runtime': '',
                 'country': ''
-            }
+            },
+            deleteMovieHallId: 0
         };
     },
 
@@ -50273,8 +50305,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             axios.get(this.url.movies_connect).then(function (response) {
                 _this.all_data = response.data;
                 _this.is_refresh = false;
-                // console.dir(this.all_data);
-
                 //обработка времени и занесение в массив moviesTime
                 _this.all_data.connections.forEach(function (el) {
                     var normTime = _this.timeOnly(el.start_time);
@@ -50355,22 +50385,50 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         },
 
+        deleteMovieInHall: function deleteMovieInHall() {
+            var _this4 = this;
+
+            console.log(this.deleteMovieHallId);
+            axios.delete(this.url.deleteMovieHall + this.deleteMovieHallId).then(function (response) {
+                console.log(response);
+                _this4.update();
+                _this4.showModalDel = false;
+            }).catch(function (error) {
+                _this4.showModalDel = false;
+                console.log(error.response);
+            });
+        },
+
         //drag and drop
         dragStart: function dragStart(which, ev) {
             console.log('dragStart');
             ev.dataTransfer.setData('Text', this.id);
             ev.dataTransfer.dropEffect = 'move';
             this.dragging = which;
+            // console.dir(which);
         },
         dragFinish: function dragFinish(to, hall) {
             console.log('dragFinish');
-            console.dir(hall);
+            console.dir(this.dragging);
+            // console.dir(hall);
             //переименовую id чтоб не было проблем слияния
             var hallDate = { 'id_hall': hall.id, 'hall_name': hall.hall_name };
-            //передаем выбранный элемент (фильм)
-            this.moveItem(this.dragging, hallDate, to);
+            //если выбрали фильм из списка - передаем выбранный элемент (фильм)
+            if (this.dragging.runtime) {
+                this.moveItemToHall(this.dragging, hallDate, to);
+            }
         },
-        moveItem: function moveItem(movieData, hallData, to) {
+        moveFromHall: function moveFromHall() {
+            // проверяем или данный фильм имеет время старта, проверяем или мы выдвинули его из зала
+            if (this.dragging.start_time && event.target.className === 'conf-step__wrapper') {
+                // console.log(this.dragging);
+                console.log(this.dragging.id);
+                this.deleteMovieHallId = this.dragging.id;
+                this.dragEnd();
+                this.showModalDel = true;
+            }
+        },
+        moveItemToHall: function moveItemToHall(movieData, hallData, to) {
             if (to === -1) {
                 console.dir('moveItem');
                 console.dir(movieData);
@@ -50828,7 +50886,8 @@ var render = function() {
                         {
                           attrs: {
                             id: "uploadForm",
-                            enctype: "multipart/form-data"
+                            enctype: "multipart/form-data",
+                            method: "post"
                           }
                         },
                         [
@@ -51173,120 +51232,204 @@ var render = function() {
         ])
       : _vm._e(),
     _vm._v(" "),
+    _vm.showModalDel
+      ? _c("div", [
+          _c("div", { staticClass: "modal-mask" }, [
+            _c("div", { staticClass: "modal-wrapper" }, [
+              _c("div", { staticClass: "modal-container" }, [
+                _c(
+                  "div",
+                  { staticClass: "modal-body" },
+                  [
+                    _vm._t("body", [
+                      _c("p", { staticClass: "conf-step__paragraph" }, [
+                        _vm._v("Удалить с показа???")
+                      ]),
+                      _vm._v(" "),
+                      _c("form", { attrs: { method: "post" } }, [
+                        _c("input", {
+                          staticClass: "conf-step__input",
+                          attrs: {
+                            type: "hidden",
+                            name: "id_connection",
+                            required: ""
+                          },
+                          domProps: { value: _vm.deleteMovieHallId }
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "conf-step__button conf-step__button-accent",
+                            on: {
+                              click: function($event) {
+                                $event.preventDefault()
+                                return _vm.deleteMovieInHall($event)
+                              }
+                            }
+                          },
+                          [_vm._v("Удалить")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "conf-step__button conf-step__button-regular",
+                            on: {
+                              click: function($event) {
+                                _vm.showModalDel = false
+                              }
+                            }
+                          },
+                          [_vm._v("Отмена")]
+                        )
+                      ])
+                    ])
+                  ],
+                  2
+                )
+              ])
+            ])
+          ])
+        ])
+      : _vm._e(),
+    _vm._v(" "),
     _vm._m(0),
     _vm._v(" "),
-    _c("div", { staticClass: "conf-step__wrapper" }, [
-      _c("p", { staticClass: "conf-step__paragraph" }, [
-        _c(
-          "button",
-          {
-            staticClass: "conf-step__button conf-step__button-accent",
-            on: {
-              click: function($event) {
-                _vm.showModal = true
-              }
-            }
-          },
-          [_vm._v("Добавить фильм")]
-        )
-      ]),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "conf-step__movies" },
-        _vm._l(_vm.all_data.movies, function(movie) {
-          return _c(
-            "div",
+    _c(
+      "div",
+      {
+        staticClass: "conf-step__wrapper",
+        on: {
+          dragover: function($event) {
+            return _vm.moveFromHall()
+          }
+        }
+      },
+      [
+        _c("p", { staticClass: "conf-step__paragraph" }, [
+          _c(
+            "button",
             {
-              staticClass: "conf-step__movie",
-              attrs: { draggable: "true" },
+              staticClass: "conf-step__button conf-step__button-accent",
               on: {
-                dragstart: function($event) {
-                  return _vm.dragStart(movie, $event)
-                },
-                dragend: _vm.dragEnd
-              }
-            },
-            [
-              _c("img", {
-                staticClass: "conf-step__movie-poster",
-                attrs: { alt: "poster", src: movie.image }
-              }),
-              _vm._v(" "),
-              _c("h3", { staticClass: "conf-step__movie-title" }, [
-                _vm._v(_vm._s(movie.name))
-              ]),
-              _vm._v(" "),
-              _c("p", { staticClass: "conf-step__movie-duration" }, [
-                _vm._v(_vm._s(movie.runtime) + " минут")
-              ])
-            ]
-          )
-        }),
-        0
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "conf-step__seances" },
-        _vm._l(_vm.halls, function(hall) {
-          return _c(
-            "div",
-            {
-              staticClass: "conf-step__seances-hall",
-              on: {
-                dragover: function($event) {
-                  $event.preventDefault()
-                },
-                drop: function($event) {
-                  return _vm.dragFinish(-1, hall)
+                click: function($event) {
+                  _vm.showModal = true
                 }
               }
             },
-            [
-              _c("h3", { staticClass: "conf-step__seances-title" }, [
-                _vm._v(_vm._s(hall.hall_name))
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "conf-step__seances-timeline" },
-                _vm._l(_vm.moviesInHall(hall.id), function(movieDate) {
-                  return _c(
-                    "div",
-                    {
-                      staticClass: "conf-step__seances-movie",
-                      staticStyle: {
-                        width: "60px",
-                        "background-color": "rgb(133, 255, 137)"
-                      },
-                      style: { left: _vm.moviesMargLeft[movieDate.id] + "px" }
-                    },
-                    [
-                      _c(
-                        "p",
-                        { staticClass: "conf-step__seances-movie-title" },
-                        [_vm._v(_vm._s(_vm.movieName(movieDate.id_movie)))]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "p",
-                        { staticClass: "conf-step__seances-movie-start" },
-                        [_vm._v(_vm._s(_vm.moviesTime[movieDate.id]))]
-                      )
-                    ]
-                  )
-                }),
-                0
-              )
-            ]
+            [_vm._v("Добавить фильм")]
           )
-        }),
-        0
-      ),
-      _vm._v(" "),
-      _vm._m(1)
-    ])
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "conf-step__movies" },
+          _vm._l(_vm.all_data.movies, function(movie) {
+            return _c(
+              "div",
+              {
+                staticClass: "conf-step__movie",
+                attrs: { draggable: "true" },
+                on: {
+                  dragstart: function($event) {
+                    return _vm.dragStart(movie, $event)
+                  },
+                  dragend: _vm.dragEnd
+                }
+              },
+              [
+                _c("img", {
+                  staticClass: "conf-step__movie-poster",
+                  attrs: { alt: "poster", src: movie.image }
+                }),
+                _vm._v(" "),
+                _c("h3", { staticClass: "conf-step__movie-title" }, [
+                  _vm._v(_vm._s(movie.name))
+                ]),
+                _vm._v(" "),
+                _c("p", { staticClass: "conf-step__movie-duration" }, [
+                  _vm._v(_vm._s(movie.runtime) + " минут")
+                ])
+              ]
+            )
+          }),
+          0
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "conf-step__seances" },
+          _vm._l(_vm.halls, function(hall) {
+            return _c(
+              "div",
+              {
+                staticClass: "conf-step__seances-hall",
+                on: {
+                  dragover: function($event) {
+                    $event.preventDefault()
+                  },
+                  drop: function($event) {
+                    return _vm.dragFinish(-1, hall)
+                  }
+                }
+              },
+              [
+                _c("h3", { staticClass: "conf-step__seances-title" }, [
+                  _vm._v(_vm._s(hall.hall_name))
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "conf-step__seances-timeline" },
+                  _vm._l(_vm.moviesInHall(hall.id), function(movieDate) {
+                    return _c(
+                      "div",
+                      {
+                        staticClass: "conf-step__seances-movie",
+                        staticStyle: {
+                          width: "60px",
+                          "background-color": "rgb(133, 255, 137)"
+                        },
+                        style: {
+                          left: _vm.moviesMargLeft[movieDate.id] + "px"
+                        },
+                        attrs: { draggable: "true" },
+                        on: {
+                          dragstart: function($event) {
+                            return _vm.dragStart(movieDate, $event)
+                          },
+                          dragend: _vm.dragEnd
+                        }
+                      },
+                      [
+                        _c(
+                          "p",
+                          { staticClass: "conf-step__seances-movie-title" },
+                          [_vm._v(_vm._s(_vm.movieName(movieDate.id_movie)))]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "p",
+                          { staticClass: "conf-step__seances-movie-start" },
+                          [_vm._v(_vm._s(_vm.moviesTime[movieDate.id]))]
+                        )
+                      ]
+                    )
+                  }),
+                  0
+                )
+              ]
+            )
+          }),
+          0
+        ),
+        _vm._v(" "),
+        _vm._m(1)
+      ]
+    )
   ])
 }
 var staticRenderFns = [

@@ -37,6 +37,7 @@ Route::post('/admin/post-save-prices', 'AdminsController@savePrices')->middlewar
 Route::get('/admin/get-all-movie', 'AdminsController@allMoviesApi')->middleware('auth');
 Route::post('/admin/save-new-movie', 'AdminsController@saveNewMovie')->name('image.upload')->middleware('auth');
 Route::post('/admin/save-new-time-for-movie', 'AdminsController@saveMovieTime')->middleware('auth');
+Route::delete('/admin/delete-movie-for-hall/{id_connection}', 'AdminsController@deleteMovieFromHall')->middleware('auth');
 
 
 // Route::get('/', function () {
