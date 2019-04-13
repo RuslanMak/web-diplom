@@ -72,16 +72,15 @@
                         <div class="modal-body">
                             <slot name="body">
                                 <p class="conf-step__paragraph">Заполните данные:</p>
-                                <form class="" action="/admin/save-new-movie" method="post" enctype="multipart/form-data">
-                                    <input type="hidden" name="_token" :value="csrf">
+                                <form id="uploadForm" enctype="multipart/form-data">
 
-                                    <input class="conf-step__input" type="text" name="name" value="" placeholder="Movie title" required>
-                                    <textarea class="conf-step__input" name="description" id="exampleFormControlTextarea1" rows="4"></textarea>
-                                    <input class="conf-step__input" type="number" name="runtime" value="" placeholder="Runtime" required>
-                                    <input class="conf-step__input" type="text" name="country" value="" placeholder="Country" required>
-                                    <input class="conf-step__input" type="file" name="image" value="" placeholder="image">
+                                    <input class="conf-step__input" type="text" name="name" v-model="myNewMovie.name" placeholder="Movie title" required>
+                                    <textarea class="conf-step__input" name="description" v-model="myNewMovie.description" rows="4"></textarea>
+                                    <input class="conf-step__input" type="number" name="runtime" v-model="myNewMovie.runtime" placeholder="Runtime" required>
+                                    <input class="conf-step__input" type="text" name="country" v-model="myNewMovie.country" placeholder="Country" required>
+                                    <input class="conf-step__input" id="file" type="file" name="image" placeholder="image">
 
-                                    <button class="conf-step__button conf-step__button-accent" type="submit">Добавить фильм</button>
+                                    <button class="conf-step__button conf-step__button-accent" @click.prevent="uploadFiles">Добавить фильм</button>
                                     <button class="conf-step__button conf-step__button-regular" @click="showModal=false">Отмена</button>
                                 </form>
                             </slot>
@@ -107,18 +106,18 @@
 
                         <div class="modal-body">
                             <slot name="body">
-                                <p class="conf-step__paragraph">Заполните данные:</p>
+                                <p class="conf-step__paragraph">Выберите дату показа фильма:</p>
 
-                                <form class="" action="" method="post" enctype="multipart/form-data">
-                                    <input type="hidden" name="_token" :value="csrf">
+                                <form :action="url.saveTimeMovie" method="post">
+                                    <!--<input type="hidden" name="_token" :value="csrf">-->
 
-                                    <input class="conf-step__input" type="text" name="hall_name" value="" placeholder="Hall name" required>
-                                    <input class="conf-step__input" type="number" name="id_hall" value="" placeholder="hall id" required>
-                                    <input class="conf-step__input" type="text" name="movie_name" value="" placeholder="Movie name" required>
-                                    <input class="conf-step__input" type="number" name="id_movie" value="" placeholder="id_movie" required>
-                                    <input class="conf-step__input" type="datetime-local" name="start_time" value="" placeholder="Runtime" required>
+                                    <input class="conf-step__input" type="text" name="hall_name" :value="modalTimeData.hall_name" placeholder="Hall name" disabled>
+                                    <input class="conf-step__input" type="hidden" name="id_hall" :value="modalTimeData.id" placeholder="hall id" required>
+                                    <input class="conf-step__input" type="text" name="movie_name" :value="modalTimeData.name" placeholder="Movie name" disabled>
+                                    <input class="conf-step__input" type="hidden" name="id_movie" v-model="modalTimeData.id" placeholder="id_movie" required>
+                                    <input class="conf-step__input" type="datetime-local" name="start_time" v-model="modalTimeData.start_time" placeholder="Runtime" required>
 
-                                    <button class="conf-step__button conf-step__button-accent" type="submit">Установить дату</button>
+                                    <button class="conf-step__button conf-step__button-accent" type="submit" @click.prevent="saveTimeM">Установить дату</button>
                                     <button class="conf-step__button conf-step__button-regular" @click="showModalTime=false">Отмена</button>
                                 </form>
                             </slot>
@@ -137,8 +136,6 @@
             <p class="conf-step__paragraph">
                 <!-- Modal btn -->
                 <button class="conf-step__button conf-step__button-accent" @click="showModal = true">Добавить фильм</button>
-                <button class="conf-step__button conf-step__button-accent" @click="showModalTime = true">showModalTime</button>
-                <button v-on:click="addMovieBtn" class="conf-step__button conf-step__button-accent">Добавить фильм</button>
             </p>
             <div class="conf-step__movies">
 
@@ -191,9 +188,9 @@
                 halls: [],
                 url: {
                     movies_connect: '/admin/get-all-movie',
-                    addFilm: '/admin/create_movie'
+                    saveNewFilm: '/admin/save-new-movie',
+                    saveTimeMovie: '/admin/save-new-time-for-movie'
                 },
-                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 moviesTime: [],
                 moviesMargLeft: [],
 
@@ -201,7 +198,14 @@
                 dragging: -1,
                 //add end
                 showModal: false,
-                showModalTime: false
+                showModalTime: false,
+                modalTimeData: {},
+                myNewMovie: {
+                    'name': '',
+                    'description': '',
+                    'runtime': '',
+                    'country': ''
+                }
             }
         },
 
@@ -259,14 +263,44 @@
                 return marginLeft;
             },
 
-            addMovieBtn: function () {
-                return location.href = this.url.addFilm;
+            uploadFiles () {
+                var s = this;
+                const data = new FormData(document.getElementById('uploadForm'));
+                var imagefile = document.querySelector('#file');
+                // console.log(imagefile.files[0]);
+                data.append('image', imagefile.files[0]);
+                data.append('name', s.myNewMovie.name);
+                data.append('description', s.myNewMovie.description);
+                data.append('runtime', s.myNewMovie.runtime);
+                data.append('country', s.myNewMovie.country);
+                axios.post(this.url.saveNewFilm, data, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                    .then(response => {
+                        console.log(response);
+                        this.update();
+                        this.showModal=false;
+                    })
+                    .catch(error => {
+                        console.log(error.response)
+                    });
             },
 
+            saveTimeM: function () {
+                axios.post(this.url.saveTimeMovie, this.modalTimeData)
+                    .then(response => {
+                        console.log(response);
+                        this.update();
+                        this.showModalTime=false;
+                    })
+                    .catch(error => {
+                        console.log(error.response)
+                    });
+            },
 
-
-
-            //add strart
+            //drag and drop
             dragStart(which, ev) {
                 console.log('dragStart');
                 ev.dataTransfer.setData('Text', this.id);
@@ -276,22 +310,29 @@
             dragFinish(to, hall) {
                 console.log('dragFinish');
                 console.dir(hall);
+                //переименовую id чтоб не было проблем слияния
+                let hallDate = {'id_hall': hall.id, 'hall_name': hall.hall_name};
                 //передаем выбранный элемент (фильм)
-                this.moveItem(this.dragging, to);
-                // ev.target.style.marginTop = '2px'
+                this.moveItem(this.dragging, hallDate, to);
             },
-            moveItem(movieData, to) {
+            moveItem(movieData, hallData, to) {
                 if (to === -1) {
                     console.dir('moveItem');
                     console.dir(movieData);
+
+                    //копируем данные обекты в новый обект
+                    this.modalTimeData = Object.assign({}, hallData, movieData);
+                    // this.modalTimeData = Object.assign({}, movieData);
+                    this.showModalTime = true;
+                    console.dir(this.modalTimeData);
                 }
             },
             dragEnd(ev) {
                 console.log('dragEnd');
+                // console.log(this.lol);
                 this.dragging = -1
             }
-
-            //add end
+            // END drag and drop
 
         }
     }

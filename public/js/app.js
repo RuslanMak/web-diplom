@@ -50225,9 +50225,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: [
@@ -50240,9 +50237,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             halls: [],
             url: {
                 movies_connect: '/admin/get-all-movie',
-                addFilm: '/admin/create_movie'
+                saveNewFilm: '/admin/save-new-movie',
+                saveTimeMovie: '/admin/save-new-time-for-movie'
             },
-            csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             moviesTime: [],
             moviesMargLeft: [],
 
@@ -50250,7 +50247,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             dragging: -1,
             //add end
             showModal: false,
-            showModalTime: false
+            showModalTime: false,
+            modalTimeData: {},
+            myNewMovie: {
+                'name': '',
+                'description': '',
+                'runtime': '',
+                'country': ''
+            }
         };
     },
 
@@ -50313,11 +50317,45 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return marginLeft;
         },
 
-        addMovieBtn: function addMovieBtn() {
-            return location.href = this.url.addFilm;
+        uploadFiles: function uploadFiles() {
+            var _this2 = this;
+
+            var s = this;
+            var data = new FormData(document.getElementById('uploadForm'));
+            var imagefile = document.querySelector('#file');
+            // console.log(imagefile.files[0]);
+            data.append('image', imagefile.files[0]);
+            data.append('name', s.myNewMovie.name);
+            data.append('description', s.myNewMovie.description);
+            data.append('runtime', s.myNewMovie.runtime);
+            data.append('country', s.myNewMovie.country);
+            axios.post(this.url.saveNewFilm, data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(function (response) {
+                console.log(response);
+                _this2.update();
+                _this2.showModal = false;
+            }).catch(function (error) {
+                console.log(error.response);
+            });
         },
 
-        //add strart
+
+        saveTimeM: function saveTimeM() {
+            var _this3 = this;
+
+            axios.post(this.url.saveTimeMovie, this.modalTimeData).then(function (response) {
+                console.log(response);
+                _this3.update();
+                _this3.showModalTime = false;
+            }).catch(function (error) {
+                console.log(error.response);
+            });
+        },
+
+        //drag and drop
         dragStart: function dragStart(which, ev) {
             console.log('dragStart');
             ev.dataTransfer.setData('Text', this.id);
@@ -50327,22 +50365,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         dragFinish: function dragFinish(to, hall) {
             console.log('dragFinish');
             console.dir(hall);
+            //переименовую id чтоб не было проблем слияния
+            var hallDate = { 'id_hall': hall.id, 'hall_name': hall.hall_name };
             //передаем выбранный элемент (фильм)
-            this.moveItem(this.dragging, to);
-            // ev.target.style.marginTop = '2px'
+            this.moveItem(this.dragging, hallDate, to);
         },
-        moveItem: function moveItem(movieData, to) {
+        moveItem: function moveItem(movieData, hallData, to) {
             if (to === -1) {
                 console.dir('moveItem');
                 console.dir(movieData);
+
+                //копируем данные обекты в новый обект
+                this.modalTimeData = Object.assign({}, hallData, movieData);
+                // this.modalTimeData = Object.assign({}, movieData);
+                this.showModalTime = true;
+                console.dir(this.modalTimeData);
             }
         },
         dragEnd: function dragEnd(ev) {
             console.log('dragEnd');
+            // console.log(this.lol);
             this.dragging = -1;
         }
-
-        //add end
+        // END drag and drop
 
     }
 });
@@ -50782,65 +50827,136 @@ var render = function() {
                         "form",
                         {
                           attrs: {
-                            action: "/admin/save-new-movie",
-                            method: "post",
+                            id: "uploadForm",
                             enctype: "multipart/form-data"
                           }
                         },
                         [
                           _c("input", {
-                            attrs: { type: "hidden", name: "_token" },
-                            domProps: { value: _vm.csrf }
-                          }),
-                          _vm._v(" "),
-                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.myNewMovie.name,
+                                expression: "myNewMovie.name"
+                              }
+                            ],
                             staticClass: "conf-step__input",
                             attrs: {
                               type: "text",
                               name: "name",
-                              value: "",
                               placeholder: "Movie title",
                               required: ""
+                            },
+                            domProps: { value: _vm.myNewMovie.name },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.myNewMovie,
+                                  "name",
+                                  $event.target.value
+                                )
+                              }
                             }
                           }),
                           _vm._v(" "),
                           _c("textarea", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.myNewMovie.description,
+                                expression: "myNewMovie.description"
+                              }
+                            ],
                             staticClass: "conf-step__input",
-                            attrs: {
-                              name: "description",
-                              id: "exampleFormControlTextarea1",
-                              rows: "4"
+                            attrs: { name: "description", rows: "4" },
+                            domProps: { value: _vm.myNewMovie.description },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.myNewMovie,
+                                  "description",
+                                  $event.target.value
+                                )
+                              }
                             }
                           }),
                           _vm._v(" "),
                           _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.myNewMovie.runtime,
+                                expression: "myNewMovie.runtime"
+                              }
+                            ],
                             staticClass: "conf-step__input",
                             attrs: {
                               type: "number",
                               name: "runtime",
-                              value: "",
                               placeholder: "Runtime",
                               required: ""
+                            },
+                            domProps: { value: _vm.myNewMovie.runtime },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.myNewMovie,
+                                  "runtime",
+                                  $event.target.value
+                                )
+                              }
                             }
                           }),
                           _vm._v(" "),
                           _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.myNewMovie.country,
+                                expression: "myNewMovie.country"
+                              }
+                            ],
                             staticClass: "conf-step__input",
                             attrs: {
                               type: "text",
                               name: "country",
-                              value: "",
                               placeholder: "Country",
                               required: ""
+                            },
+                            domProps: { value: _vm.myNewMovie.country },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.myNewMovie,
+                                  "country",
+                                  $event.target.value
+                                )
+                              }
                             }
                           }),
                           _vm._v(" "),
                           _c("input", {
                             staticClass: "conf-step__input",
                             attrs: {
+                              id: "file",
                               type: "file",
                               name: "image",
-                              value: "",
                               placeholder: "image"
                             }
                           }),
@@ -50850,7 +50966,12 @@ var render = function() {
                             {
                               staticClass:
                                 "conf-step__button conf-step__button-accent",
-                              attrs: { type: "submit" }
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.uploadFiles($event)
+                                }
+                              }
                             },
                             [_vm._v("Добавить фильм")]
                           ),
@@ -50904,44 +51025,38 @@ var render = function() {
                   [
                     _vm._t("body", [
                       _c("p", { staticClass: "conf-step__paragraph" }, [
-                        _vm._v("Заполните данные:")
+                        _vm._v("Выберите дату показа фильма:")
                       ]),
                       _vm._v(" "),
                       _c(
                         "form",
                         {
                           attrs: {
-                            action: "",
-                            method: "post",
-                            enctype: "multipart/form-data"
+                            action: _vm.url.saveTimeMovie,
+                            method: "post"
                           }
                         },
                         [
-                          _c("input", {
-                            attrs: { type: "hidden", name: "_token" },
-                            domProps: { value: _vm.csrf }
-                          }),
-                          _vm._v(" "),
                           _c("input", {
                             staticClass: "conf-step__input",
                             attrs: {
                               type: "text",
                               name: "hall_name",
-                              value: "",
                               placeholder: "Hall name",
-                              required: ""
-                            }
+                              disabled: ""
+                            },
+                            domProps: { value: _vm.modalTimeData.hall_name }
                           }),
                           _vm._v(" "),
                           _c("input", {
                             staticClass: "conf-step__input",
                             attrs: {
-                              type: "number",
+                              type: "hidden",
                               name: "id_hall",
-                              value: "",
                               placeholder: "hall id",
                               required: ""
-                            }
+                            },
+                            domProps: { value: _vm.modalTimeData.id }
                           }),
                           _vm._v(" "),
                           _c("input", {
@@ -50949,31 +51064,71 @@ var render = function() {
                             attrs: {
                               type: "text",
                               name: "movie_name",
-                              value: "",
                               placeholder: "Movie name",
-                              required: ""
-                            }
+                              disabled: ""
+                            },
+                            domProps: { value: _vm.modalTimeData.name }
                           }),
                           _vm._v(" "),
                           _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.modalTimeData.id,
+                                expression: "modalTimeData.id"
+                              }
+                            ],
                             staticClass: "conf-step__input",
                             attrs: {
-                              type: "number",
+                              type: "hidden",
                               name: "id_movie",
-                              value: "",
                               placeholder: "id_movie",
                               required: ""
+                            },
+                            domProps: { value: _vm.modalTimeData.id },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.modalTimeData,
+                                  "id",
+                                  $event.target.value
+                                )
+                              }
                             }
                           }),
                           _vm._v(" "),
                           _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.modalTimeData.start_time,
+                                expression: "modalTimeData.start_time"
+                              }
+                            ],
                             staticClass: "conf-step__input",
                             attrs: {
                               type: "datetime-local",
                               name: "start_time",
-                              value: "",
                               placeholder: "Runtime",
                               required: ""
+                            },
+                            domProps: { value: _vm.modalTimeData.start_time },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.modalTimeData,
+                                  "start_time",
+                                  $event.target.value
+                                )
+                              }
                             }
                           }),
                           _vm._v(" "),
@@ -50982,7 +51137,13 @@ var render = function() {
                             {
                               staticClass:
                                 "conf-step__button conf-step__button-accent",
-                              attrs: { type: "submit" }
+                              attrs: { type: "submit" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.saveTimeM($event)
+                                }
+                              }
                             },
                             [_vm._v("Установить дату")]
                           ),
@@ -51025,28 +51186,6 @@ var render = function() {
                 _vm.showModal = true
               }
             }
-          },
-          [_vm._v("Добавить фильм")]
-        ),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "conf-step__button conf-step__button-accent",
-            on: {
-              click: function($event) {
-                _vm.showModalTime = true
-              }
-            }
-          },
-          [_vm._v("showModalTime")]
-        ),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "conf-step__button conf-step__button-accent",
-            on: { click: _vm.addMovieBtn }
           },
           [_vm._v("Добавить фильм")]
         )

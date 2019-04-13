@@ -239,18 +239,15 @@ class AdminsController extends Controller
         ];
     }
 
-    public function createMovie()
-    {
-        return view('admin.create_movie');
-    }
-
     public function saveNewMovie(Request $request)
     {
 //        return $request->all();
 //        return $request->file('image');
         $path = $request->file('image')->store('uploads', 'public');
+//        $path = 'uploads/poster1.jpg';
 //        return view('admin.create_movie', ['path' => $path]);
 
+//        return $request->name;
         $movie = new Movie();
         $movie->name = $request->name;
         $movie->image = 'storage/' . $path;
@@ -259,6 +256,15 @@ class AdminsController extends Controller
         $movie->country = $request->country;
         $movie->save();
 
-        return redirect('/admin');
+//        return redirect('/admin');
+    }
+
+    public function saveMovieTime(Request $request)
+    {
+        $connections = new Connection();
+        $connections->id_hall = $request->id_hall;
+        $connections->id_movie = $request->id;
+        $connections->start_time = $request->start_time;
+        $connections->save();
     }
 }
