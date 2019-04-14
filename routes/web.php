@@ -25,7 +25,7 @@ Route::get('/client/ticket/{id}', 'PagesController@ticket')->middleware('auth');
 Route::get('/admin', 'AdminsController@index')->middleware('auth');
 Route::get('/admin/create', 'AdminsController@create')->middleware('auth');
 Route::post('/admin/hall', 'AdminsController@save')->middleware('auth');
-Route::delete('/admin/hall/{id}', 'AdminsController@delete')->middleware('auth');
+Route::delete('/admin/hall/{id}', 'AdminsController@deleteHall')->middleware('auth');
 Route::get('/admin/get-api-places/{id_hall}', 'AdminsController@getApi')->middleware('auth');
 Route::get('/admin/post-api-row/{id_hall}/{num}', 'AdminsController@updateNumRow')->middleware('auth');
 Route::get('/admin/get-update-place-in-row/{id_hall}/{num}', 'AdminsController@updateNumPlaceInRow')->middleware('auth');
@@ -38,6 +38,9 @@ Route::get('/admin/get-all-movie', 'AdminsController@allMoviesApi')->middleware(
 Route::post('/admin/save-new-movie', 'AdminsController@saveNewMovie')->name('image.upload')->middleware('auth');
 Route::post('/admin/save-new-time-for-movie', 'AdminsController@saveMovieTime')->middleware('auth');
 Route::delete('/admin/delete-movie-for-hall/{id_connection}', 'AdminsController@deleteMovieFromHall')->middleware('auth');
+
+Route::get('/admin/open-sale', 'AdminsController@openSale')->middleware('auth');
+Route::get('/admin/get-all-halls', 'AdminsController@allHallsApi')->middleware('auth');
 
 
 // Route::get('/', function () {

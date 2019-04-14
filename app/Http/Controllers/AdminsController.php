@@ -40,17 +40,21 @@ class AdminsController extends Controller
         $hall->hall_name = request('hall_name');
         $hall->rows = 0;
         $hall->places_in_row = 0;
+        $hall->places_in_row = 0;
+        $hall->admin_doing_rows = 0;
+        $hall->admin_doing_places = 0;
+        $hall->id_prices = '';
         $hall->save();
-        return redirect('/admin');
+//        return redirect('/admin');
     }
 
-    public function delete($id)
+    public function deleteHall($id)
     {
 //        НАДО ДОБАВИТЬ УДАЛЕНИЕ ДАННЫХ ИЗ ДРУГИХ ТАБЛИЦ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //        dd($id);
 //        return request()->all();
         Hall::findOrFail($id)->delete();
-        return redirect('/admin');
+//        return redirect('/admin');
     }
 
     public function getApi($id_hall)
@@ -272,5 +276,17 @@ class AdminsController extends Controller
     {
 //        return $request;
         Connection::findOrFail($request->id_connection)->delete();
+    }
+
+    public function openSale()
+    {
+        Connection::where('on_sale', '=', 0)
+            ->update(array('on_sale' => 1));
+        return redirect('/');
+    }
+
+    public function allHallsApi()
+    {
+        return Hall::all();
     }
 }
