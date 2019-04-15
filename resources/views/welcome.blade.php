@@ -88,6 +88,7 @@
                     <a href="/client">client</a>
                     <a href="/about">about</a>
                     <a href="/admin">admin</a>
+                    <a href="/controller">Контроллер</a>
                 </div>
             </div>
         </div>

@@ -20,6 +20,10 @@ class PagesController extends Controller
       return view('welcome');
   }
 
+  public function controller() {
+      return view('controller');
+  }
+
   public function about() {
       $movies = Movie::all();
       $timesOfMovie = Connection::all();

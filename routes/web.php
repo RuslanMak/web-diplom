@@ -42,6 +42,8 @@ Route::delete('/admin/delete-movie-for-hall/{id_connection}', 'AdminsController@
 Route::get('/admin/open-sale', 'AdminsController@openSale')->middleware('auth');
 Route::get('/admin/get-all-halls', 'AdminsController@allHallsApi')->middleware('auth');
 
+Route::get('/controller', 'PagesController@controller')->middleware('auth');
+
 
 // Route::get('/', function () {
 //     return view('welcome');

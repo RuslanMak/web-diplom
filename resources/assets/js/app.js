@@ -9,11 +9,18 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+// QR code
+import Vue from "vue";
+import VueQrcodeReader from "vue-qrcode-reader";
+
+Vue.use(VueQrcodeReader);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
+
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('halls-component', require('./components/HallsComponent.vue'));
@@ -21,6 +28,7 @@ Vue.component('admin-hall-places-component', require('./components/AdminHallPlac
 Vue.component('admin-prices-component', require('./components/AdminPricesComponent.vue'));
 Vue.component('admin-movie-time-component', require('./components/AdminMovieTimeComponent.vue'));
 Vue.component('admin-hall-edit-component', require('./components/AdminHallEditComponent.vue'));
+Vue.component('read-qr-code-component', require('./components/QrReaderComponent.vue'));
 
 const app = new Vue({
     el: '#app'
@@ -32,3 +40,4 @@ headers.forEach(header => header.addEventListener('click', () => {
     header.classList.toggle('conf-step__header_closed');
     header.classList.toggle('conf-step__header_opened');
 }));
+
