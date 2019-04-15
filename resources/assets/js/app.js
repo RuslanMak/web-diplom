@@ -9,11 +9,13 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
-// QR code
+// QR code https://github.com/gruhn/vue-qrcode-reader
 import Vue from "vue";
 import VueQrcodeReader from "vue-qrcode-reader";
-
 Vue.use(VueQrcodeReader);
+
+import VueQRCodeComponent from 'vue-qrcode-component'
+Vue.component('qr-code', VueQRCodeComponent);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -29,6 +31,7 @@ Vue.component('admin-prices-component', require('./components/AdminPricesCompone
 Vue.component('admin-movie-time-component', require('./components/AdminMovieTimeComponent.vue'));
 Vue.component('admin-hall-edit-component', require('./components/AdminHallEditComponent.vue'));
 Vue.component('read-qr-code-component', require('./components/QrReaderComponent.vue'));
+Vue.component('generate-qr-code-component', require('./components/QrGenerateComponent.vue'));
 
 const app = new Vue({
     el: '#app'

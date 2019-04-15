@@ -25,7 +25,8 @@
         <p class="ticket__info">В зале: <span class="ticket__details ticket__hall">{{ $hallName }}</span></p>
         <p class="ticket__info">Начало сеанса: <span class="ticket__details ticket__start">{{ $startTime }}</span></p>
 
-        <img class="ticket__info-qr" src="{{ asset('client-style/i/qr-code.png') }}">
+        {{--<img class="ticket__info-qr" src="{{ asset('client-style/i/qr-code.png') }}">--}}
+        <generate-qr-code-component for_qr='{{ json_encode($ticketInfor) }}'></generate-qr-code-component>
 
         <p class="ticket__hint">Покажите QR-код нашему контроллеру для подтверждения бронирования.</p>
         <p class="ticket__hint">Приятного просмотра!</p>

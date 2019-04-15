@@ -98,12 +98,20 @@ class PagesController extends Controller
           }
       }
 
+      $ticketInfor = [
+          'movie' => $movie,
+          'startTime' => $startTime,
+          'places' => $places,
+          'hallName' => $hallName
+      ];
+
       return view('client.ticket')
           ->with('movie', $movie)
           ->with('hallName', $hallName)
           ->with('startTime', $startTime)
           ->with('places', $places)
-          ->with('connectionid', $id);
+          ->with('connectionid', $id)
+          ->with('ticketInfor', $ticketInfor);
   }
 
 

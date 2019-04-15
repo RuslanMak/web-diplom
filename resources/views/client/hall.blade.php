@@ -11,8 +11,8 @@
       <div class="buying__info">
         <div class="buying__info-description">
 
-          <h1>{{ request()->user()->name }}</h1>
-          <h1>{{ Auth::user()->email }}</h1>
+          {{--<h1>{{ request()->user()->role }}</h1>--}}
+          {{--<h1>{{ Auth::user()->email }}</h1>--}}
 
           <h2 class="buying__info-title">{{ $movieName }}</h2>
           <p class="buying__info-start">Начало сеанса: {{ $startTime }}</p>
