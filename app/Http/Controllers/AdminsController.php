@@ -229,7 +229,7 @@ class AdminsController extends Controller
              $hall->save();
          }
 
-        return redirect('/admin');
+//        return redirect('/admin');
     }
 
     public function allMoviesApi()

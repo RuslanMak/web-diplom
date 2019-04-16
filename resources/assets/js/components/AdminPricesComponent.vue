@@ -10,10 +10,9 @@
         </header>
         <div class="conf-step__wrapper">
             <form action="/admin/post-save-prices" method="post">
-            <!--<form method="post">-->
             <!--<form @submit.prevent="saveBtn()">-->
 
-                <input type="hidden" name="_token" :value="csrf">
+                <!--<input type="hidden" name="_token" :value="csrf">-->
 
                 <p class="conf-step__paragraph">Выберите зал для конфигурации:</p>
                 <ul class="conf-step__selectors-box">
@@ -25,21 +24,21 @@
 
                 <p class="conf-step__paragraph">Установите цены для типов кресел:</p>
                 <div class="conf-step__legend">
-                    <input type="hidden" name="id_standart_place" :value="id_standart_place">
-                    <label class="conf-step__label">Цена, рублей<input type="text" class="conf-step__input" name="standart_place" placeholder="0" v-model="standart_price"></label>
+                    <input type="hidden" name="id_standart_place" :value="dataForm.id_standart_place">
+                    <label class="conf-step__label">Цена, рублей<input type="text" class="conf-step__input" name="standart_place" placeholder="0" v-model="dataForm.standart_place"></label>
                     за <span class="conf-step__chair conf-step__chair_standart"></span> обычные кресла
                 </div>
                 <div class="conf-step__legend">
-                    <input type="hidden" name="id_vip_place" :value="id_vip_place">
-                    <label class="conf-step__label">Цена, рублей<input type="text" class="conf-step__input" name="vip_place" placeholder="0" v-model="vip_price"></label>
+                    <input type="hidden" name="id_vip_place" :value="dataForm.id_vip_place">
+                    <label class="conf-step__label">Цена, рублей<input type="text" class="conf-step__input" name="vip_place" placeholder="0" v-model="dataForm.vip_place"></label>
                     за <span class="conf-step__chair conf-step__chair_vip"></span> VIP кресла
                 </div>
 
                 <fieldset class="conf-step__buttons text-center">
                     <button v-on:click.prevent="update" class="conf-step__button conf-step__button-regular">Отмена</button>
-                    <!--<input v-on:click.prevent="saveBtn()" type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">-->
+                    <input v-on:click.prevent="saveBtn()" type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">
                     <!--<input v-on:click="saveBtn()" type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">-->
-                    <input type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">
+                    <!--<input type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">-->
                 </fieldset>
             </form>
         </div>
@@ -61,18 +60,22 @@
                 url: {
                     saveUrl: '/admin/post-save-prices'
                 },
-                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                standart_price: 0,
-                vip_price: 20,
-                id_standart_place: 0,
-                id_vip_place: 0
+                // csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                dataForm: {
+                    'id_hall': 1,
+                    'id_standart_place': 0,
+                    'standart_place': 0,
+                    'id_vip_place': 0,
+                    'vip_place': 20,
+                }
             }
         },
 
         watch: {
-            // selected_hall: function () {
-            //     this.update();
-            // }
+            selected_hall: function () {
+                this.dataForm.id_hall = this.selected_hall;
+                this.update();
+            }
         },
 
         mounted() {
@@ -83,36 +86,39 @@
             update: function() {
                 this.is_refresh = true;
 
-                axios.get('/admin/get-api-places/' + this.selected_hall).then((response) => {
+                axios.get('/admin/get-api-places/' + this.dataForm.id_hall).then((response) => {
                     this.halldata = response.data;
                     this.is_refresh = false;
 
-                    // console.dir(this.halldata.hall.id_prices);
                     //добавление цены and ID
                     if (this.halldata.prices.vip) {
-                        this.vip_price = this.halldata.prices.vip.price;
-                        this.id_vip_place = this.halldata.prices.vip.id;
+                        this.dataForm.vip_place = this.halldata.prices.vip.price;
+                        this.dataForm.id_vip_place = this.halldata.prices.vip.id;
                     } else {
-                        this.vip_price = 0;
-                        this.id_vip_place = 0;
+                        this.dataForm.vip_place = 0;
+                        this.dataForm.id_vip_place = 0;
                     }
 
                     if (this.halldata.prices.standart) {
-                        this.standart_price = this.halldata.prices.standart.price;
-                        this.id_standart_place = this.halldata.prices.standart.id;
+                        this.dataForm.standart_place = this.halldata.prices.standart.price;
+                        this.dataForm.id_standart_place = this.halldata.prices.standart.id;
                     } else {
-                        this.standart_price = 0;
-                        this.id_standart_place = 0;
+                        this.dataForm.standart_place = 0;
+                        this.dataForm.id_standart_place = 0;
                     }
                 });
 
             },
 
             saveBtn: function () {
-                axios.post(this.url.saveUrl)
-                    .then(this.update())
-                    .catch((error) => {
-                        console.log(error);
+                console.dir(this.dataForm);
+                axios.post(this.url.saveUrl, this.dataForm)
+                    .then(response => {
+                        console.log(response);
+                        this.update();
+                    })
+                    .catch(error => {
+                        console.log(error.response);
                     });
             }
 
