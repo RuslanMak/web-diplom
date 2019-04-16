@@ -51588,63 +51588,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: [
@@ -51765,12 +51708,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         saveTimeM: function saveTimeM() {
             var _this3 = this;
 
+            console.log(this.modalTimeData);
             axios.post(this.url.saveTimeMovie, this.modalTimeData).then(function (response) {
                 console.log(response);
                 _this3.update();
                 _this3.showModalTime = false;
             }).catch(function (error) {
                 console.log(error.response);
+                _this3.showModalTime = false;
             });
         },
 

@@ -269,6 +269,7 @@ class AdminsController extends Controller
         $connections->id_hall = $request->id_hall;
         $connections->id_movie = $request->id;
         $connections->start_time = $request->start_time;
+        $connections->on_sale = 0;
         $connections->save();
     }
 
