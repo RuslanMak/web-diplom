@@ -4,22 +4,7 @@
         <!--@foreach ($movies as $movie)-->
         <section v-for="movie in moviesFilter()" class="movie">
 
-            <client-home-movi-component v-if="!is_refresh" :movie_id="movie.id_movie"></client-home-movi-component>
-
-            <!--{{--данние зала и время начала фильма--}}-->
-            <div class="movie-seances__hall">
-                <!--@foreach ($halls as $hall)-->
-
-                <!--<h3 class="movie-seances__hall-title">{{$hall->hall_name}}</h3>-->
-                <ul class="movie-seances__list">
-                    <!--@foreach ($timesOfMovie as $time)-->
-                    <!--@if($time->id_movie === $movie->id && $time->id_hall === $hall->id)-->
-                    <!--<li class="movie-seances__time-block"><a class="movie-seances__time" href="client/hall/{{$time->id}}">{{$time->start_time}}</a></li>-->
-                    <!--@endif-->
-                    <!--@endforeach-->
-                </ul>
-                <!--@endforeach-->
-            </div>
+            <client-home-movi-component v-if="!is_refresh" :movie_halls="movie"></client-home-movi-component>
 
         </section>
         <!--@endforeach-->
@@ -39,7 +24,7 @@
                 url: {
                     allDate: '/client-data-of-selected-date/',
                 },
-                datas: []
+                datas: [],
             }
         },
 
@@ -69,43 +54,21 @@
             moviesFilter: function () {
                 if (this.datas) {
                     let movieId;
-                    let movies = [];
+                    // let movies = [];
+                    let movies = {};
                     this.datas.forEach(movie => {
                         if(movieId !== movie.id_movie) {
                             movieId = movie.id_movie;
 
-                            movies.push(movie);
-                            this.idsMovie = movieId;
+                            movies[movieId] = [movie];
+                        } else {
+                            movies[movieId].push(movie);
                         }
                     });
+                    // console.dir(movies);
                     return movies;
                 }
             },
-
-            // hallFilter: function (movieData) {
-            //     if (this.datas) {
-            //         let hallId;
-            //         let halls = [];
-            //         movieData.forEach(hall => {
-            //             if(hallId !== hall.id_hall) {
-            //                 hallId = hall.id_hall;
-            //
-            //                 halls.push(hall);
-            //             }
-            //         });
-            //         // console.dir(halls);
-            //         return halls;
-            //     }
-            // },
-            //
-            // forShowMovieData: function () {
-            //     if (moviesAllData[movie.id_movie]) {
-            //
-            //     }
-            //     return false;
-            // }
-
-
         }
     }
 </script>

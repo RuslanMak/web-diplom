@@ -14215,6 +14215,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('generate-qr-code-componen
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-component', __webpack_require__(85));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-days-component', __webpack_require__(88));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-movi-component', __webpack_require__(94));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-hall-times-component', __webpack_require__(97));
 
 var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
   el: '#app'
@@ -54330,21 +54331,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: [
@@ -54387,47 +54373,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
 
         moviesFilter: function moviesFilter() {
-            var _this2 = this;
-
             if (this.datas) {
                 var movieId = void 0;
-                var movies = [];
+                // let movies = [];
+                var movies = {};
                 this.datas.forEach(function (movie) {
                     if (movieId !== movie.id_movie) {
                         movieId = movie.id_movie;
 
-                        movies.push(movie);
-                        _this2.idsMovie = movieId;
+                        movies[movieId] = [movie];
+                    } else {
+                        movies[movieId].push(movie);
                     }
                 });
+                // console.dir(movies);
                 return movies;
             }
         }
-
-        // hallFilter: function (movieData) {
-        //     if (this.datas) {
-        //         let hallId;
-        //         let halls = [];
-        //         movieData.forEach(hall => {
-        //             if(hallId !== hall.id_hall) {
-        //                 hallId = hall.id_hall;
-        //
-        //                 halls.push(hall);
-        //             }
-        //         });
-        //         // console.dir(halls);
-        //         return halls;
-        //     }
-        // },
-        //
-        // forShowMovieData: function () {
-        //     if (moviesAllData[movie.id_movie]) {
-        //
-        //     }
-        //     return false;
-        // }
-
-
     }
 });
 
@@ -54448,11 +54410,9 @@ var render = function() {
         [
           !_vm.is_refresh
             ? _c("client-home-movi-component", {
-                attrs: { movie_id: movie.id_movie }
+                attrs: { movie_halls: movie }
               })
-            : _vm._e(),
-          _vm._v(" "),
-          _vm._m(0, true)
+            : _vm._e()
         ],
         1
       )
@@ -54460,16 +54420,7 @@ var render = function() {
     0
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "movie-seances__hall" }, [
-      _c("ul", { staticClass: "movie-seances__list" })
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -54803,13 +54754,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: [
-    //get data from Blade
-    'movie_id'],
+    props: ['movie_halls'],
+
     data: function data() {
         return {
+            is_refresh: false,
             url: {
                 movieAllData: '/client-data-of-movie/'
             },
@@ -54826,19 +54779,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         update: function update() {
             var _this = this;
 
-            axios.get(this.url.movieAllData + this.movie_id).then(function (response) {
+            this.is_refresh = true;
+            console.dir(this.movie_halls);
+            axios.get(this.url.movieAllData + this.movie_halls[0].id_movie).then(function (response) {
                 _this.datas = response.data;
                 // console.dir(this.datas);
+                _this.is_refresh = false;
             });
         }
-
-        // getDataOfMovie: function (movie_id) {
-        //     axios.get(this.url.movieAllData + movie_id).then((response) => {
-        //         this.moviesAllData[movie_id] = response.data;
-        //         console.dir(this.moviesAllData);
-        //     });
-        // },
-
 
     }
 });
@@ -54851,34 +54799,45 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "movie__info" }, [
-    _c("div", { staticClass: "movie__poster" }, [
-      _c("img", {
-        staticClass: "movie__poster-image",
-        attrs: { alt: "Звёздные войны постер", src: _vm.datas.image }
-      })
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "movie__description" }, [
-      _c("h2", { staticClass: "movie__title" }, [
-        _vm._v(_vm._s(_vm.datas.name))
+  return _c(
+    "div",
+    { staticClass: "movie__info" },
+    [
+      _c("div", { staticClass: "movie__poster" }, [
+        _c("img", {
+          staticClass: "movie__poster-image",
+          attrs: { alt: "Звёздные войны постер", src: _vm.datas.image }
+        })
       ]),
       _vm._v(" "),
-      _c("p", { staticClass: "movie__synopsis" }, [
-        _vm._v(_vm._s(_vm.datas.description))
-      ]),
-      _vm._v(" "),
-      _c("p", { staticClass: "movie__data" }, [
-        _c("span", { staticClass: "movie__data-duration" }, [
-          _vm._v(_vm._s(_vm.datas.runtime) + " минут")
+      _c("div", { staticClass: "movie__description" }, [
+        _c("h2", { staticClass: "movie__title" }, [
+          _vm._v(_vm._s(_vm.datas.name))
         ]),
         _vm._v(" "),
-        _c("span", { staticClass: "movie__data-origin" }, [
-          _vm._v(_vm._s(_vm.datas.country))
+        _c("p", { staticClass: "movie__synopsis" }, [
+          _vm._v(_vm._s(_vm.datas.description))
+        ]),
+        _vm._v(" "),
+        _c("p", { staticClass: "movie__data" }, [
+          _c("span", { staticClass: "movie__data-duration" }, [
+            _vm._v(_vm._s(_vm.datas.runtime) + " минут")
+          ]),
+          _vm._v(" "),
+          _c("span", { staticClass: "movie__data-origin" }, [
+            _vm._v(_vm._s(_vm.datas.country))
+          ])
         ])
-      ])
-    ])
-  ])
+      ]),
+      _vm._v(" "),
+      !_vm.is_refresh
+        ? _c("client-home-hall-times-component", {
+            attrs: { hallsArr: _vm.movie_halls }
+          })
+        : _vm._e()
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -54887,6 +54846,189 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-0abdcab6", module.exports)
+  }
+}
+
+/***/ }),
+/* 97 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(98)
+/* template */
+var __vue_template__ = __webpack_require__(99)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ClientHallAndTimesComponent.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-0ed5973a", Component.options)
+  } else {
+    hotAPI.reload("data-v-0ed5973a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 98 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['hallsArr'],
+    data: function data() {
+        return {
+            is_refresh: false,
+            url: {
+                allDate: '/client-data-of-selected-date/'
+            },
+            datas: []
+        };
+    },
+
+    mounted: function mounted() {
+        console.dir(this.hallsArr);
+        if (this.hallsArr) {
+            this.update();
+        }
+    },
+
+
+    // watch: {
+    //     date_selected: function () {
+    //         this.update();
+    //     }
+    // },
+
+    methods: {
+        update: function update() {
+            this.is_refresh = true;
+
+            // axios.get(this.url.allDate + this.date_selected).then((response) => {
+            //     this.datas = response.data;
+            //     // console.dir(this.datas);
+            //     this.is_refresh = false;
+            // });
+        }
+
+        // hallFilter: function () {
+        //     if (this.hallsArr) {
+        //         let hallId;
+        //         let halls = [];
+        //         this.hallsArr.forEach(hall => {
+        //             if(hallId !== hall.id_hall) {
+        //                 hallId = hall.id_hall;
+        //
+        //                 halls.push(hall);
+        //             }
+        //         });
+        //         // console.dir(halls);
+        //         return halls;
+        //     }
+        // },
+
+        // moviesFilter: function () {
+        //     if (this.datas) {
+        //         let movieId;
+        //         // let movies = [];
+        //         let movies = {};
+        //         this.datas.forEach(movie => {
+        //             if(movieId !== movie.id_movie) {
+        //                 movieId = movie.id_movie;
+        //
+        //                 movies[movieId] = [movie];
+        //             } else {
+        //                 movies[movieId].push(movie);
+        //             }
+        //         });
+        //         // console.dir(movies);
+        //         return movies;
+        //     }
+        // },
+
+    }
+});
+
+/***/ }),
+/* 99 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    _vm._l(_vm.hallsArr, function(hall) {
+      return _c("div", { staticClass: "movie-seances__hall" }, [
+        _c("h3", { staticClass: "movie-seances__hall-title" }, [
+          _vm._v(_vm._s(hall))
+        ]),
+        _vm._v(" "),
+        _c("ul", { staticClass: "movie-seances__list" })
+      ])
+    }),
+    0
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-0ed5973a", module.exports)
   }
 }
 

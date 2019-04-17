@@ -11,17 +11,20 @@
             <span class="movie__data-origin">{{ datas.country }}</span>
             </p>
         </div>
+
+        <client-home-hall-times-component v-if="!is_refresh" :hallsArr="movie_halls"></client-home-hall-times-component>
     </div>
 </template>
 
 <script>
     export default {
         props: [
-            //get data from Blade
-            'movie_id'
+            'movie_halls'
         ],
+
         data: function() {
             return {
+                is_refresh: false,
                 url: {
                     movieAllData: '/client-data-of-movie/',
                 },
@@ -35,20 +38,15 @@
 
         methods: {
             update: function() {
-                axios.get(this.url.movieAllData + this.movie_id).then((response) => {
+                this.is_refresh = true;
+                console.dir(this.movie_halls);
+                axios.get(this.url.movieAllData + this.movie_halls[0].id_movie).then((response) => {
                     this.datas = response.data;
                     // console.dir(this.datas);
+                    this.is_refresh = false;
                 });
-            },
+            }
 
-            // getDataOfMovie: function (movie_id) {
-            //     axios.get(this.url.movieAllData + movie_id).then((response) => {
-            //         this.moviesAllData[movie_id] = response.data;
-            //         console.dir(this.moviesAllData);
-            //     });
-            // },
-
-
-        }
+        },
     }
 </script>
