@@ -114,6 +114,12 @@ class PagesController extends Controller
           ->with('ticketInfor', $ticketInfor);
   }
 
+  public function getTimesAndMore() {
+
+      $date = date('Y-m-d h:i:s', time());
+      return Connection::where('start_time', '>=', $date)->orderBy('start_time')->get();
+  }
+
 
 
 }

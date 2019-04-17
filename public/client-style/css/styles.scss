@@ -492,3 +492,15 @@ body {
     display: none;
   }
 }
+
+.my-update-sign {
+    width: 50%;
+    position: fixed;
+    top: 50%;
+    left: 0;
+    background: rgba(256, 256, 0, 0.75);
+    text-align: center;
+    margin: 0 25%;
+    z-index: 99;
+    padding: 30px;
+}

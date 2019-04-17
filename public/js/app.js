@@ -14212,6 +14212,8 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-movie-time-componen
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-hall-edit-component', __webpack_require__(67));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('read-qr-code-component', __webpack_require__(70));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('generate-qr-code-component', __webpack_require__(80));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-component', __webpack_require__(85));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-days-component', __webpack_require__(88));
 
 var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
   el: '#app'
@@ -54258,6 +54260,518 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 84 */,
+/* 85 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(86)
+/* template */
+var __vue_template__ = __webpack_require__(87)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ClientComponent.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-51e540ea", Component.options)
+  } else {
+    hotAPI.reload("data-v-51e540ea", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 86 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: [
+        //get data from Blade
+        // 'halls_string'
+    ],
+    data: function data() {
+        return {
+            is_refresh: false,
+            deleteHallId: 0,
+            hallsdata: [],
+            url: {
+                allHallsData: '/admin/get-all-halls',
+                deleteHall: '/admin/hall/',
+                createHall: '/admin/hall/'
+            },
+            showModalDeleteHall: false,
+            showModalCreadeHall: false,
+            createHallData: {}
+        };
+    },
+
+    mounted: function mounted() {
+        // this.halls = JSON.parse(this.halls_string);
+        this.update();
+    },
+
+
+    methods: {
+        update: function update() {
+            var _this = this;
+
+            // console.log('update');
+            this.is_refresh = true;
+
+            axios.get(this.url.allHallsData).then(function (response) {
+                _this.hallsdata = response.data;
+                _this.is_refresh = false;
+                // console.dir(this.hallsdata);
+            });
+        },
+
+        showHallDeleteForm: function showHallDeleteForm(id) {
+            this.deleteHallId = id;
+            this.showModalDeleteHall = true;
+        },
+
+        deleteHallDo: function deleteHallDo(id) {
+            var _this2 = this;
+
+            axios.delete(this.url.deleteHall + id).then(function (response) {
+                console.log(response);
+                _this2.update();
+                _this2.showModalDeleteHall = false;
+            }).catch(function (error) {
+                _this2.showModalDeleteHall = false;
+                console.log(error.response);
+            });
+        },
+
+        createHallDo: function createHallDo() {
+            var _this3 = this;
+
+            console.dir(this.createHallData);
+
+            axios.post(this.url.createHall, this.createHallData).then(function (response) {
+                console.log(response);
+                _this3.update();
+                _this3.showModalCreadeHall = false;
+                _this3.createHallData.hall_name = '';
+            }).catch(function (error) {
+                _this3.showModalCreadeHall = false;
+                console.log(error.response);
+                _this3.createHallData.hall_name = '';
+            });
+        }
+
+    }
+});
+
+/***/ }),
+/* 87 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm._m(0)
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [
+      _c("nav", { staticClass: "page-nav" }, [
+        _c(
+          "a",
+          {
+            staticClass: "page-nav__day page-nav__day_today",
+            attrs: { href: "#" }
+          },
+          [
+            _c("span", { staticClass: "page-nav__day-week" }, [_vm._v("Пн")]),
+            _c("span", { staticClass: "page-nav__day-number" }, [_vm._v("31")])
+          ]
+        ),
+        _vm._v(" "),
+        _c("a", { staticClass: "page-nav__day", attrs: { href: "#" } }, [
+          _c("span", { staticClass: "page-nav__day-week" }, [_vm._v("Вт")]),
+          _c("span", { staticClass: "page-nav__day-number" }, [_vm._v("1")])
+        ]),
+        _vm._v(" "),
+        _c(
+          "a",
+          {
+            staticClass: "page-nav__day page-nav__day_chosen",
+            attrs: { href: "#" }
+          },
+          [
+            _c("span", { staticClass: "page-nav__day-week" }, [_vm._v("Ср")]),
+            _c("span", { staticClass: "page-nav__day-number" }, [_vm._v("2")])
+          ]
+        ),
+        _vm._v(" "),
+        _c("a", { staticClass: "page-nav__day", attrs: { href: "#" } }, [
+          _c("span", { staticClass: "page-nav__day-week" }, [_vm._v("Чт")]),
+          _c("span", { staticClass: "page-nav__day-number" }, [_vm._v("3")])
+        ]),
+        _vm._v(" "),
+        _c("a", { staticClass: "page-nav__day", attrs: { href: "#" } }, [
+          _c("span", { staticClass: "page-nav__day-week" }, [_vm._v("Пт")]),
+          _c("span", { staticClass: "page-nav__day-number" }, [_vm._v("4")])
+        ]),
+        _vm._v(" "),
+        _c(
+          "a",
+          {
+            staticClass: "page-nav__day page-nav__day_weekend",
+            attrs: { href: "#" }
+          },
+          [
+            _c("span", { staticClass: "page-nav__day-week" }, [_vm._v("Сб")]),
+            _c("span", { staticClass: "page-nav__day-number" }, [_vm._v("5")])
+          ]
+        ),
+        _vm._v(" "),
+        _c("a", {
+          staticClass: "page-nav__day page-nav__day_next",
+          attrs: { href: "#" }
+        })
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-51e540ea", module.exports)
+  }
+}
+
+/***/ }),
+/* 88 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(89)
+/* template */
+var __vue_template__ = __webpack_require__(90)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ClientDaysComponent.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-81f20d18", Component.options)
+  } else {
+    hotAPI.reload("data-v-81f20d18", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 89 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: [
+        //get data from Blade
+    ],
+    data: function data() {
+        return {
+            is_refresh: false,
+            url: {
+                allDate: '/times-of-movies-and-more'
+            },
+            dates: [],
+            filteredDates: [],
+            dayForNextComponent: ''
+        };
+    },
+
+    mounted: function mounted() {
+        // this.halls = JSON.parse(this.halls_string);
+        this.update();
+    },
+
+
+    methods: {
+        update: function update() {
+            var _this = this;
+
+            // console.log('update');
+            this.is_refresh = true;
+
+            axios.get(this.url.allDate).then(function (response) {
+                _this.dates = response.data;
+                _this.is_refresh = false;
+                // console.dir(this.dates);
+            });
+        },
+
+        newDay: function newDay() {
+            var day = void 0;
+            var days = [];
+            this.dates.forEach(function (date) {
+                var corentDate = date.start_time.slice(0, 10);
+
+                if (day !== corentDate) {
+                    day = corentDate;
+
+                    // получаем день недели
+                    var dateNormFormat = new Date(corentDate);
+                    var dayOfWeek = dateNormFormat.toLocaleString('ru', { weekday: 'short' });
+
+                    days.push({
+                        'date': corentDate,
+                        'dayIs': dayOfWeek
+                    });
+                }
+            });
+            return days;
+        },
+
+        selectDay: function selectDay(day) {
+            this.dayForNextComponent = day;
+            console.log(this.dayForNextComponent);
+        }
+
+    }
+});
+
+/***/ }),
+/* 90 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "nav",
+    { staticClass: "page-nav" },
+    [
+      _vm.is_refresh
+        ? _c("div", { staticClass: "my-update-sign" }, [
+            _c("h2", { staticStyle: { "font-size": "25px" } }, [
+              _vm._v("Пожалуйста подождите!!!")
+            ])
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _vm._l(_vm.newDay(), function(day, index) {
+        return [
+          index === 0
+            ? _c(
+                "a",
+                {
+                  staticClass: "page-nav__day page-nav__day_today",
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      return _vm.selectDay(day.date)
+                    }
+                  }
+                },
+                [
+                  _c("span", { staticClass: "page-nav__day-week" }, [
+                    _vm._v(_vm._s(day.dayIs))
+                  ]),
+                  _c("span", { staticClass: "page-nav__day-number" }, [
+                    _vm._v(_vm._s(day.date))
+                  ])
+                ]
+              )
+            : _c(
+                "a",
+                {
+                  staticClass: "page-nav__day",
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      return _vm.selectDay(day.date)
+                    }
+                  }
+                },
+                [
+                  _c("span", { staticClass: "page-nav__day-week" }, [
+                    _vm._v(_vm._s(day.dayIs))
+                  ]),
+                  _c("span", { staticClass: "page-nav__day-number" }, [
+                    _vm._v(_vm._s(day.date))
+                  ])
+                ]
+              )
+        ]
+      }),
+      _vm._v(" "),
+      _c("a", {
+        staticClass: "page-nav__day page-nav__day_next",
+        attrs: { href: "#" }
+      })
+    ],
+    2
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-81f20d18", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);

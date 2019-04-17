@@ -32,6 +32,8 @@ Vue.component('admin-movie-time-component', require('./components/AdminMovieTime
 Vue.component('admin-hall-edit-component', require('./components/AdminHallEditComponent.vue'));
 Vue.component('read-qr-code-component', require('./components/QrReaderComponent.vue'));
 Vue.component('generate-qr-code-component', require('./components/QrGenerateComponent.vue'));
+Vue.component('client-home-component', require('./components/ClientComponent.vue'));
+Vue.component('client-home-days-component', require('./components/ClientDaysComponent.vue'));
 
 const app = new Vue({
     el: '#app'

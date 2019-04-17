@@ -44,6 +44,8 @@ Route::get('/admin/get-all-halls', 'AdminsController@allHallsApi')->middleware('
 
 Route::get('/controller', 'PagesController@controller')->middleware('auth');
 
+Route::get('/times-of-movies-and-more', 'PagesController@getTimesAndMore')->middleware('auth');
+
 
 // Route::get('/', function () {
 //     return view('welcome');
