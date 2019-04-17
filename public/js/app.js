@@ -14214,6 +14214,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('read-qr-code-component', 
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('generate-qr-code-component', __webpack_require__(80));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-component', __webpack_require__(85));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-days-component', __webpack_require__(88));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-movi-component', __webpack_require__(94));
 
 var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
   el: '#app'
@@ -54344,118 +54345,88 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: [
-        //get data from Blade
-        // 'halls_string'
-    ],
+    //get data from Blade
+    'date_selected'],
     data: function data() {
         return {
             is_refresh: false,
-            deleteHallId: 0,
-            hallsdata: [],
             url: {
-                allHallsData: '/admin/get-all-halls',
-                deleteHall: '/admin/hall/',
-                createHall: '/admin/hall/'
+                allDate: '/client-data-of-selected-date/'
             },
-            showModalDeleteHall: false,
-            showModalCreadeHall: false,
-            createHallData: {}
+            datas: []
         };
     },
 
     mounted: function mounted() {
-        // this.halls = JSON.parse(this.halls_string);
-        this.update();
+        if (this.date_selected) {
+            this.update();
+        }
     },
 
+
+    watch: {
+        date_selected: function date_selected() {
+            this.update();
+        }
+    },
 
     methods: {
         update: function update() {
             var _this = this;
 
-            // console.log('update');
             this.is_refresh = true;
 
-            axios.get(this.url.allHallsData).then(function (response) {
-                _this.hallsdata = response.data;
+            axios.get(this.url.allDate + this.date_selected).then(function (response) {
+                _this.datas = response.data;
+                // console.dir(this.datas);
                 _this.is_refresh = false;
-                // console.dir(this.hallsdata);
             });
         },
 
-        showHallDeleteForm: function showHallDeleteForm(id) {
-            this.deleteHallId = id;
-            this.showModalDeleteHall = true;
-        },
-
-        deleteHallDo: function deleteHallDo(id) {
+        moviesFilter: function moviesFilter() {
             var _this2 = this;
 
-            axios.delete(this.url.deleteHall + id).then(function (response) {
-                console.log(response);
-                _this2.update();
-                _this2.showModalDeleteHall = false;
-            }).catch(function (error) {
-                _this2.showModalDeleteHall = false;
-                console.log(error.response);
-            });
-        },
+            if (this.datas) {
+                var movieId = void 0;
+                var movies = [];
+                this.datas.forEach(function (movie) {
+                    if (movieId !== movie.id_movie) {
+                        movieId = movie.id_movie;
 
-        createHallDo: function createHallDo() {
-            var _this3 = this;
-
-            console.dir(this.createHallData);
-
-            axios.post(this.url.createHall, this.createHallData).then(function (response) {
-                console.log(response);
-                _this3.update();
-                _this3.showModalCreadeHall = false;
-                _this3.createHallData.hall_name = '';
-            }).catch(function (error) {
-                _this3.showModalCreadeHall = false;
-                console.log(error.response);
-                _this3.createHallData.hall_name = '';
-            });
+                        movies.push(movie);
+                        _this2.idsMovie = movieId;
+                    }
+                });
+                return movies;
+            }
         }
+
+        // hallFilter: function (movieData) {
+        //     if (this.datas) {
+        //         let hallId;
+        //         let halls = [];
+        //         movieData.forEach(hall => {
+        //             if(hallId !== hall.id_hall) {
+        //                 hallId = hall.id_hall;
+        //
+        //                 halls.push(hall);
+        //             }
+        //         });
+        //         // console.dir(halls);
+        //         return halls;
+        //     }
+        // },
+        //
+        // forShowMovieData: function () {
+        //     if (moviesAllData[movie.id_movie]) {
+        //
+        //     }
+        //     return false;
+        // }
+
 
     }
 });
@@ -54468,71 +54439,34 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c(
+    "main",
+    _vm._l(_vm.moviesFilter(), function(movie) {
+      return _c(
+        "section",
+        { staticClass: "movie" },
+        [
+          !_vm.is_refresh
+            ? _c("client-home-movi-component", {
+                attrs: { movie_id: movie.id_movie }
+              })
+            : _vm._e(),
+          _vm._v(" "),
+          _vm._m(0, true)
+        ],
+        1
+      )
+    }),
+    0
+  )
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", [
-      _c("nav", { staticClass: "page-nav" }, [
-        _c(
-          "a",
-          {
-            staticClass: "page-nav__day page-nav__day_today",
-            attrs: { href: "#" }
-          },
-          [
-            _c("span", { staticClass: "page-nav__day-week" }, [_vm._v("Пн")]),
-            _c("span", { staticClass: "page-nav__day-number" }, [_vm._v("31")])
-          ]
-        ),
-        _vm._v(" "),
-        _c("a", { staticClass: "page-nav__day", attrs: { href: "#" } }, [
-          _c("span", { staticClass: "page-nav__day-week" }, [_vm._v("Вт")]),
-          _c("span", { staticClass: "page-nav__day-number" }, [_vm._v("1")])
-        ]),
-        _vm._v(" "),
-        _c(
-          "a",
-          {
-            staticClass: "page-nav__day page-nav__day_chosen",
-            attrs: { href: "#" }
-          },
-          [
-            _c("span", { staticClass: "page-nav__day-week" }, [_vm._v("Ср")]),
-            _c("span", { staticClass: "page-nav__day-number" }, [_vm._v("2")])
-          ]
-        ),
-        _vm._v(" "),
-        _c("a", { staticClass: "page-nav__day", attrs: { href: "#" } }, [
-          _c("span", { staticClass: "page-nav__day-week" }, [_vm._v("Чт")]),
-          _c("span", { staticClass: "page-nav__day-number" }, [_vm._v("3")])
-        ]),
-        _vm._v(" "),
-        _c("a", { staticClass: "page-nav__day", attrs: { href: "#" } }, [
-          _c("span", { staticClass: "page-nav__day-week" }, [_vm._v("Пт")]),
-          _c("span", { staticClass: "page-nav__day-number" }, [_vm._v("4")])
-        ]),
-        _vm._v(" "),
-        _c(
-          "a",
-          {
-            staticClass: "page-nav__day page-nav__day_weekend",
-            attrs: { href: "#" }
-          },
-          [
-            _c("span", { staticClass: "page-nav__day-week" }, [_vm._v("Сб")]),
-            _c("span", { staticClass: "page-nav__day-number" }, [_vm._v("5")])
-          ]
-        ),
-        _vm._v(" "),
-        _c("a", {
-          staticClass: "page-nav__day page-nav__day_next",
-          attrs: { href: "#" }
-        })
-      ])
+    return _c("div", { staticClass: "movie-seances__hall" }, [
+      _c("ul", { staticClass: "movie-seances__list" })
     ])
   }
 ]
@@ -54622,6 +54556,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: [
@@ -54639,6 +54577,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         };
     },
 
+    // watch() {
+    //     dayForNextComponent: function f() {
+    //
+    //     }
+    // },
+
     mounted: function mounted() {
         // this.halls = JSON.parse(this.halls_string);
         this.update();
@@ -54655,7 +54599,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             axios.get(this.url.allDate).then(function (response) {
                 _this.dates = response.data;
                 _this.is_refresh = false;
-                // console.dir(this.dates);
+
+                _this.dayForNextComponent = _this.dates[0].start_time.slice(0, 10);
+                // console.dir(this.dayForNextComponent);
             });
         },
 
@@ -54683,7 +54629,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         selectDay: function selectDay(day) {
             this.dayForNextComponent = day;
-            console.log(this.dayForNextComponent);
+            // console.log(this.dayForNextComponent);
         }
 
     }
@@ -54698,69 +54644,81 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c(
-    "nav",
-    { staticClass: "page-nav" },
+    "div",
     [
-      _vm.is_refresh
-        ? _c("div", { staticClass: "my-update-sign" }, [
-            _c("h2", { staticStyle: { "font-size": "25px" } }, [
-              _vm._v("Пожалуйста подождите!!!")
-            ])
-          ])
-        : _vm._e(),
+      _c(
+        "nav",
+        { staticClass: "page-nav" },
+        [
+          _vm.is_refresh
+            ? _c("div", { staticClass: "my-update-sign" }, [
+                _c("h2", { staticStyle: { "font-size": "25px" } }, [
+                  _vm._v("Пожалуйста подождите!!!")
+                ])
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          _vm._l(_vm.newDay(), function(day, index) {
+            return [
+              index === 0
+                ? _c(
+                    "a",
+                    {
+                      staticClass: "page-nav__day page-nav__day_today",
+                      attrs: { href: "#" },
+                      on: {
+                        click: function($event) {
+                          return _vm.selectDay(day.date)
+                        }
+                      }
+                    },
+                    [
+                      _c("span", { staticClass: "page-nav__day-week" }, [
+                        _vm._v(_vm._s(day.dayIs))
+                      ]),
+                      _c("span", { staticClass: "page-nav__day-number" }, [
+                        _vm._v(_vm._s(day.date))
+                      ])
+                    ]
+                  )
+                : _c(
+                    "a",
+                    {
+                      staticClass: "page-nav__day",
+                      attrs: { href: "#" },
+                      on: {
+                        click: function($event) {
+                          return _vm.selectDay(day.date)
+                        }
+                      }
+                    },
+                    [
+                      _c("span", { staticClass: "page-nav__day-week" }, [
+                        _vm._v(_vm._s(day.dayIs))
+                      ]),
+                      _c("span", { staticClass: "page-nav__day-number" }, [
+                        _vm._v(_vm._s(day.date))
+                      ])
+                    ]
+                  )
+            ]
+          }),
+          _vm._v(" "),
+          _c("a", {
+            staticClass: "page-nav__day page-nav__day_next",
+            attrs: { href: "#" }
+          })
+        ],
+        2
+      ),
       _vm._v(" "),
-      _vm._l(_vm.newDay(), function(day, index) {
-        return [
-          index === 0
-            ? _c(
-                "a",
-                {
-                  staticClass: "page-nav__day page-nav__day_today",
-                  attrs: { href: "#" },
-                  on: {
-                    click: function($event) {
-                      return _vm.selectDay(day.date)
-                    }
-                  }
-                },
-                [
-                  _c("span", { staticClass: "page-nav__day-week" }, [
-                    _vm._v(_vm._s(day.dayIs))
-                  ]),
-                  _c("span", { staticClass: "page-nav__day-number" }, [
-                    _vm._v(_vm._s(day.date))
-                  ])
-                ]
-              )
-            : _c(
-                "a",
-                {
-                  staticClass: "page-nav__day",
-                  attrs: { href: "#" },
-                  on: {
-                    click: function($event) {
-                      return _vm.selectDay(day.date)
-                    }
-                  }
-                },
-                [
-                  _c("span", { staticClass: "page-nav__day-week" }, [
-                    _vm._v(_vm._s(day.dayIs))
-                  ]),
-                  _c("span", { staticClass: "page-nav__day-number" }, [
-                    _vm._v(_vm._s(day.date))
-                  ])
-                ]
-              )
-        ]
-      }),
-      _vm._v(" "),
-      _c("a", {
-        staticClass: "page-nav__day page-nav__day_next",
-        attrs: { href: "#" }
-      })
+      !_vm.is_refresh
+        ? _c("client-home-component", {
+            attrs: { date_selected: _vm.dayForNextComponent }
+          })
+        : _vm._e()
     ],
-    2
+    1
   )
 }
 var staticRenderFns = []
@@ -54770,6 +54728,165 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-81f20d18", module.exports)
+  }
+}
+
+/***/ }),
+/* 91 */,
+/* 92 */,
+/* 93 */,
+/* 94 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(95)
+/* template */
+var __vue_template__ = __webpack_require__(96)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ClientMoviComponent.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-0abdcab6", Component.options)
+  } else {
+    hotAPI.reload("data-v-0abdcab6", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 95 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: [
+    //get data from Blade
+    'movie_id'],
+    data: function data() {
+        return {
+            url: {
+                movieAllData: '/client-data-of-movie/'
+            },
+            datas: []
+        };
+    },
+
+    mounted: function mounted() {
+        this.update();
+    },
+
+
+    methods: {
+        update: function update() {
+            var _this = this;
+
+            axios.get(this.url.movieAllData + this.movie_id).then(function (response) {
+                _this.datas = response.data;
+                // console.dir(this.datas);
+            });
+        }
+
+        // getDataOfMovie: function (movie_id) {
+        //     axios.get(this.url.movieAllData + movie_id).then((response) => {
+        //         this.moviesAllData[movie_id] = response.data;
+        //         console.dir(this.moviesAllData);
+        //     });
+        // },
+
+
+    }
+});
+
+/***/ }),
+/* 96 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "movie__info" }, [
+    _c("div", { staticClass: "movie__poster" }, [
+      _c("img", {
+        staticClass: "movie__poster-image",
+        attrs: { alt: "Звёздные войны постер", src: _vm.datas.image }
+      })
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "movie__description" }, [
+      _c("h2", { staticClass: "movie__title" }, [
+        _vm._v(_vm._s(_vm.datas.name))
+      ]),
+      _vm._v(" "),
+      _c("p", { staticClass: "movie__synopsis" }, [
+        _vm._v(_vm._s(_vm.datas.description))
+      ]),
+      _vm._v(" "),
+      _c("p", { staticClass: "movie__data" }, [
+        _c("span", { staticClass: "movie__data-duration" }, [
+          _vm._v(_vm._s(_vm.datas.runtime) + " минут")
+        ]),
+        _vm._v(" "),
+        _c("span", { staticClass: "movie__data-origin" }, [
+          _vm._v(_vm._s(_vm.datas.country))
+        ])
+      ])
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-0abdcab6", module.exports)
   }
 }
 

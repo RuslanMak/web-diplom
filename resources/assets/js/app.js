@@ -34,6 +34,7 @@ Vue.component('read-qr-code-component', require('./components/QrReaderComponent.
 Vue.component('generate-qr-code-component', require('./components/QrGenerateComponent.vue'));
 Vue.component('client-home-component', require('./components/ClientComponent.vue'));
 Vue.component('client-home-days-component', require('./components/ClientDaysComponent.vue'));
+Vue.component('client-home-movi-component', require('./components/ClientMoviComponent.vue'));
 
 const app = new Vue({
     el: '#app'

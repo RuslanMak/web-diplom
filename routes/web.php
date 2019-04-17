@@ -44,7 +44,9 @@ Route::get('/admin/get-all-halls', 'AdminsController@allHallsApi')->middleware('
 
 Route::get('/controller', 'PagesController@controller')->middleware('auth');
 
-Route::get('/times-of-movies-and-more', 'PagesController@getTimesAndMore')->middleware('auth');
+Route::get('/times-of-movies-and-more', 'PagesController@getTimesAndMore');
+Route::get('/client-data-of-selected-date/{date}', 'PagesController@getDataOfDate');
+Route::get('/client-data-of-movie/{id_movie}', 'PagesController@getDataOfMovie');
 
 
 // Route::get('/', function () {

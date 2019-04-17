@@ -1,24 +1,28 @@
 <template>
 
-    <nav class="page-nav">
+    <div>
+        <nav class="page-nav">
 
-        <div v-if="is_refresh" class="my-update-sign">
-            <h2 style="font-size: 25px;">Пожалуйста подождите!!!</h2>
-        </div>
+            <div v-if="is_refresh" class="my-update-sign">
+                <h2 style="font-size: 25px;">Пожалуйста подождите!!!</h2>
+            </div>
 
-        <template v-for="(day, index) in newDay()">
-            <a v-if="index === 0" class="page-nav__day page-nav__day_today" href="#" v-on:click="selectDay(day.date)">
-                <span class="page-nav__day-week">{{ day.dayIs }}</span><span class="page-nav__day-number">{{ day.date }}</span>
+            <template v-for="(day, index) in newDay()">
+                <a v-if="index === 0" class="page-nav__day page-nav__day_today" href="#" v-on:click="selectDay(day.date)">
+                    <span class="page-nav__day-week">{{ day.dayIs }}</span><span class="page-nav__day-number">{{ day.date }}</span>
+                </a>
+
+                <a v-else class="page-nav__day" href="#" v-on:click="selectDay(day.date)">
+                    <span class="page-nav__day-week">{{ day.dayIs }}</span><span class="page-nav__day-number">{{ day.date }}</span>
+                </a>
+            </template>
+
+            <a class="page-nav__day page-nav__day_next" href="#">
             </a>
+        </nav>
 
-            <a v-else class="page-nav__day" href="#" v-on:click="selectDay(day.date)">
-                <span class="page-nav__day-week">{{ day.dayIs }}</span><span class="page-nav__day-number">{{ day.date }}</span>
-            </a>
-        </template>
-
-        <a class="page-nav__day page-nav__day_next" href="#">
-        </a>
-    </nav>
+        <client-home-component v-if="!is_refresh" :date_selected="dayForNextComponent"></client-home-component>
+    </div>
 
 </template>
 
@@ -39,6 +43,12 @@
             }
         },
 
+        // watch() {
+        //     dayForNextComponent: function f() {
+        //
+        //     }
+        // },
+
         mounted() {
             // this.halls = JSON.parse(this.halls_string);
             this.update();
@@ -52,7 +62,9 @@
                 axios.get(this.url.allDate).then((response) => {
                     this.dates = response.data;
                     this.is_refresh = false;
-                    // console.dir(this.dates);
+
+                    this.dayForNextComponent = this.dates[0].start_time.slice(0, 10);
+                    // console.dir(this.dayForNextComponent);
                 });
             },
 
@@ -80,7 +92,7 @@
 
             selectDay: function (day) {
                 this.dayForNextComponent = day;
-                console.log(this.dayForNextComponent);
+                // console.log(this.dayForNextComponent);
             }
 
 

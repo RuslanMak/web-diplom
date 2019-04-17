@@ -16,40 +16,40 @@ class PagesController extends Controller
 //        $this->middleware('auth');
 //    }
 
-  public function home() {
+    public function home() {
       return view('welcome');
-  }
+    }
 
-  public function controller() {
+    public function controller() {
       return view('controller');
-  }
+    }
 
-  public function about() {
+    public function about() {
       $movies = Movie::all();
       $timesOfMovie = Connection::all();
       $hall = Hall::all();
-//      return $movies;
-      
-//      return view('about', compact('movies'), compact('timesOfMovie'), compact('hall'));
+    //      return $movies;
+
+    //      return view('about', compact('movies'), compact('timesOfMovie'), compact('hall'));
       return view('about')
           ->with('movies', $movies)
           ->with('timesOfMovie', $timesOfMovie)
           ->with('hall', $hall);
-  }
+    }
 
-  public function client() {
+    public function client() {
       $movies = Movie::all();
       $timesOfMovie = Connection::all();
       $halls = Hall::all();
 
-//      return view('client.index', compact('movies'), compact('timesOfMovie'), compact('hall'));
+    //      return view('client.index', compact('movies'), compact('timesOfMovie'), compact('hall'));
       return view('client.index')
           ->with('movies', $movies)
           ->with('timesOfMovie', $timesOfMovie)
           ->with('halls', $halls);
-  }
+    }
 
-  public function payment($id) {
+    public function payment($id) {
       if ( !isset(request()->user()->id) ) {
           return redirect('/');
       }
@@ -75,9 +75,9 @@ class PagesController extends Controller
           ->with('totalPrice', $totalPrice)
           ->with('places', $places)
           ->with('connectionid', $id);
-  }
+    }
 
-  public function ticket($id) {
+    public function ticket($id) {
       if ( !isset(request()->user()->id) ) {
           return redirect('/');
       }
@@ -112,13 +112,27 @@ class PagesController extends Controller
           ->with('places', $places)
           ->with('connectionid', $id)
           ->with('ticketInfor', $ticketInfor);
-  }
+    }
 
-  public function getTimesAndMore() {
+    public function getTimesAndMore() {
 
       $date = date('Y-m-d h:i:s', time());
       return Connection::where('start_time', '>=', $date)->orderBy('start_time')->get();
-  }
+    }
+
+    public function getDataOfDate($date) {
+
+        return Connection::where('start_time', 'LIKE', $date . '%')
+            ->where('on_sale', '=', 1)
+            ->orderBy('id_movie')
+            ->orderBy('id_hall')
+            ->orderBy('start_time')->get();
+    }
+
+    public function getDataOfMovie($id_movie) {
+
+        return Movie::findOrFail($id_movie);
+    }
 
 
 
