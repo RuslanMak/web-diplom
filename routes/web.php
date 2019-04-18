@@ -47,6 +47,7 @@ Route::get('/controller', 'PagesController@controller')->middleware('auth');
 Route::get('/times-of-movies-and-more', 'PagesController@getTimesAndMore');
 Route::get('/client-data-of-selected-date/{date}', 'PagesController@getDataOfDate');
 Route::get('/client-data-of-movie/{id_movie}', 'PagesController@getDataOfMovie');
+Route::get('/client-get-hall-name/{id_hall}', 'PagesController@getHallName');
 
 
 // Route::get('/', function () {

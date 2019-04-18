@@ -54756,6 +54756,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['movie_halls'],
@@ -54780,7 +54782,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this = this;
 
             this.is_refresh = true;
-            console.dir(this.movie_halls);
+            // console.dir(this.movie_halls);
             axios.get(this.url.movieAllData + this.movie_halls[0].id_movie).then(function (response) {
                 _this.datas = response.data;
                 // console.dir(this.datas);
@@ -54801,31 +54803,32 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "movie__info" },
     [
-      _c("div", { staticClass: "movie__poster" }, [
-        _c("img", {
-          staticClass: "movie__poster-image",
-          attrs: { alt: "Звёздные войны постер", src: _vm.datas.image }
-        })
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "movie__description" }, [
-        _c("h2", { staticClass: "movie__title" }, [
-          _vm._v(_vm._s(_vm.datas.name))
+      _c("div", { staticClass: "movie__info" }, [
+        _c("div", { staticClass: "movie__poster" }, [
+          _c("img", {
+            staticClass: "movie__poster-image",
+            attrs: { alt: "Звёздные войны постер", src: _vm.datas.image }
+          })
         ]),
         _vm._v(" "),
-        _c("p", { staticClass: "movie__synopsis" }, [
-          _vm._v(_vm._s(_vm.datas.description))
-        ]),
-        _vm._v(" "),
-        _c("p", { staticClass: "movie__data" }, [
-          _c("span", { staticClass: "movie__data-duration" }, [
-            _vm._v(_vm._s(_vm.datas.runtime) + " минут")
+        _c("div", { staticClass: "movie__description" }, [
+          _c("h2", { staticClass: "movie__title" }, [
+            _vm._v(_vm._s(_vm.datas.name))
           ]),
           _vm._v(" "),
-          _c("span", { staticClass: "movie__data-origin" }, [
-            _vm._v(_vm._s(_vm.datas.country))
+          _c("p", { staticClass: "movie__synopsis" }, [
+            _vm._v(_vm._s(_vm.datas.description))
+          ]),
+          _vm._v(" "),
+          _c("p", { staticClass: "movie__data" }, [
+            _c("span", { staticClass: "movie__data-duration" }, [
+              _vm._v(_vm._s(_vm.datas.runtime) + " минут")
+            ]),
+            _vm._v(" "),
+            _c("span", { staticClass: "movie__data-origin" }, [
+              _vm._v(_vm._s(_vm.datas.country))
+            ])
           ])
         ])
       ]),
@@ -54915,87 +54918,39 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['hallsArr'],
     data: function data() {
         return {
-            is_refresh: false,
-            url: {
-                allDate: '/client-data-of-selected-date/'
-            },
-            datas: []
+            // is_refresh: false,
         };
     },
 
-    mounted: function mounted() {
-        console.dir(this.hallsArr);
-        if (this.hallsArr) {
-            this.update();
-        }
-    },
-
-
-    // watch: {
-    //     date_selected: function () {
-    //         this.update();
-    //     }
-    // },
-
     methods: {
-        update: function update() {
-            this.is_refresh = true;
+        hallFilter: function hallFilter() {
+            if (this.hallsArr) {
+                var hallId = void 0;
+                var halls = {};
+                this.hallsArr.forEach(function (hall) {
+                    if (hallId !== hall.id_hall) {
+                        hallId = hall.id_hall;
 
-            // axios.get(this.url.allDate + this.date_selected).then((response) => {
-            //     this.datas = response.data;
-            //     // console.dir(this.datas);
-            //     this.is_refresh = false;
-            // });
+                        halls[hallId] = [hall];
+                    } else {
+                        halls[hallId].push(hall);
+                    }
+                });
+                // console.dir(halls);
+                return halls;
+            }
+        },
+
+        timeOnly: function timeOnly(date) {
+            var d = new Date(date);
+            var datestring = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+            return datestring;
         }
-
-        // hallFilter: function () {
-        //     if (this.hallsArr) {
-        //         let hallId;
-        //         let halls = [];
-        //         this.hallsArr.forEach(hall => {
-        //             if(hallId !== hall.id_hall) {
-        //                 hallId = hall.id_hall;
-        //
-        //                 halls.push(hall);
-        //             }
-        //         });
-        //         // console.dir(halls);
-        //         return halls;
-        //     }
-        // },
-
-        // moviesFilter: function () {
-        //     if (this.datas) {
-        //         let movieId;
-        //         // let movies = [];
-        //         let movies = {};
-        //         this.datas.forEach(movie => {
-        //             if(movieId !== movie.id_movie) {
-        //                 movieId = movie.id_movie;
-        //
-        //                 movies[movieId] = [movie];
-        //             } else {
-        //                 movies[movieId].push(movie);
-        //             }
-        //         });
-        //         // console.dir(movies);
-        //         return movies;
-        //     }
-        // },
 
     }
 });
@@ -55010,13 +54965,29 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    _vm._l(_vm.hallsArr, function(hall) {
+    _vm._l(_vm.hallFilter(), function(hall) {
       return _c("div", { staticClass: "movie-seances__hall" }, [
         _c("h3", { staticClass: "movie-seances__hall-title" }, [
-          _vm._v(_vm._s(hall))
+          _vm._v(_vm._s(hall[0].hall_name))
         ]),
         _vm._v(" "),
-        _c("ul", { staticClass: "movie-seances__list" })
+        _c(
+          "ul",
+          { staticClass: "movie-seances__list" },
+          _vm._l(hall, function(time) {
+            return _c("li", { staticClass: "movie-seances__time-block" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "movie-seances__time",
+                  attrs: { href: "client/hall/" + time.id }
+                },
+                [_vm._v(_vm._s(_vm.timeOnly(time.start_time)))]
+              )
+            ])
+          }),
+          0
+        )
       ])
     }),
     0

@@ -1,23 +1,14 @@
 <template>
-    <!--{{--данние зала и время начала фильма--}}-->
     <div>
-        <div v-for="hall in hallsArr" class="movie-seances__hall">
-            <!--@foreach ($halls as $hall)-->
+        <div v-for="hall in hallFilter()" class="movie-seances__hall">
+            <h3 class="movie-seances__hall-title">{{ hall[0].hall_name }}</h3>
 
-            <!--<h3 class="movie-seances__hall-title">{{$hall->hall_name}}</h3>-->
-            <h3 class="movie-seances__hall-title">{{ hall }}</h3>
             <ul class="movie-seances__list">
-                <!--@foreach ($timesOfMovie as $time)-->
-                <!--@if($time->id_movie === $movie->id && $time->id_hall === $hall->id)-->
-                <!--<li class="movie-seances__time-block"><a class="movie-seances__time" href="client/hall/{{$time->id}}">{{$time->start_time}}</a></li>-->
-                <!--@endif-->
-                <!--@endforeach-->
+                <li v-for="time in hall" class="movie-seances__time-block"><a class="movie-seances__time" :href="'client/hall/'+time.id">{{ timeOnly(time.start_time) }}</a></li>
             </ul>
-            <!--@endforeach-->
+
         </div>
     </div>
-
-
 </template>
 
 <script>
@@ -27,72 +18,34 @@
         ],
         data: function() {
             return {
-                is_refresh: false,
-                url: {
-                    allDate: '/client-data-of-selected-date/',
-                },
-                datas: []
+                // is_refresh: false,
             }
         },
-
-        mounted() {
-            console.dir(this.hallsArr);
-            if(this.hallsArr) {
-                this.update();
-            }
-        },
-
-        // watch: {
-        //     date_selected: function () {
-        //         this.update();
-        //     }
-        // },
 
         methods: {
-            update: function() {
-                this.is_refresh = true;
+            hallFilter: function () {
+                if (this.hallsArr) {
+                    let hallId;
+                    let halls = {};
+                    this.hallsArr.forEach(hall => {
+                        if(hallId !== hall.id_hall) {
+                            hallId = hall.id_hall;
 
-                // axios.get(this.url.allDate + this.date_selected).then((response) => {
-                //     this.datas = response.data;
-                //     // console.dir(this.datas);
-                //     this.is_refresh = false;
-                // });
+                            halls[hallId] = [hall];
+                        } else {
+                            halls[hallId].push(hall);
+                        }
+                    });
+                    // console.dir(halls);
+                    return halls;
+                }
             },
 
-            // hallFilter: function () {
-            //     if (this.hallsArr) {
-            //         let hallId;
-            //         let halls = [];
-            //         this.hallsArr.forEach(hall => {
-            //             if(hallId !== hall.id_hall) {
-            //                 hallId = hall.id_hall;
-            //
-            //                 halls.push(hall);
-            //             }
-            //         });
-            //         // console.dir(halls);
-            //         return halls;
-            //     }
-            // },
-
-            // moviesFilter: function () {
-            //     if (this.datas) {
-            //         let movieId;
-            //         // let movies = [];
-            //         let movies = {};
-            //         this.datas.forEach(movie => {
-            //             if(movieId !== movie.id_movie) {
-            //                 movieId = movie.id_movie;
-            //
-            //                 movies[movieId] = [movie];
-            //             } else {
-            //                 movies[movieId].push(movie);
-            //             }
-            //         });
-            //         // console.dir(movies);
-            //         return movies;
-            //     }
-            // },
+            timeOnly: function (date) {
+                let d = new Date(date);
+                let datestring = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+                return datestring;
+            },
 
         }
     }

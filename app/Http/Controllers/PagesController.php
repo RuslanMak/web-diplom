@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use App\Connection;
 use Illuminate\Http\Request;
 use App\Movie;
@@ -121,8 +122,10 @@ class PagesController extends Controller
     }
 
     public function getDataOfDate($date) {
-
-        return Connection::where('start_time', 'LIKE', $date . '%')
+        return DB::table('connections')
+            ->join('halls', 'connections.id_hall', '=', 'halls.id')
+            ->select('connections.*', 'halls.hall_name')
+            ->where('start_time', 'LIKE', $date . '%')
             ->where('on_sale', '=', 1)
             ->orderBy('id_movie')
             ->orderBy('id_hall')
@@ -132,6 +135,11 @@ class PagesController extends Controller
     public function getDataOfMovie($id_movie) {
 
         return Movie::findOrFail($id_movie);
+    }
+
+    public function getHallName($id_hall) {
+
+        return Hall::findOrFail($id_hall);
     }
 
 
