@@ -16,3 +16,8 @@
 5. php artisan config:cache
 6. php artisan migrate
 
+## NB
+in db->users
+role = 1 --- admin
+role = 2 --- controller
+

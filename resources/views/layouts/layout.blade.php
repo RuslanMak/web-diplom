@@ -15,7 +15,7 @@
   <!-- Styles -->
   {{--<link href="{{ asset('css/app.css') }}" rel="stylesheet">--}}
   @yield('stylesheets')
-  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&amp;subset=cyrillic,cyrillic-ext,latin-ext" rel="stylesheet">
+  {{--<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&amp;subset=cyrillic,cyrillic-ext,latin-ext" rel="stylesheet">--}}
 </head>
 
 <body>

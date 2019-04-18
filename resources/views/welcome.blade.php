@@ -86,9 +86,17 @@
                     <a href="https://laravel.com/docs">Documentation</a>
                     <a href="https://laracasts.com">Laracasts</a>
                     <a href="/client">client</a>
-                    <a href="/about">about</a>
-                    <a href="/admin">admin</a>
-                    <a href="/controller">Контроллер</a>
+                    @if (Route::has('login'))
+                        @auth
+                            @if ( auth()->user()->role == 1)
+                                <a href="/admin">admin</a>
+                                <a href="/controller">Контроллер</a>
+                            @endif
+                            @if ( auth()->user()->role == 2)
+                                <a href="/controller">Контроллер</a>
+                            @endif
+                        @endauth
+                    @endif
                 </div>
             </div>
         </div>

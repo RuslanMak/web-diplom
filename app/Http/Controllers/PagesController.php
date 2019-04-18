@@ -25,19 +25,6 @@ class PagesController extends Controller
       return view('controller');
     }
 
-    public function about() {
-      $movies = Movie::all();
-      $timesOfMovie = Connection::all();
-      $hall = Hall::all();
-    //      return $movies;
-
-    //      return view('about', compact('movies'), compact('timesOfMovie'), compact('hall'));
-      return view('about')
-          ->with('movies', $movies)
-          ->with('timesOfMovie', $timesOfMovie)
-          ->with('hall', $hall);
-    }
-
     public function client() {
       $movies = Movie::all();
       $timesOfMovie = Connection::all();

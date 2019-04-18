@@ -12,7 +12,6 @@
 */
 
 Route::get('/', 'PagesController@home');
-Route::get('/about', 'PagesController@about');
 Route::get('/client', 'PagesController@client');
 
 Route::get('/client/hall/{reservation}', 'HallController@hall')->middleware('auth');
@@ -22,27 +21,27 @@ Route::get('/start/update-ajax/{id}', 'HallController@updateStatus');
 Route::get('/client/payment/{id}', 'PagesController@payment')->middleware('auth');
 Route::get('/client/ticket/{id}', 'PagesController@ticket')->middleware('auth');
 
-Route::get('/admin', 'AdminsController@index')->middleware('auth');
-Route::get('/admin/create', 'AdminsController@create')->middleware('auth');
-Route::post('/admin/hall', 'AdminsController@save')->middleware('auth');
-Route::delete('/admin/hall/{id}', 'AdminsController@deleteHall')->middleware('auth');
-Route::get('/admin/get-api-places/{id_hall}', 'AdminsController@getApi')->middleware('auth');
-Route::get('/admin/post-api-row/{id_hall}/{num}', 'AdminsController@updateNumRow')->middleware('auth');
-Route::get('/admin/get-update-place-in-row/{id_hall}/{num}', 'AdminsController@updateNumPlaceInRow')->middleware('auth');
-Route::get('/admin/get-update-type-place-doing/{row}/{num}/{type}/{id_hall}', 'AdminsController@updateTypePlace')->middleware('auth');
-Route::get('/admin/get-cancel-change/{pass}/{id_hall}', 'AdminsController@cancelChange')->middleware('auth');
-Route::get('/admin/get-save-change/{id_hall}', 'AdminsController@saveChange')->middleware('auth');
-Route::post('/admin/post-save-prices', 'AdminsController@savePrices')->middleware('auth');
+Route::get('/admin', 'AdminsController@index')->middleware('auth', 'role:admin');
+Route::get('/admin/create', 'AdminsController@create')->middleware('auth', 'role:admin');
+Route::post('/admin/hall', 'AdminsController@save')->middleware('auth', 'role:admin');
+Route::delete('/admin/hall/{id}', 'AdminsController@deleteHall')->middleware('auth', 'role:admin');
+Route::get('/admin/get-api-places/{id_hall}', 'AdminsController@getApi')->middleware('auth', 'role:admin');
+Route::get('/admin/post-api-row/{id_hall}/{num}', 'AdminsController@updateNumRow')->middleware('auth', 'role:admin');
+Route::get('/admin/get-update-place-in-row/{id_hall}/{num}', 'AdminsController@updateNumPlaceInRow')->middleware('auth', 'role:admin');
+Route::get('/admin/get-update-type-place-doing/{row}/{num}/{type}/{id_hall}', 'AdminsController@updateTypePlace')->middleware('auth', 'role:admin');
+Route::get('/admin/get-cancel-change/{pass}/{id_hall}', 'AdminsController@cancelChange')->middleware('auth', 'role:admin');
+Route::get('/admin/get-save-change/{id_hall}', 'AdminsController@saveChange')->middleware('auth', 'role:admin');
+Route::post('/admin/post-save-prices', 'AdminsController@savePrices')->middleware('auth', 'role:admin');
 
-Route::get('/admin/get-all-movie', 'AdminsController@allMoviesApi')->middleware('auth');
-Route::post('/admin/save-new-movie', 'AdminsController@saveNewMovie')->name('image.upload')->middleware('auth');
-Route::post('/admin/save-new-time-for-movie', 'AdminsController@saveMovieTime')->middleware('auth');
-Route::delete('/admin/delete-movie-for-hall/{id_connection}', 'AdminsController@deleteMovieFromHall')->middleware('auth');
+Route::get('/admin/get-all-movie', 'AdminsController@allMoviesApi')->middleware('auth', 'role:admin');
+Route::post('/admin/save-new-movie', 'AdminsController@saveNewMovie')->name('image.upload')->middleware('auth', 'role:admin');
+Route::post('/admin/save-new-time-for-movie', 'AdminsController@saveMovieTime')->middleware('auth', 'role:admin');
+Route::delete('/admin/delete-movie-for-hall/{id_connection}', 'AdminsController@deleteMovieFromHall')->middleware('auth', 'role:admin');
 
-Route::get('/admin/open-sale', 'AdminsController@openSale')->middleware('auth');
-Route::get('/admin/get-all-halls', 'AdminsController@allHallsApi')->middleware('auth');
+Route::get('/admin/open-sale', 'AdminsController@openSale')->middleware('auth', 'role:admin');
+Route::get('/admin/get-all-halls', 'AdminsController@allHallsApi')->middleware('auth', 'role:admin');
 
-Route::get('/controller', 'PagesController@controller')->middleware('auth');
+Route::get('/controller', 'PagesController@controller')->middleware('auth', 'role:controller');
 
 Route::get('/times-of-movies-and-more', 'PagesController@getTimesAndMore');
 Route::get('/client-data-of-selected-date/{date}', 'PagesController@getDataOfDate');
