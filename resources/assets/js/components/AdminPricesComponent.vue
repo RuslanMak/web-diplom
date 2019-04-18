@@ -49,15 +49,17 @@
     export default {
         props: [
             //get data from Blade
-            'halls_string'
+            // 'halls_string',
+            'halls'
         ],
         data: function() {
             return {
                 halldata: [],
                 is_refresh: false,
                 selected_hall: 1,
-                halls: [],
+                // halls: [],
                 url: {
+                    getApiPlaces: '/admin/get-api-places/',
                     saveUrl: '/admin/post-save-prices'
                 },
                 // csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -79,34 +81,39 @@
         },
 
         mounted() {
-            this.halls = JSON.parse(this.halls_string);
-            this.update()
+            // this.halls = JSON.parse(this.halls_string);
+            this.update();
         },
         methods: {
             update: function() {
                 this.is_refresh = true;
 
-                axios.get('/admin/get-api-places/' + this.dataForm.id_hall).then((response) => {
-                    this.halldata = response.data;
-                    this.is_refresh = false;
+                axios.get(this.url.getApiPlaces + this.dataForm.id_hall)
+                    .then(response => {
+                        this.halldata = response.data;
+                        this.is_refresh = false;
 
-                    //добавление цены and ID
-                    if (this.halldata.prices.vip) {
-                        this.dataForm.vip_place = this.halldata.prices.vip.price;
-                        this.dataForm.id_vip_place = this.halldata.prices.vip.id;
-                    } else {
-                        this.dataForm.vip_place = 0;
-                        this.dataForm.id_vip_place = 0;
-                    }
+                        //добавление цены and ID
+                        if (this.halldata.prices.vip) {
+                            this.dataForm.vip_place = this.halldata.prices.vip.price;
+                            this.dataForm.id_vip_place = this.halldata.prices.vip.id;
+                        } else {
+                            this.dataForm.vip_place = 0;
+                            this.dataForm.id_vip_place = 0;
+                        }
 
-                    if (this.halldata.prices.standart) {
-                        this.dataForm.standart_place = this.halldata.prices.standart.price;
-                        this.dataForm.id_standart_place = this.halldata.prices.standart.id;
-                    } else {
-                        this.dataForm.standart_place = 0;
-                        this.dataForm.id_standart_place = 0;
-                    }
-                });
+                        if (this.halldata.prices.standart) {
+                            this.dataForm.standart_place = this.halldata.prices.standart.price;
+                            this.dataForm.id_standart_place = this.halldata.prices.standart.id;
+                        } else {
+                            this.dataForm.standart_place = 0;
+                            this.dataForm.id_standart_place = 0;
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error.response);
+                        this.is_refresh = false;
+                    });
 
             },
 

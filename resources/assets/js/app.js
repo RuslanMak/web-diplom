@@ -27,6 +27,7 @@ Vue.component('qr-code', VueQRCodeComponent);
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('halls-component', require('./components/HallsComponent.vue'));
 Vue.component('admin-hall-places-component', require('./components/AdminHallPlacesComponent.vue'));
+Vue.component('admin-main-component', require('./components/AdminMainComponent.vue'));
 Vue.component('admin-prices-component', require('./components/AdminPricesComponent.vue'));
 Vue.component('admin-movie-time-component', require('./components/AdminMovieTimeComponent.vue'));
 Vue.component('admin-hall-edit-component', require('./components/AdminHallEditComponent.vue'));

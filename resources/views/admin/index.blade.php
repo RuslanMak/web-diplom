@@ -35,13 +35,15 @@
       {{--</div>--}}
     {{--</section>--}}
 
-    <admin-hall-edit-component></admin-hall-edit-component>
+    <admin-main-component></admin-main-component>
 
-    <admin-hall-places-component halls_string='{{ json_encode($halls) }}'></admin-hall-places-component>
+    {{--<admin-hall-edit-component></admin-hall-edit-component>--}}
 
-    <admin-prices-component halls_string='{{ json_encode($halls) }}'></admin-prices-component>
+    {{--<admin-hall-places-component halls_string='{{ json_encode($halls) }}'></admin-hall-places-component>--}}
 
-    <admin-movie-time-component halls_string='{{ json_encode($halls) }}'></admin-movie-time-component>
+    {{--<admin-prices-component halls_string='{{ json_encode($halls) }}'></admin-prices-component>--}}
+
+    {{--<admin-movie-time-component halls_string='{{ json_encode($halls) }}'></admin-movie-time-component>--}}
 
     <section class="conf-step">
       <header class="conf-step__header conf-step__header_opened">

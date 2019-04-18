@@ -14207,6 +14207,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('qr-code', __WEBPACK_IMPOR
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('example-component', __webpack_require__(52));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('halls-component', __webpack_require__(55));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-hall-places-component', __webpack_require__(58));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-main-component', __webpack_require__(100));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-prices-component', __webpack_require__(61));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-movie-time-component', __webpack_require__(64));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-hall-edit-component', __webpack_require__(67));
@@ -50647,7 +50648,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: [
     //get data from Blade
     // 'connectionid'
-    'halls_string'],
+    'halls'],
     data: function data() {
         return {
             halldata: [],
@@ -50656,9 +50657,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             is_refresh: false,
             totalPlaces: 0,
             selected_hall: 1,
-            halls: [],
+            // halls: [],
             url: {
                 updateRowNum: '/admin/post-api-row/',
+                getApiPlaces: '/admin/get-api-places/',
                 updatePlaceInRowNum: '/admin/get-update-place-in-row/',
                 doingTypePlace: '/admin/get-update-type-place-doing/',
                 cancelUrl: '/admin/get-cancel-change/',
@@ -50699,7 +50701,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     mounted: function mounted() {
-        this.halls = JSON.parse(this.halls_string);
+        // this.halls = this.halls_string;
         this.update();
     },
 
@@ -50709,7 +50711,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.is_refresh = true;
 
-            axios.get('/admin/get-api-places/' + this.selected_hall).then(function (response) {
+            // console.dir(this.halls_string);
+
+            axios.get(this.url.getApiPlaces + this.selected_hall).then(function (response) {
                 _this.halldata = response.data;
                 _this.is_refresh = false;
                 // console.dir(this.selected_hall);
@@ -50724,6 +50728,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 } else {
                     _this.places_in_row = _this.halldata.hall.places_in_row;
                 }
+            }).catch(function (error) {
+                console.log(error.response);
+                _this.is_refresh = false;
             });
         },
 
@@ -50841,8 +50848,7 @@ var render = function() {
       _vm._v(" "),
       _c("p", { staticClass: "conf-step__paragraph" }, [
         _vm._v(
-          "Укажите количество рядов и максимальное количество кресел в ряду: " +
-            _vm._s(_vm.selected_hall)
+          "Укажите количество рядов и максимальное количество кресел в ряду:"
         )
       ]),
       _vm._v(" "),
@@ -51106,14 +51112,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: [
     //get data from Blade
-    'halls_string'],
+    // 'halls_string',
+    'halls'],
     data: function data() {
         return {
             halldata: [],
             is_refresh: false,
             selected_hall: 1,
-            halls: [],
+            // halls: [],
             url: {
+                getApiPlaces: '/admin/get-api-places/',
                 saveUrl: '/admin/post-save-prices'
             },
             // csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -51135,7 +51143,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     mounted: function mounted() {
-        this.halls = JSON.parse(this.halls_string);
+        // this.halls = JSON.parse(this.halls_string);
         this.update();
     },
 
@@ -51145,7 +51153,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.is_refresh = true;
 
-            axios.get('/admin/get-api-places/' + this.dataForm.id_hall).then(function (response) {
+            axios.get(this.url.getApiPlaces + this.dataForm.id_hall).then(function (response) {
                 _this.halldata = response.data;
                 _this.is_refresh = false;
 
@@ -51165,6 +51173,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     _this.dataForm.standart_place = 0;
                     _this.dataForm.id_standart_place = 0;
                 }
+            }).catch(function (error) {
+                console.log(error.response);
+                _this.is_refresh = false;
             });
         },
 
@@ -51596,12 +51607,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: [
     //get data from Blade
-    'halls_string'],
+    'halls_string', 'halls'],
     data: function data() {
         return {
             all_data: [],
             is_refresh: false,
-            halls: [],
+            // halls: [],
             url: {
                 movies_connect: '/admin/get-all-movie',
                 saveNewFilm: '/admin/save-new-movie',
@@ -51627,7 +51638,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     mounted: function mounted() {
-        this.halls = JSON.parse(this.halls_string);
+        // this.halls = JSON.parse(this.halls_string);
         this.update();
     },
 
@@ -54553,6 +54564,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
                 _this.dayForNextComponent = _this.dates[0].start_time.slice(0, 10);
                 // console.dir(this.dayForNextComponent);
+            }).catch(function (error) {
+                console.log(error.response);
+                _this.is_refresh = false;
             });
         },
 
@@ -55000,6 +55014,478 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-0ed5973a", module.exports)
+  }
+}
+
+/***/ }),
+/* 100 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(101)
+/* template */
+var __vue_template__ = __webpack_require__(102)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/AdminMainComponent.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-c31a8fa8", Component.options)
+  } else {
+    hotAPI.reload("data-v-c31a8fa8", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 101 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: [
+        //get data from Blade
+        // 'halls_string'
+    ],
+    data: function data() {
+        return {
+            is_refresh: false,
+            deleteHallId: 0,
+            hallsdata: [],
+            url: {
+                allHallsData: '/admin/get-all-halls',
+                deleteHall: '/admin/hall/',
+                createHall: '/admin/hall/'
+            },
+            showModalDeleteHall: false,
+            showModalCreadeHall: false,
+            createHallData: {}
+        };
+    },
+
+    mounted: function mounted() {
+        // this.halls = JSON.parse(this.halls_string);
+        this.update();
+    },
+
+
+    methods: {
+        update: function update() {
+            var _this = this;
+
+            // console.log('update');
+            this.is_refresh = true;
+
+            axios.get(this.url.allHallsData).then(function (response) {
+                _this.hallsdata = response.data;
+                _this.is_refresh = false;
+                // console.dir(this.hallsdata);
+            });
+        },
+
+        showHallDeleteForm: function showHallDeleteForm(id) {
+            this.deleteHallId = id;
+            this.showModalDeleteHall = true;
+        },
+
+        deleteHallDo: function deleteHallDo(id) {
+            var _this2 = this;
+
+            axios.delete(this.url.deleteHall + id).then(function (response) {
+                console.log(response);
+                _this2.update();
+                _this2.showModalDeleteHall = false;
+            }).catch(function (error) {
+                _this2.showModalDeleteHall = false;
+                console.log(error.response);
+            });
+        },
+
+        createHallDo: function createHallDo() {
+            var _this3 = this;
+
+            console.dir(this.createHallData);
+
+            axios.post(this.url.createHall, this.createHallData).then(function (response) {
+                console.log(response);
+                _this3.update();
+                _this3.showModalCreadeHall = false;
+                _this3.createHallData.hall_name = '';
+            }).catch(function (error) {
+                _this3.showModalCreadeHall = false;
+                console.log(error.response);
+                _this3.createHallData.hall_name = '';
+            });
+        }
+
+    }
+});
+
+/***/ }),
+/* 102 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      _c("section", { staticClass: "conf-step" }, [
+        _vm.showModalDeleteHall
+          ? _c("div", [
+              _c("div", { staticClass: "modal-mask" }, [
+                _c("div", { staticClass: "modal-wrapper" }, [
+                  _c("div", { staticClass: "modal-container" }, [
+                    _c(
+                      "div",
+                      { staticClass: "modal-body" },
+                      [
+                        _vm._t("body", [
+                          _c("p", { staticClass: "conf-step__paragraph" }, [
+                            _vm._v("Удалить зал???")
+                          ]),
+                          _vm._v(" "),
+                          _c("form", { attrs: { method: "post" } }, [
+                            _c("input", {
+                              staticClass: "conf-step__input",
+                              attrs: {
+                                type: "hidden",
+                                name: "id_connection",
+                                required: ""
+                              },
+                              domProps: { value: _vm.deleteHallId }
+                            }),
+                            _vm._v(" "),
+                            _c(
+                              "button",
+                              {
+                                staticClass:
+                                  "conf-step__button conf-step__button-accent",
+                                on: {
+                                  click: function($event) {
+                                    $event.preventDefault()
+                                    return _vm.deleteHallDo(_vm.deleteHallId)
+                                  }
+                                }
+                              },
+                              [_vm._v("Удалить")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "button",
+                              {
+                                staticClass:
+                                  "conf-step__button conf-step__button-regular",
+                                on: {
+                                  click: function($event) {
+                                    _vm.showModalDeleteHall = false
+                                  }
+                                }
+                              },
+                              [_vm._v("Отмена")]
+                            )
+                          ])
+                        ])
+                      ],
+                      2
+                    )
+                  ])
+                ])
+              ])
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.showModalCreadeHall
+          ? _c("div", [
+              _c("div", { staticClass: "modal-mask" }, [
+                _c("div", { staticClass: "modal-wrapper" }, [
+                  _c("div", { staticClass: "modal-container" }, [
+                    _c(
+                      "div",
+                      { staticClass: "modal-body" },
+                      [
+                        _vm._t("body", [
+                          _vm._m(0),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "conf-step__wrapper" }, [
+                            _c("p", { staticClass: "conf-step__paragraph" }, [
+                              _vm._v("Название зала:")
+                            ]),
+                            _vm._v(" "),
+                            _c("form", { attrs: { method: "post" } }, [
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.createHallData.hall_name,
+                                    expression: "createHallData.hall_name"
+                                  }
+                                ],
+                                staticClass: "conf-step__input",
+                                attrs: {
+                                  type: "text",
+                                  name: "hall_name",
+                                  placeholder: "Hall title",
+                                  required: ""
+                                },
+                                domProps: {
+                                  value: _vm.createHallData.hall_name
+                                },
+                                on: {
+                                  input: function($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      _vm.createHallData,
+                                      "hall_name",
+                                      $event.target.value
+                                    )
+                                  }
+                                }
+                              }),
+                              _vm._v(" "),
+                              _c(
+                                "button",
+                                {
+                                  staticClass:
+                                    "conf-step__button conf-step__button-accent",
+                                  on: {
+                                    click: function($event) {
+                                      $event.preventDefault()
+                                      return _vm.createHallDo($event)
+                                    }
+                                  }
+                                },
+                                [_vm._v("Создать зал")]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "button",
+                                {
+                                  staticClass:
+                                    "conf-step__button conf-step__button-regular",
+                                  on: {
+                                    click: function($event) {
+                                      _vm.showModalCreadeHall = false
+                                    }
+                                  }
+                                },
+                                [_vm._v("Отмена")]
+                              )
+                            ])
+                          ])
+                        ])
+                      ],
+                      2
+                    )
+                  ])
+                ])
+              ])
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm._m(1),
+        _vm._v(" "),
+        _c("div", { staticClass: "conf-step__wrapper" }, [
+          _c("p", { staticClass: "conf-step__paragraph" }, [
+            _vm._v("Доступные залы:")
+          ]),
+          _vm._v(" "),
+          _c(
+            "ul",
+            { staticClass: "conf-step__list" },
+            _vm._l(_vm.hallsdata, function(hall) {
+              return _c("li", [
+                _vm._v(
+                  "\n                    " +
+                    _vm._s(hall.hall_name) +
+                    "\n                    "
+                ),
+                _c("button", {
+                  staticClass: "conf-step__button conf-step__button-trash",
+                  on: {
+                    click: function($event) {
+                      return _vm.showHallDeleteForm(hall.id)
+                    }
+                  }
+                })
+              ])
+            }),
+            0
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "conf-step__button conf-step__button-accent",
+              on: {
+                click: function($event) {
+                  _vm.showModalCreadeHall = true
+                }
+              }
+            },
+            [_vm._v("Создать зал")]
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      !_vm.is_refresh
+        ? _c("admin-hall-places-component", { attrs: { halls: _vm.hallsdata } })
+        : _vm._e(),
+      _vm._v(" "),
+      !_vm.is_refresh
+        ? _c("admin-prices-component", { attrs: { halls: _vm.hallsdata } })
+        : _vm._e(),
+      _vm._v(" "),
+      !_vm.is_refresh
+        ? _c("admin-movie-time-component", { attrs: { halls: _vm.hallsdata } })
+        : _vm._e()
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("header", { staticClass: "conf-step__header" }, [
+      _c("h2", { staticClass: "conf-step__title" }, [_vm._v("Создание зала")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "header",
+      { staticClass: "conf-step__header conf-step__header_opened" },
+      [
+        _c("h2", { staticClass: "conf-step__title" }, [
+          _vm._v("Управление залами")
+        ])
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-c31a8fa8", module.exports)
   }
 }
 

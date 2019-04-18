@@ -59,13 +59,18 @@
                 // console.log('update');
                 this.is_refresh = true;
 
-                axios.get(this.url.allDate).then((response) => {
-                    this.dates = response.data;
-                    this.is_refresh = false;
+                axios.get(this.url.allDate)
+                    .then(response => {
+                        this.dates = response.data;
+                        this.is_refresh = false;
 
-                    this.dayForNextComponent = this.dates[0].start_time.slice(0, 10);
-                    // console.dir(this.dayForNextComponent);
-                });
+                        this.dayForNextComponent = this.dates[0].start_time.slice(0, 10);
+                        // console.dir(this.dayForNextComponent);
+                    })
+                    .catch(error => {
+                        console.log(error.response);
+                        this.is_refresh = false;
+                    });
             },
 
             newDay: function () {

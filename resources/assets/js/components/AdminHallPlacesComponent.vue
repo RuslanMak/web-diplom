@@ -32,7 +32,7 @@
                     <span class="conf-step__selector">{{ hall.hall_name }}</span>
                 </li>
             </ul>
-            <p class="conf-step__paragraph">Укажите количество рядов и максимальное количество кресел в ряду: {{ selected_hall }}</p>
+            <p class="conf-step__paragraph">Укажите количество рядов и максимальное количество кресел в ряду:</p>
             <div class="conf-step__legend">
                 <label class="conf-step__label">Рядов, шт<input type="text" class="conf-step__input" placeholder="0" v-model="rows" ></label>
                 <span class="multiplier">x</span>
@@ -74,7 +74,7 @@
         props: [
             //get data from Blade
             // 'connectionid'
-            'halls_string'
+            'halls'
         ],
         data: function() {
             return {
@@ -84,9 +84,10 @@
                 is_refresh: false,
                 totalPlaces: 0,
                 selected_hall: 1,
-                halls: [],
+                // halls: [],
                 url: {
                     updateRowNum: '/admin/post-api-row/',
+                    getApiPlaces: '/admin/get-api-places/',
                     updatePlaceInRowNum: '/admin/get-update-place-in-row/',
                     doingTypePlace: '/admin/get-update-type-place-doing/',
                     cancelUrl: '/admin/get-cancel-change/',
@@ -126,30 +127,36 @@
         },
 
         mounted() {
-            this.halls = JSON.parse(this.halls_string);
+            // this.halls = this.halls_string;
             this.update()
         },
         methods: {
             update: function() {
                 this.is_refresh = true;
 
-                axios.get('/admin/get-api-places/' + this.selected_hall).then((response) => {
-                    this.halldata = response.data;
-                    this.is_refresh = false;
-                    // console.dir(this.selected_hall);
-                    if (this.halldata.hall.admin_doing_rows > 0) {
-                        this.rows = this.halldata.hall.admin_doing_rows;
-                    } else {
-                        this.rows = this.halldata.hall.rows;
-                    }
+                // console.dir(this.halls_string);
 
-                    if (this.halldata.hall.admin_doing_places > 0) {
-                        this.places_in_row = this.halldata.hall.admin_doing_places;
-                    } else {
-                        this.places_in_row = this.halldata.hall.places_in_row;
-                    }
+                axios.get(this.url.getApiPlaces + this.selected_hall)
+                    .then(response => {
+                        this.halldata = response.data;
+                        this.is_refresh = false;
+                        // console.dir(this.selected_hall);
+                        if (this.halldata.hall.admin_doing_rows > 0) {
+                            this.rows = this.halldata.hall.admin_doing_rows;
+                        } else {
+                            this.rows = this.halldata.hall.rows;
+                        }
 
-                });
+                        if (this.halldata.hall.admin_doing_places > 0) {
+                            this.places_in_row = this.halldata.hall.admin_doing_places;
+                        } else {
+                            this.places_in_row = this.halldata.hall.places_in_row;
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error.response);
+                        this.is_refresh = false;
+                    });
 
             },
 

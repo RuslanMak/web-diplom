@@ -153,13 +153,14 @@
     export default {
         props: [
             //get data from Blade
-            'halls_string'
+            'halls_string',
+            'halls'
         ],
         data: function() {
             return {
                 all_data: [],
                 is_refresh: false,
-                halls: [],
+                // halls: [],
                 url: {
                     movies_connect: '/admin/get-all-movie',
                     saveNewFilm: '/admin/save-new-movie',
@@ -185,7 +186,7 @@
         },
 
         mounted() {
-            this.halls = JSON.parse(this.halls_string);
+            // this.halls = JSON.parse(this.halls_string);
             this.update();
         },
         methods: {
