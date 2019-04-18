@@ -1,7 +1,7 @@
 <template>
 
     <div class="buying-scheme__wrapper">
-        <div v-for="row in halldata.hall.rows" class="buying-scheme__row">
+        <div v-for="row in rows" class="buying-scheme__row">
             <!--v-bind:class="'buying-scheme__chair_' + classObj(halldata.places[totalPlaces].id)"-->
             <span v-for="n in halldata.hall.places_in_row"
                   class="buying-scheme__chair"
@@ -25,7 +25,8 @@
             return {
                 halldata: [],
                 is_refresh: false,
-                totalPlaces: 0
+                totalPlaces: 0,
+                rows: 0
             }
         },
         mounted() {
@@ -33,12 +34,13 @@
         },
         methods: {
             update: function() {
-                this.is_refresh = true
+                this.is_refresh = true;
                 axios.get('/start/get-json/' + this.connectionid).then((response) => {
                     // console.log(response)
                     this.halldata = response.data
                     this.is_refresh = false
-                    // console.log("updated");
+                    this.rows = this.halldata.hall.rows;
+                    console.dir(this.halldata);
                     // console.log(this.halldata.user_id);
                 });
 
@@ -63,7 +65,9 @@
 
             classAction: function(row, n) {
                 let place = this.halldata.places.filter(x => x["num_row"] === row).filter(x => x["num_place_in_row"] === n);
+                console.dir(place);
                 if (place[0]) {
+
                     axios.get('/start/update-ajax/' + place[0].id);
                 }
                 this.update();

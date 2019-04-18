@@ -23,7 +23,7 @@
         </div>
       </div>
       <div class="buying-scheme">
-        <halls-component :connectionid={{ $connectionid }} :userid={{ request()->user()->name }}></halls-component>
+        <halls-component :connectionid={{ $connectionid }}></halls-component>
 
 
         <div class="buying-scheme__legend">

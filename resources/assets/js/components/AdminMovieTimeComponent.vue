@@ -52,7 +52,7 @@
                                 <p class="conf-step__paragraph">Выберите дату показа фильма:</p>
 
                                 <form :action="url.saveTimeMovie" method="post">
-                                    <!--<input type="hidden" name="_token" :value="csrf">-->
+                                    <input type="hidden" name="_token" :value="csrf">
 
                                     <input class="conf-step__input" type="text" name="hall_name" :value="modalTimeData.hall_name" placeholder="Hall name" disabled>
                                     <input class="conf-step__input" type="hidden" name="id_hall" :value="modalTimeData.id" placeholder="hall id" required>
@@ -61,6 +61,7 @@
                                     <input class="conf-step__input" type="datetime-local" name="start_time" v-model="modalTimeData.start_time" placeholder="Runtime" required>
 
                                     <button class="conf-step__button conf-step__button-accent" type="submit" @click.prevent="saveTimeM">Установить дату</button>
+                                    <!--<button class="conf-step__button conf-step__button-accent" type="submit">Установить дату</button>-->
                                     <button class="conf-step__button conf-step__button-regular" @click="showModalTime=false">Отмена</button>
                                 </form>
                             </slot>
@@ -71,7 +72,7 @@
             </div>
         </div>
         <!-- END Modal -->
-        <!--==================  Modal - Добавить фильм =========================-->
+        <!--==================  Modal - Удалить с показа =========================-->
         <div v-if="showModalDel">
             <div class="modal-mask">
                 <div class="modal-wrapper">
@@ -167,7 +168,7 @@
                     saveTimeMovie: '/admin/save-new-time-for-movie',
                     deleteMovieHall: '/admin/delete-movie-for-hall/'
                 },
-                // csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 moviesTime: [],
                 moviesMargLeft: [],
                 dragging: -1,

@@ -50416,7 +50416,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             halldata: [],
             is_refresh: false,
-            totalPlaces: 0
+            totalPlaces: 0,
+            rows: 0
         };
     },
     mounted: function mounted() {
@@ -50432,7 +50433,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 // console.log(response)
                 _this.halldata = response.data;
                 _this.is_refresh = false;
-                // console.log("updated");
+                _this.rows = _this.halldata.hall.rows;
+                console.dir(_this.halldata);
                 // console.log(this.halldata.user_id);
             });
         },
@@ -50464,7 +50466,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }).filter(function (x) {
                 return x["num_place_in_row"] === n;
             });
+            console.dir(place);
             if (place[0]) {
+
                 axios.get('/start/update-ajax/' + place[0].id);
             }
             this.update();
@@ -50484,7 +50488,7 @@ var render = function() {
   return _c(
     "div",
     { staticClass: "buying-scheme__wrapper" },
-    _vm._l(_vm.halldata.hall.rows, function(row) {
+    _vm._l(_vm.rows, function(row) {
       return _c(
         "div",
         { staticClass: "buying-scheme__row" },
@@ -51603,6 +51607,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: [
@@ -51619,7 +51624,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 saveTimeMovie: '/admin/save-new-time-for-movie',
                 deleteMovieHall: '/admin/delete-movie-for-hall/'
             },
-            // csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             moviesTime: [],
             moviesMargLeft: [],
             dragging: -1,
@@ -52050,6 +52055,11 @@ var render = function() {
                           }
                         },
                         [
+                          _c("input", {
+                            attrs: { type: "hidden", name: "_token" },
+                            domProps: { value: _vm.csrf }
+                          }),
+                          _vm._v(" "),
                           _c("input", {
                             staticClass: "conf-step__input",
                             attrs: {

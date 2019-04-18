@@ -64,6 +64,7 @@ class PagesController extends Controller
       $places = Place::where('id_connections', '=', $id)
           ->where('id_user', '=', $userId)->get();
 
+//      dd($places);
       $totalPrice = 0;
       foreach ($places as $place) {
           $totalPrice = $totalPrice + $place->price;

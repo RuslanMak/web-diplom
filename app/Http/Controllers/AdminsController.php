@@ -229,6 +229,15 @@ class AdminsController extends Controller
              $hall->save();
          }
 
+//         заносим цены в таблицу мест places
+        Place::where('id_hall', '=', request('id_hall'))
+            ->where('type', '=', 'standart')
+            ->update(['price' => request('standart_place')]);
+
+        Place::where('id_hall', '=', request('id_hall'))
+            ->where('type', '=', 'vip')
+            ->update(['price' => request('vip_place')]);
+
 //        return redirect('/admin');
     }
 
@@ -265,12 +274,18 @@ class AdminsController extends Controller
 
     public function saveMovieTime(Request $request)
     {
+//        dd($request);
         $connections = new Connection();
         $connections->id_hall = $request->id_hall;
         $connections->id_movie = $request->id;
+//        $connections->id_movie = $request->id_movie;
         $connections->start_time = $request->start_time;
         $connections->on_sale = 0;
         $connections->save();
+//        dd($connections->id);
+
+        Place::where('id_hall', '=', $connections->id_hall)
+            ->update(array('id_connections' => $connections->id));
     }
 
     public function deleteMovieFromHall(Request $request)
