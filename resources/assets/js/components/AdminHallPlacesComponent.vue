@@ -83,7 +83,7 @@
                 places_in_row: 0,
                 is_refresh: false,
                 totalPlaces: 0,
-                selected_hall: 1,
+                selected_hall: 0,
                 // halls: [],
                 url: {
                     updateRowNum: '/admin/post-api-row/',
@@ -136,27 +136,29 @@
 
                 // console.dir(this.halls_string);
 
-                axios.get(this.url.getApiPlaces + this.selected_hall)
-                    .then(response => {
-                        this.halldata = response.data;
-                        this.is_refresh = false;
-                        // console.dir(this.selected_hall);
-                        if (this.halldata.hall.admin_doing_rows > 0) {
-                            this.rows = this.halldata.hall.admin_doing_rows;
-                        } else {
-                            this.rows = this.halldata.hall.rows;
-                        }
+                if (this.selected_hall !== 0) {
+                    axios.get(this.url.getApiPlaces + this.selected_hall)
+                        .then(response => {
+                            this.halldata = response.data;
+                            this.is_refresh = false;
+                            // console.dir(this.selected_hall);
+                            if (this.halldata.hall.admin_doing_rows > 0) {
+                                this.rows = this.halldata.hall.admin_doing_rows;
+                            } else {
+                                this.rows = this.halldata.hall.rows;
+                            }
 
-                        if (this.halldata.hall.admin_doing_places > 0) {
-                            this.places_in_row = this.halldata.hall.admin_doing_places;
-                        } else {
-                            this.places_in_row = this.halldata.hall.places_in_row;
-                        }
-                    })
-                    .catch(error => {
-                        console.log(error.response);
-                        this.is_refresh = false;
-                    });
+                            if (this.halldata.hall.admin_doing_places > 0) {
+                                this.places_in_row = this.halldata.hall.admin_doing_places;
+                            } else {
+                                this.places_in_row = this.halldata.hall.places_in_row;
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error.response);
+                            this.is_refresh = false;
+                        });
+                }
 
             },
 

@@ -50660,7 +50660,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             places_in_row: 0,
             is_refresh: false,
             totalPlaces: 0,
-            selected_hall: 1,
+            selected_hall: 0,
             // halls: [],
             url: {
                 updateRowNum: '/admin/post-api-row/',
@@ -50717,25 +50717,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             // console.dir(this.halls_string);
 
-            axios.get(this.url.getApiPlaces + this.selected_hall).then(function (response) {
-                _this.halldata = response.data;
-                _this.is_refresh = false;
-                // console.dir(this.selected_hall);
-                if (_this.halldata.hall.admin_doing_rows > 0) {
-                    _this.rows = _this.halldata.hall.admin_doing_rows;
-                } else {
-                    _this.rows = _this.halldata.hall.rows;
-                }
+            if (this.selected_hall !== 0) {
+                axios.get(this.url.getApiPlaces + this.selected_hall).then(function (response) {
+                    _this.halldata = response.data;
+                    _this.is_refresh = false;
+                    // console.dir(this.selected_hall);
+                    if (_this.halldata.hall.admin_doing_rows > 0) {
+                        _this.rows = _this.halldata.hall.admin_doing_rows;
+                    } else {
+                        _this.rows = _this.halldata.hall.rows;
+                    }
 
-                if (_this.halldata.hall.admin_doing_places > 0) {
-                    _this.places_in_row = _this.halldata.hall.admin_doing_places;
-                } else {
-                    _this.places_in_row = _this.halldata.hall.places_in_row;
-                }
-            }).catch(function (error) {
-                console.log(error.response);
-                _this.is_refresh = false;
-            });
+                    if (_this.halldata.hall.admin_doing_places > 0) {
+                        _this.places_in_row = _this.halldata.hall.admin_doing_places;
+                    } else {
+                        _this.places_in_row = _this.halldata.hall.places_in_row;
+                    }
+                }).catch(function (error) {
+                    console.log(error.response);
+                    _this.is_refresh = false;
+                });
+            }
         },
 
         //добавление класса месту
@@ -51130,7 +51132,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             },
             // csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             dataForm: {
-                'id_hall': 1,
+                'id_hall': 0,
                 'id_standart_place': 0,
                 'standart_place': 0,
                 'id_vip_place': 0,
@@ -51157,30 +51159,32 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.is_refresh = true;
 
-            axios.get(this.url.getApiPlaces + this.dataForm.id_hall).then(function (response) {
-                _this.halldata = response.data;
-                _this.is_refresh = false;
+            if (this.dataForm.id_hall !== 0) {
+                axios.get(this.url.getApiPlaces + this.dataForm.id_hall).then(function (response) {
+                    _this.halldata = response.data;
+                    _this.is_refresh = false;
 
-                //добавление цены and ID
-                if (_this.halldata.prices.vip) {
-                    _this.dataForm.vip_place = _this.halldata.prices.vip.price;
-                    _this.dataForm.id_vip_place = _this.halldata.prices.vip.id;
-                } else {
-                    _this.dataForm.vip_place = 0;
-                    _this.dataForm.id_vip_place = 0;
-                }
+                    //добавление цены and ID
+                    if (_this.halldata.prices.vip) {
+                        _this.dataForm.vip_place = _this.halldata.prices.vip.price;
+                        _this.dataForm.id_vip_place = _this.halldata.prices.vip.id;
+                    } else {
+                        _this.dataForm.vip_place = 0;
+                        _this.dataForm.id_vip_place = 0;
+                    }
 
-                if (_this.halldata.prices.standart) {
-                    _this.dataForm.standart_place = _this.halldata.prices.standart.price;
-                    _this.dataForm.id_standart_place = _this.halldata.prices.standart.id;
-                } else {
-                    _this.dataForm.standart_place = 0;
-                    _this.dataForm.id_standart_place = 0;
-                }
-            }).catch(function (error) {
-                console.log(error.response);
-                _this.is_refresh = false;
-            });
+                    if (_this.halldata.prices.standart) {
+                        _this.dataForm.standart_place = _this.halldata.prices.standart.price;
+                        _this.dataForm.id_standart_place = _this.halldata.prices.standart.id;
+                    } else {
+                        _this.dataForm.standart_place = 0;
+                        _this.dataForm.id_standart_place = 0;
+                    }
+                }).catch(function (error) {
+                    console.log(error.response);
+                    _this.is_refresh = false;
+                });
+            }
         },
 
         saveBtn: function saveBtn() {

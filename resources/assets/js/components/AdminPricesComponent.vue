@@ -64,7 +64,7 @@
                 },
                 // csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 dataForm: {
-                    'id_hall': 1,
+                    'id_hall': 0,
                     'id_standart_place': 0,
                     'standart_place': 0,
                     'id_vip_place': 0,
@@ -88,32 +88,34 @@
             update: function() {
                 this.is_refresh = true;
 
-                axios.get(this.url.getApiPlaces + this.dataForm.id_hall)
-                    .then(response => {
-                        this.halldata = response.data;
-                        this.is_refresh = false;
+                if (this.dataForm.id_hall !== 0) {
+                    axios.get(this.url.getApiPlaces + this.dataForm.id_hall)
+                        .then(response => {
+                            this.halldata = response.data;
+                            this.is_refresh = false;
 
-                        //добавление цены and ID
-                        if (this.halldata.prices.vip) {
-                            this.dataForm.vip_place = this.halldata.prices.vip.price;
-                            this.dataForm.id_vip_place = this.halldata.prices.vip.id;
-                        } else {
-                            this.dataForm.vip_place = 0;
-                            this.dataForm.id_vip_place = 0;
-                        }
+                            //добавление цены and ID
+                            if (this.halldata.prices.vip) {
+                                this.dataForm.vip_place = this.halldata.prices.vip.price;
+                                this.dataForm.id_vip_place = this.halldata.prices.vip.id;
+                            } else {
+                                this.dataForm.vip_place = 0;
+                                this.dataForm.id_vip_place = 0;
+                            }
 
-                        if (this.halldata.prices.standart) {
-                            this.dataForm.standart_place = this.halldata.prices.standart.price;
-                            this.dataForm.id_standart_place = this.halldata.prices.standart.id;
-                        } else {
-                            this.dataForm.standart_place = 0;
-                            this.dataForm.id_standart_place = 0;
-                        }
-                    })
-                    .catch(error => {
-                        console.log(error.response);
-                        this.is_refresh = false;
-                    });
+                            if (this.halldata.prices.standart) {
+                                this.dataForm.standart_place = this.halldata.prices.standart.price;
+                                this.dataForm.id_standart_place = this.halldata.prices.standart.id;
+                            } else {
+                                this.dataForm.standart_place = 0;
+                                this.dataForm.id_standart_place = 0;
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error.response);
+                            this.is_refresh = false;
+                        });
+                }
 
             },
 
