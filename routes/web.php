@@ -16,7 +16,7 @@ Route::get('/client', 'PagesController@client');
 
 Route::get('/client/hall/{reservation}', 'HallController@hall')->middleware('auth');
 Route::get('/start/get-json/{id}', 'HallController@getJson');
-Route::get('/start/update-ajax/{id}', 'HallController@updateStatus');
+Route::get('/start/update-ajax/{id}', 'HallController@updateStatus')->middleware('auth');
 
 Route::get('/client/payment/{id}', 'PagesController@payment')->middleware('auth');
 Route::get('/client/ticket/{id}', 'PagesController@ticket')->middleware('auth');

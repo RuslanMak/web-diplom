@@ -7,7 +7,7 @@
                 <h2 style="font-size: 25px;">Пожалуйста подождите!!!</h2>
             </div>
 
-            <template v-for="(day, index) in newDay()">
+            <template v-for="(day, index) in nowDay()">
                 <a v-if="index === 0" class="page-nav__day page-nav__day_today" href="#" v-on:click="selectDay(day.date)">
                     <span class="page-nav__day-week">{{ day.dayIs }}</span><span class="page-nav__day-number">{{ day.date }}</span>
                 </a>
@@ -17,8 +17,8 @@
                 </a>
             </template>
 
-            <a class="page-nav__day page-nav__day_next" href="#">
-            </a>
+            <a class="page-nav__day " href="#" v-if="pageNumber !== 0" @click="prevPage" style="font-weight: 500; font-size: 2.1rem; text-align: center;"><</a>
+            <a class="page-nav__day page-nav__day_next" href="#" v-if="pageNumber <= pageCount -1" @click="nextPage"></a>
         </nav>
 
         <client-home-component v-if="!is_refresh" :date_selected="dayForNextComponent"></client-home-component>
@@ -39,15 +39,11 @@
                 },
                 dates: [],
                 filteredDates: [],
-                dayForNextComponent: ''
+                dayForNextComponent: '',
+                pageNumber: 0,  // по умолчанию 0
+                size: 3
             }
         },
-
-        // watch() {
-        //     dayForNextComponent: function f() {
-        //
-        //     }
-        // },
 
         mounted() {
             // this.halls = JSON.parse(this.halls_string);
@@ -65,7 +61,7 @@
                         this.is_refresh = false;
 
                         this.dayForNextComponent = this.dates[0].start_time.slice(0, 10);
-                        // console.dir(this.dayForNextComponent);
+                        console.dir(this.dates);
                     })
                     .catch(error => {
                         console.log(error.response);
@@ -73,10 +69,10 @@
                     });
             },
 
-            newDay: function () {
+            nowDay: function () {
                 let day;
                 let days = [];
-                this.dates.forEach(date => {
+                this.paginatedData.forEach(date => {
                     let corentDate = date.start_time.slice(0, 10);
 
                     if(day !== corentDate) {
@@ -98,9 +94,33 @@
             selectDay: function (day) {
                 this.dayForNextComponent = day;
                 // console.log(this.dayForNextComponent);
+            },
+
+
+
+            nextPage(){
+                this.pageNumber++;
+            },
+            prevPage(){
+                this.pageNumber--;
             }
 
 
-        }
+        },
+
+        computed:{
+            pageCount(){
+                let l = this.dates.length,
+                    s = this.size;
+                // console.log(l);
+                return Math.ceil(l/s);
+            },
+            paginatedData(){
+                const start = this.pageNumber * this.size,
+                    end = start + this.size;
+                console.dir(this.dates.slice(start, end));
+                return this.dates.slice(start, end);
+            }
+        },
     }
 </script>

@@ -50713,11 +50713,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         update: function update() {
             var _this = this;
 
-            this.is_refresh = true;
-
             // console.dir(this.halls_string);
 
             if (this.selected_hall !== 0) {
+                this.is_refresh = true;
+
                 axios.get(this.url.getApiPlaces + this.selected_hall).then(function (response) {
                     _this.halldata = response.data;
                     _this.is_refresh = false;
@@ -51157,9 +51157,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         update: function update() {
             var _this = this;
 
-            this.is_refresh = true;
-
             if (this.dataForm.id_hall !== 0) {
+                this.is_refresh = true;
+
                 axios.get(this.url.getApiPlaces + this.dataForm.id_hall).then(function (response) {
                     _this.halldata = response.data;
                     _this.is_refresh = false;
@@ -54549,15 +54549,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             },
             dates: [],
             filteredDates: [],
-            dayForNextComponent: ''
+            dayForNextComponent: '',
+            pageNumber: 0, // по умолчанию 0
+            size: 3
         };
     },
-
-    // watch() {
-    //     dayForNextComponent: function f() {
-    //
-    //     }
-    // },
 
     mounted: function mounted() {
         // this.halls = JSON.parse(this.halls_string);
@@ -54577,17 +54573,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this.is_refresh = false;
 
                 _this.dayForNextComponent = _this.dates[0].start_time.slice(0, 10);
-                // console.dir(this.dayForNextComponent);
+                console.dir(_this.dates);
             }).catch(function (error) {
                 console.log(error.response);
                 _this.is_refresh = false;
             });
         },
 
-        newDay: function newDay() {
+        nowDay: function nowDay() {
             var day = void 0;
             var days = [];
-            this.dates.forEach(function (date) {
+            this.paginatedData.forEach(function (date) {
                 var corentDate = date.start_time.slice(0, 10);
 
                 if (day !== corentDate) {
@@ -54609,8 +54605,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         selectDay: function selectDay(day) {
             this.dayForNextComponent = day;
             // console.log(this.dayForNextComponent);
-        }
+        },
 
+        nextPage: function nextPage() {
+            this.pageNumber++;
+        },
+        prevPage: function prevPage() {
+            this.pageNumber--;
+        }
+    },
+
+    computed: {
+        pageCount: function pageCount() {
+            var l = this.dates.length,
+                s = this.size;
+            // console.log(l);
+            return Math.ceil(l / s);
+        },
+        paginatedData: function paginatedData() {
+            var start = this.pageNumber * this.size,
+                end = start + this.size;
+            console.dir(this.dates.slice(start, end));
+            return this.dates.slice(start, end);
+        }
     }
 });
 
@@ -54637,7 +54654,7 @@ var render = function() {
               ])
             : _vm._e(),
           _vm._v(" "),
-          _vm._l(_vm.newDay(), function(day, index) {
+          _vm._l(_vm.nowDay(), function(day, index) {
             return [
               index === 0
                 ? _c(
@@ -54683,10 +54700,30 @@ var render = function() {
             ]
           }),
           _vm._v(" "),
-          _c("a", {
-            staticClass: "page-nav__day page-nav__day_next",
-            attrs: { href: "#" }
-          })
+          _vm.pageNumber !== 0
+            ? _c(
+                "a",
+                {
+                  staticClass: "page-nav__day ",
+                  staticStyle: {
+                    "font-weight": "500",
+                    "font-size": "2.1rem",
+                    "text-align": "center"
+                  },
+                  attrs: { href: "#" },
+                  on: { click: _vm.prevPage }
+                },
+                [_vm._v("<")]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.pageNumber <= _vm.pageCount - 1
+            ? _c("a", {
+                staticClass: "page-nav__day page-nav__day_next",
+                attrs: { href: "#" },
+                on: { click: _vm.nextPage }
+              })
+            : _vm._e()
         ],
         2
       ),

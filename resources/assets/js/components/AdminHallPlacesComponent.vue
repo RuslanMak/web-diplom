@@ -132,11 +132,11 @@
         },
         methods: {
             update: function() {
-                this.is_refresh = true;
-
                 // console.dir(this.halls_string);
 
                 if (this.selected_hall !== 0) {
+                    this.is_refresh = true;
+
                     axios.get(this.url.getApiPlaces + this.selected_hall)
                         .then(response => {
                             this.halldata = response.data;

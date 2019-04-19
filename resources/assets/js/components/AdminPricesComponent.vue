@@ -86,9 +86,10 @@
         },
         methods: {
             update: function() {
-                this.is_refresh = true;
 
                 if (this.dataForm.id_hall !== 0) {
+                    this.is_refresh = true;
+
                     axios.get(this.url.getApiPlaces + this.dataForm.id_hall)
                         .then(response => {
                             this.halldata = response.data;
