@@ -8,7 +8,7 @@
             </div>
 
             <template v-for="(day, index) in nowDay()">
-                <a v-if="index === 0" class="page-nav__day page-nav__day_today" href="#" v-on:click="selectDay(day.date)">
+                <a v-if="pageNumber === 0 && index === 0" class="page-nav__day page-nav__day_today" href="#" v-on:click="selectDay(day.date)">
                     <span class="page-nav__day-week">{{ day.dayIs }}</span><span class="page-nav__day-number">{{ day.date }}</span>
                 </a>
 
@@ -38,10 +38,9 @@
                     allDate: '/times-of-movies-and-more',
                 },
                 dates: [],
-                filteredDates: [],
                 dayForNextComponent: '',
                 pageNumber: 0,  // по умолчанию 0
-                size: 3
+                size: 6
             }
         },
 
@@ -58,10 +57,10 @@
                 axios.get(this.url.allDate)
                     .then(response => {
                         this.dates = response.data;
+                        console.dir(this.dates);
                         this.is_refresh = false;
 
                         this.dayForNextComponent = this.dates[0].start_time.slice(0, 10);
-                        console.dir(this.dates);
                     })
                     .catch(error => {
                         console.log(error.response);
@@ -118,7 +117,7 @@
             paginatedData(){
                 const start = this.pageNumber * this.size,
                     end = start + this.size;
-                console.dir(this.dates.slice(start, end));
+                // console.dir(this.dates.slice(start, end));
                 return this.dates.slice(start, end);
             }
         },

@@ -14165,7 +14165,7 @@ function toComment(sourceMap) {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(17);
-module.exports = __webpack_require__(98);
+module.exports = __webpack_require__(101);
 
 
 /***/ }),
@@ -14217,7 +14217,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-component', _
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-days-component', __webpack_require__(89));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-movi-component', __webpack_require__(92));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-hall-times-component', __webpack_require__(95));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-hall-places-show-component', __webpack_require__(100));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-hall-places-show-component', __webpack_require__(98));
 
 var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
   el: '#app'
@@ -54868,10 +54868,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 allDate: '/times-of-movies-and-more'
             },
             dates: [],
-            filteredDates: [],
             dayForNextComponent: '',
             pageNumber: 0, // по умолчанию 0
-            size: 3
+            size: 6
         };
     },
 
@@ -54890,10 +54889,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             axios.get(this.url.allDate).then(function (response) {
                 _this.dates = response.data;
+                console.dir(_this.dates);
                 _this.is_refresh = false;
 
                 _this.dayForNextComponent = _this.dates[0].start_time.slice(0, 10);
-                console.dir(_this.dates);
             }).catch(function (error) {
                 console.log(error.response);
                 _this.is_refresh = false;
@@ -54945,7 +54944,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         paginatedData: function paginatedData() {
             var start = this.pageNumber * this.size,
                 end = start + this.size;
-            console.dir(this.dates.slice(start, end));
+            // console.dir(this.dates.slice(start, end));
             return this.dates.slice(start, end);
         }
     }
@@ -54976,7 +54975,7 @@ var render = function() {
           _vm._v(" "),
           _vm._l(_vm.nowDay(), function(day, index) {
             return [
-              index === 0
+              _vm.pageNumber === 0 && index === 0
                 ? _c(
                     "a",
                     {
@@ -55387,21 +55386,14 @@ if (false) {
 
 /***/ }),
 /* 98 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 99 */,
-/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(101)
+var __vue_script__ = __webpack_require__(99)
 /* template */
-var __vue_template__ = __webpack_require__(102)
+var __vue_template__ = __webpack_require__(100)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -55440,7 +55432,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 101 */
+/* 99 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55568,7 +55560,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 102 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -55636,6 +55628,12 @@ if (false) {
     require("vue-hot-reload-api")      .rerender("data-v-42fb23fa", module.exports)
   }
 }
+
+/***/ }),
+/* 101 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

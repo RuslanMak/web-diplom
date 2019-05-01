@@ -16,6 +16,10 @@
 5. php artisan config:cache
 6. php artisan migrate
 
+For changing
+1. npm install
+2. npm run watch-poll
+
 ## NB
 in db->users
 role = 1 --- admin
