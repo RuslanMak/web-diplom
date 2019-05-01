@@ -1,17 +1,3 @@
-<!--<style scoped>-->
-    <!--.my-update-sign {-->
-        <!--width: 50%;-->
-        <!--position: fixed;-->
-        <!--top: 50%;-->
-        <!--left: 0;-->
-        <!--background: rgba(256, 256, 0, 0.75);-->
-        <!--text-align: center;-->
-        <!--margin: 0 25%;-->
-        <!--z-index: 99;-->
-        <!--padding: 30px;-->
-    <!--}-->
-<!--</style>-->
-
 <template>
     <section class="conf-step">
         <div v-if="is_refresh" class="my-update-sign">
@@ -34,9 +20,9 @@
             </ul>
             <p class="conf-step__paragraph">Укажите количество рядов и максимальное количество кресел в ряду:</p>
             <div class="conf-step__legend">
-                <label class="conf-step__label">Рядов, шт<input type="text" class="conf-step__input" placeholder="0" v-model="rows" ></label>
+                <label class="conf-step__label">Рядов, шт<input type="number" class="conf-step__input" placeholder="0" v-model="rows" ></label>
                 <span class="multiplier">x</span>
-                <label class="conf-step__label">Мест, шт<input type="text" class="conf-step__input" placeholder="8" v-model="places_in_row"></label>
+                <label class="conf-step__label">Мест, шт<input type="number" class="conf-step__input" placeholder="8" v-model="places_in_row"></label>
             </div>
             <p class="conf-step__paragraph">Теперь вы можете указать типы кресел на схеме зала:</p>
             <div class="conf-step__legend">
@@ -46,25 +32,15 @@
                 <p class="conf-step__hint">Чтобы изменить вид кресла, нажмите по нему левой кнопкой мыши</p>
             </div>
 
-            <div class="conf-step__hall">
-                <div class="conf-step__hall-wrapper">
-
-                    <div v-for="row in rows" class="conf-step__row" v-bind:key="row">
-                    <span v-for="place in places_in_row"
-                          class="conf-step__chair"
-                          v-bind:class="'conf-step__chair_' + classObj(row, place)"
-                          @click="classAction(row, place)">
-                        {{totalPlaces}}
-                    </span>
-                    </div>
-
-                </div>
-            </div>
-
-            <fieldset class="conf-step__buttons text-center">
-                <button v-on:click="cancel" class="conf-step__button conf-step__button-regular">Отмена</button>
-                <input v-on:click="saveAll" type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">
-            </fieldset>
+            <admin-hall-places-show-component
+                v-if="selected_hall !== 0"
+                :places_arr="halldata.places"
+                :rows="Number(rows)"
+                :places_in_row="Number(places_in_row)"
+                :selected_hall="Number(selected_hall)"
+                @update="update"
+            >
+            </admin-hall-places-show-component>
         </div>
     </section>
 </template>
@@ -72,8 +48,6 @@
 <script>
     export default {
         props: [
-            //get data from Blade
-            // 'connectionid'
             'halls'
         ],
         data: function() {
@@ -101,29 +75,6 @@
             selected_hall: function () {
                 this.update();
             },
-
-            rows: function (newRows, oldRows) {
-                this.debouncedUpdate(this.url.updateRowNum, this.rows);
-            },
-
-            places_in_row: function () {
-                this.debouncedUpdate(this.url.updatePlaceInRowNum, this.places_in_row);
-            }
-        },
-
-        beforeUpdate() {
-            // this.rows;
-            // console.log('ddddd');
-        },
-
-        created: function () {
-            // _.debounce — это функция lodash, позволяющая ограничить то,
-            // насколько часто может выполняться определённая операция.
-            // В данном случае мы ограничиваем частоту обращений к api,
-            // дожидаясь завершения печати вопроса перед отправкой ajax-запроса.
-            // Узнать больше о функции _.debounce (и её родственнице _.throttle),
-            // можно в документации: https://lodash.com/docs#debounce
-            this.debouncedUpdate = _.debounce(this.updateRowsOrPlace, 400)
         },
 
         mounted() {
@@ -141,18 +92,9 @@
                         .then(response => {
                             this.halldata = response.data;
                             this.is_refresh = false;
-                            // console.dir(this.selected_hall);
-                            if (this.halldata.hall.admin_doing_rows > 0) {
-                                this.rows = this.halldata.hall.admin_doing_rows;
-                            } else {
-                                this.rows = this.halldata.hall.rows;
-                            }
-
-                            if (this.halldata.hall.admin_doing_places > 0) {
-                                this.places_in_row = this.halldata.hall.admin_doing_places;
-                            } else {
-                                this.places_in_row = this.halldata.hall.places_in_row;
-                            }
+                            // console.dir(this.halldata);
+                            this.rows = this.halldata.hall.rows;
+                            this.places_in_row = this.halldata.hall.places_in_row;
                         })
                         .catch(error => {
                             console.log(error.response);
@@ -161,56 +103,6 @@
                 }
 
             },
-
-            //добавление класса месту
-            classObj: function(row, n) {
-                let place = this.halldata.places.filter(x => x["num_row"] === row).filter(x => x["num_place_in_row"] === n);
-
-                if (place[0]) {
-                    if (place[0].admin_doing_type.length > 1) {
-                        return place[0].admin_doing_type;
-                    } else {
-                        return place[0].type;
-                    }
-                }
-            },
-
-            //при клике менять класс места
-            classAction: function(row, num) {
-                switch (this.doing_type_place) {
-                    case 'disabled':
-                        this.doing_type_place = 'standart';
-                        break;
-                    case 'standart':
-                        this.doing_type_place = 'vip';
-                        break;
-                    case 'vip':
-                        this.doing_type_place = 'disabled';
-                        break;
-                    default:
-                        alert( 'Перебор' );
-                }
-
-                axios.get(this.url.doingTypePlace + row + '/' + num + '/' + this.doing_type_place + '/' + this.selected_hall)
-                    .then(this.update());
-            },
-
-            updateRowsOrPlace: function (url, row_or_place) {
-                // axios.post('/admin/post-api-row/' + 1, this.mypost);
-                axios.get(url + this.selected_hall + '/' + row_or_place)
-                    .then(this.update());
-            },
-
-            cancel: function () {
-                const PASS = 'herePassword';
-                axios.get(this.url.cancelUrl + PASS + '/' + this.selected_hall)
-                    .then(this.update());
-            },
-
-            saveAll: function () {
-                axios.get(this.url.saveUrl + this.selected_hall)
-                    .then(this.update());
-            }
 
         }
     }

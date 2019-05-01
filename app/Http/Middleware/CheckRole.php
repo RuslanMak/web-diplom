@@ -15,17 +15,19 @@ class CheckRole
      */
     public function handle($request, Closure $next, $role)
     {
+//        dd($role);
         if ($role === 'admin') {
             $role = 1;
         } elseif ($role === 'controller') {
             $role = 2;
         }
+
 //        dd($request->user()->role);
 
 //        if (!isset($request->user()->role)) {
 //            return redirect('/');
 //        }
-        if( $request->user()->role !== $role) {
+        if( $request->user()->role !== 1 && $request->user()->role !== $role ) {
             return redirect('/');
         }
 

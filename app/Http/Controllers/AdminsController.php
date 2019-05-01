@@ -50,11 +50,12 @@ class AdminsController extends Controller
 
     public function deleteHall($id)
     {
-//        НАДО ДОБАВИТЬ УДАЛЕНИЕ ДАННЫХ ИЗ ДРУГИХ ТАБЛИЦ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//        dd($id);
-//        return request()->all();
         Hall::findOrFail($id)->delete();
-//        return redirect('/admin');
+        Place::where('id_hall', '=', $id)
+            ->delete();
+
+        Connection::where('id_hall', '=', $id)
+            ->delete();
     }
 
     public function getApi($id_hall)
@@ -80,122 +81,6 @@ class AdminsController extends Controller
             'prices' => $prices_arr,
             'places' => $places
         ];
-    }
-
-    public function updateNumRow($id_hall, $num)
-    {
-        if ( !isset($id_hall) &&  !isset($num)) {
-            return redirect('/');
-        }
-
-        $hall = Hall::findOrFail($id_hall);
-
-        $hall->admin_doing_rows = $num;
-
-        $hall->save();
-
-//        return redirect('/');
-    }
-
-    public function updateNumPlaceInRow($id_hall, $num)
-    {
-        if ( !isset($id_hall) &&  !isset($num)) {
-            return redirect('/');
-        }
-
-        $hall = Hall::findOrFail($id_hall);
-        $hall->admin_doing_places = $num;
-
-        $hall->save();
-
-//        return redirect('/');
-    }
-
-    public function updateTypePlace($row, $num, $type, $id_hall)
-    {
-// $place = DB::select("SELECT * FROM places WHERE id_hall = $id_hall AND num_row = $row AND num_place_in_row = $num");
-
-//        $place = DB::table('places')
-//            ->where('id_hall', '=', $id_hall)
-//            ->where('num_row', '=', $row)
-//            ->where('num_place_in_row', '=', $num)
-//            ->get();
-
-        $place = Place::where('id_hall', '=', $id_hall)
-            ->where('num_row', '=', $row)
-            ->where('num_place_in_row', '=', $num)
-            ->get();
-
-        if (isset($place[0])) {
-//            dd($place[0]->type);
-            $place[0]->admin_doing_type = $type;
-            $place[0]->save();
-        } else {
-            $newPlace = new Place();
-            $newPlace->id_hall = $id_hall;
-            $newPlace->num_row = $row;
-            $newPlace->num_place_in_row = $num;
-            $newPlace->type = '';
-            $newPlace->price = 0;
-            $newPlace->id_connections = 0;
-            $newPlace->status = '';
-            $newPlace->id_user = 0;
-            $newPlace->admin_doing_type = $type;
-//            dd($newPlace);
-            $newPlace->save();
-        }
-
-//        return redirect('/');
-    }
-
-    public function cancelChange($pass, $id_hall)
-    {
-        if ($pass != 'herePassword') {
-            return redirect('/');
-        }
-
-        $hall = Hall::findOrFail($id_hall);
-        $hall->admin_doing_rows = 0;
-        $hall->admin_doing_places = 0;
-//        dd($hall);
-        $hall->save();
-
-        Place::where('admin_doing_type', '!=', '')
-            ->update(array('admin_doing_type' => ''));
-
-        Place::where('type', '=', '')
-            ->delete();
-
-//        return redirect('/');
-    }
-
-    public function saveChange($id_hall)
-    {
-        $hall = Hall::findOrFail($id_hall);
-
-        if ($hall->admin_doing_rows != 0) {
-            $hall->rows = $hall->admin_doing_rows;
-            $hall->admin_doing_rows = 0;
-        }
-        if ($hall->admin_doing_places != 0) {
-            $hall->places_in_row = $hall->admin_doing_places;
-            $hall->admin_doing_places = 0;
-        }
-        $hall->save();
-
-        $places = Place::where('id_hall', '=', $id_hall)
-            ->where('admin_doing_type', '!=', '')
-            ->get();
-
-        if (count($places) > 0) {
-            foreach ($places as $place) {
-                $place->type = $place->admin_doing_type;
-                $place->admin_doing_type = '';
-                $place->save();
-            }
-        }
-
-//        return redirect('/');
     }
 
     public function savePrices()
@@ -304,5 +189,41 @@ class AdminsController extends Controller
     public function allHallsApi()
     {
         return Hall::all();
+    }
+
+
+    public function saveTypePlace(Request $request, $rows, $nums, $id_hall)
+    {
+        $hall = Hall::findOrFail($id_hall);
+        $hall->	rows = $rows;
+        $hall->	places_in_row = $nums;
+        $hall->save();
+
+        foreach ($request->input() as $key=>$placeArr) {
+//            return $placeArr['type'];
+            $place = Place::where('id_hall', '=', $id_hall)
+                ->where('num_row', '=', $placeArr['row'])
+                ->where('num_place_in_row', '=', $placeArr['num'])
+                ->get();
+
+            if (isset($place[0])) {
+                $place[0]->	type = $placeArr['type'];
+                $place[0]->save();
+            } else {
+                $newPlace = new Place();
+                $newPlace->id_hall = $id_hall;
+                $newPlace->num_row = $placeArr['row'];
+                $newPlace->num_place_in_row = $placeArr['num'];
+                $newPlace->type = $placeArr['type'];
+                $newPlace->price = 0;
+                $newPlace->id_connections = 0;
+                $newPlace->status = '';
+                $newPlace->id_user = 0;
+                $newPlace->admin_doing_type = '';
+//            dd($newPlace);
+                $newPlace->save();
+            }
+        }
+
     }
 }

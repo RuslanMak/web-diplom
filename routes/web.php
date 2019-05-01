@@ -26,11 +26,14 @@ Route::get('/admin/create', 'AdminsController@create')->middleware('auth', 'role
 Route::post('/admin/hall', 'AdminsController@save')->middleware('auth', 'role:admin');
 Route::delete('/admin/hall/{id}', 'AdminsController@deleteHall')->middleware('auth', 'role:admin');
 Route::get('/admin/get-api-places/{id_hall}', 'AdminsController@getApi')->middleware('auth', 'role:admin');
-Route::get('/admin/post-api-row/{id_hall}/{num}', 'AdminsController@updateNumRow')->middleware('auth', 'role:admin');
-Route::get('/admin/get-update-place-in-row/{id_hall}/{num}', 'AdminsController@updateNumPlaceInRow')->middleware('auth', 'role:admin');
-Route::get('/admin/get-update-type-place-doing/{row}/{num}/{type}/{id_hall}', 'AdminsController@updateTypePlace')->middleware('auth', 'role:admin');
-Route::get('/admin/get-cancel-change/{pass}/{id_hall}', 'AdminsController@cancelChange')->middleware('auth', 'role:admin');
-Route::get('/admin/get-save-change/{id_hall}', 'AdminsController@saveChange')->middleware('auth', 'role:admin');
+//Route::get('/admin/post-api-row/{id_hall}/{num}', 'AdminsController@updateNumRow')->middleware('auth', 'role:admin');
+//Route::get('/admin/get-update-place-in-row/{id_hall}/{num}', 'AdminsController@updateNumPlaceInRow')->middleware('auth', 'role:admin');
+//Route::get('/admin/get-update-type-place-doing/{row}/{num}/{type}/{id_hall}', 'AdminsController@updateTypePlace')->middleware('auth', 'role:admin');
+Route::post('/admin/get-update-type-place-doing/{rows}/{nums}/{id_hall}', 'AdminsController@saveTypePlace')->middleware('auth', 'role:admin');
+
+
+//Route::get('/admin/get-cancel-change/{pass}/{id_hall}', 'AdminsController@cancelChange')->middleware('auth', 'role:admin');
+//Route::get('/admin/get-save-change/{id_hall}', 'AdminsController@saveChange')->middleware('auth', 'role:admin');
 Route::post('/admin/post-save-prices', 'AdminsController@savePrices')->middleware('auth', 'role:admin');
 
 Route::get('/admin/get-all-movie', 'AdminsController@allMoviesApi')->middleware('auth', 'role:admin');

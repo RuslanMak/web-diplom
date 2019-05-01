@@ -65,6 +65,115 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -374,115 +483,6 @@ module.exports = {
 
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
-
-/***/ }),
 /* 2 */
 /***/ (function(module, exports) {
 
@@ -516,7 +516,7 @@ module.exports = g;
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 var normalizeHeaderName = __webpack_require__(25);
 
 var DEFAULT_CONTENT_TYPE = {
@@ -13817,7 +13817,7 @@ process.umask = function() { return 0; };
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 var settle = __webpack_require__(26);
 var buildURL = __webpack_require__(28);
 var parseHeaders = __webpack_require__(29);
@@ -14165,7 +14165,7 @@ function toComment(sourceMap) {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(17);
-module.exports = __webpack_require__(83);
+module.exports = __webpack_require__(98);
 
 
 /***/ }),
@@ -14207,16 +14207,17 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('qr-code', __WEBPACK_IMPOR
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('example-component', __webpack_require__(52));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('halls-component', __webpack_require__(55));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-hall-places-component', __webpack_require__(58));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-main-component', __webpack_require__(100));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-prices-component', __webpack_require__(61));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-movie-time-component', __webpack_require__(64));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-hall-edit-component', __webpack_require__(67));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('read-qr-code-component', __webpack_require__(70));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('generate-qr-code-component', __webpack_require__(80));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-component', __webpack_require__(85));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-days-component', __webpack_require__(88));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-movi-component', __webpack_require__(94));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-hall-times-component', __webpack_require__(97));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-main-component', __webpack_require__(61));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-prices-component', __webpack_require__(64));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-movie-time-component', __webpack_require__(67));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-hall-edit-component', __webpack_require__(70));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('read-qr-code-component', __webpack_require__(73));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('generate-qr-code-component', __webpack_require__(83));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-component', __webpack_require__(86));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-days-component', __webpack_require__(89));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-movi-component', __webpack_require__(92));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('client-home-hall-times-component', __webpack_require__(95));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('admin-hall-places-show-component', __webpack_require__(100));
 
 var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
   el: '#app'
@@ -35861,7 +35862,7 @@ module.exports = __webpack_require__(22);
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 var bind = __webpack_require__(7);
 var Axios = __webpack_require__(24);
 var defaults = __webpack_require__(3);
@@ -35948,7 +35949,7 @@ function isSlowBuffer (obj) {
 
 
 var defaults = __webpack_require__(3);
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 var InterceptorManager = __webpack_require__(33);
 var dispatchRequest = __webpack_require__(34);
 
@@ -36033,7 +36034,7 @@ module.exports = Axios;
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 module.exports = function normalizeHeaderName(headers, normalizedName) {
   utils.forEach(headers, function processHeader(value, name) {
@@ -36113,7 +36114,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 function encode(val) {
   return encodeURIComponent(val).
@@ -36186,7 +36187,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 // Headers whose duplicates are ignored by node
 // c.f. https://nodejs.org/api/http.html#http_message_headers
@@ -36246,7 +36247,7 @@ module.exports = function parseHeaders(headers) {
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -36364,7 +36365,7 @@ module.exports = btoa;
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -36424,7 +36425,7 @@ module.exports = (
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 function InterceptorManager() {
   this.handlers = [];
@@ -36483,7 +36484,7 @@ module.exports = InterceptorManager;
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 var transformData = __webpack_require__(35);
 var isCancel = __webpack_require__(11);
 var defaults = __webpack_require__(3);
@@ -36576,7 +36577,7 @@ module.exports = function dispatchRequest(config) {
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 /**
  * Transform the data for a request or a response
@@ -49465,7 +49466,7 @@ module.exports = function (css) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(49)
 /* template */
@@ -50223,7 +50224,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(53)
 /* template */
@@ -50342,7 +50343,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(56)
 /* template */
@@ -50528,7 +50529,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(59)
 /* template */
@@ -50623,36 +50624,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: [
-    //get data from Blade
-    // 'connectionid'
-    'halls'],
+    props: ['halls'],
     data: function data() {
         return {
             halldata: [],
@@ -50677,31 +50651,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     watch: {
         selected_hall: function selected_hall() {
             this.update();
-        },
-
-        rows: function rows(newRows, oldRows) {
-            this.debouncedUpdate(this.url.updateRowNum, this.rows);
-        },
-
-        places_in_row: function places_in_row() {
-            this.debouncedUpdate(this.url.updatePlaceInRowNum, this.places_in_row);
         }
-    },
-
-    beforeUpdate: function beforeUpdate() {
-        // this.rows;
-        // console.log('ddddd');
-    },
-
-
-    created: function created() {
-        // _.debounce — это функция lodash, позволяющая ограничить то,
-        // насколько часто может выполняться определённая операция.
-        // В данном случае мы ограничиваем частоту обращений к api,
-        // дожидаясь завершения печати вопроса перед отправкой ajax-запроса.
-        // Узнать больше о функции _.debounce (и её родственнице _.throttle),
-        // можно в документации: https://lodash.com/docs#debounce
-        this.debouncedUpdate = _.debounce(this.updateRowsOrPlace, 400);
     },
 
     mounted: function mounted() {
@@ -50721,73 +50671,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 axios.get(this.url.getApiPlaces + this.selected_hall).then(function (response) {
                     _this.halldata = response.data;
                     _this.is_refresh = false;
-                    // console.dir(this.selected_hall);
-                    if (_this.halldata.hall.admin_doing_rows > 0) {
-                        _this.rows = _this.halldata.hall.admin_doing_rows;
-                    } else {
-                        _this.rows = _this.halldata.hall.rows;
-                    }
-
-                    if (_this.halldata.hall.admin_doing_places > 0) {
-                        _this.places_in_row = _this.halldata.hall.admin_doing_places;
-                    } else {
-                        _this.places_in_row = _this.halldata.hall.places_in_row;
-                    }
+                    // console.dir(this.halldata);
+                    _this.rows = _this.halldata.hall.rows;
+                    _this.places_in_row = _this.halldata.hall.places_in_row;
                 }).catch(function (error) {
                     console.log(error.response);
                     _this.is_refresh = false;
                 });
             }
-        },
-
-        //добавление класса месту
-        classObj: function classObj(row, n) {
-            var place = this.halldata.places.filter(function (x) {
-                return x["num_row"] === row;
-            }).filter(function (x) {
-                return x["num_place_in_row"] === n;
-            });
-
-            if (place[0]) {
-                if (place[0].admin_doing_type.length > 1) {
-                    return place[0].admin_doing_type;
-                } else {
-                    return place[0].type;
-                }
-            }
-        },
-
-        //при клике менять класс места
-        classAction: function classAction(row, num) {
-            switch (this.doing_type_place) {
-                case 'disabled':
-                    this.doing_type_place = 'standart';
-                    break;
-                case 'standart':
-                    this.doing_type_place = 'vip';
-                    break;
-                case 'vip':
-                    this.doing_type_place = 'disabled';
-                    break;
-                default:
-                    alert('Перебор');
-            }
-
-            axios.get(this.url.doingTypePlace + row + '/' + num + '/' + this.doing_type_place + '/' + this.selected_hall).then(this.update());
-        },
-
-        updateRowsOrPlace: function updateRowsOrPlace(url, row_or_place) {
-            // axios.post('/admin/post-api-row/' + 1, this.mypost);
-            axios.get(url + this.selected_hall + '/' + row_or_place).then(this.update());
-        },
-
-        cancel: function cancel() {
-            var PASS = 'herePassword';
-            axios.get(this.url.cancelUrl + PASS + '/' + this.selected_hall).then(this.update());
-        },
-
-        saveAll: function saveAll() {
-            axios.get(this.url.saveUrl + this.selected_hall).then(this.update());
         }
 
     }
@@ -50812,165 +50703,129 @@ var render = function() {
     _vm._v(" "),
     _vm._m(0),
     _vm._v(" "),
-    _c("div", { staticClass: "conf-step__wrapper" }, [
-      _c("p", { staticClass: "conf-step__paragraph" }, [
-        _vm._v("Выберите зал для конфигурации:")
-      ]),
-      _vm._v(" "),
-      _c(
-        "ul",
-        { staticClass: "conf-step__selectors-box" },
-        _vm._l(_vm.halls, function(hall) {
-          return _c("li", [
+    _c(
+      "div",
+      { staticClass: "conf-step__wrapper" },
+      [
+        _c("p", { staticClass: "conf-step__paragraph" }, [
+          _vm._v("Выберите зал для конфигурации:")
+        ]),
+        _vm._v(" "),
+        _c(
+          "ul",
+          { staticClass: "conf-step__selectors-box" },
+          _vm._l(_vm.halls, function(hall) {
+            return _c("li", [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.selected_hall,
+                    expression: "selected_hall"
+                  }
+                ],
+                staticClass: "conf-step__radio",
+                attrs: { type: "radio", name: "chairs-hall" },
+                domProps: {
+                  value: hall.id,
+                  checked: _vm._q(_vm.selected_hall, hall.id)
+                },
+                on: {
+                  change: function($event) {
+                    _vm.selected_hall = hall.id
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("span", { staticClass: "conf-step__selector" }, [
+                _vm._v(_vm._s(hall.hall_name))
+              ])
+            ])
+          }),
+          0
+        ),
+        _vm._v(" "),
+        _c("p", { staticClass: "conf-step__paragraph" }, [
+          _vm._v(
+            "Укажите количество рядов и максимальное количество кресел в ряду:"
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "conf-step__legend" }, [
+          _c("label", { staticClass: "conf-step__label" }, [
+            _vm._v("Рядов, шт"),
             _c("input", {
               directives: [
                 {
                   name: "model",
                   rawName: "v-model",
-                  value: _vm.selected_hall,
-                  expression: "selected_hall"
+                  value: _vm.rows,
+                  expression: "rows"
                 }
               ],
-              staticClass: "conf-step__radio",
-              attrs: { type: "radio", name: "chairs-hall" },
-              domProps: {
-                value: hall.id,
-                checked: _vm._q(_vm.selected_hall, hall.id)
-              },
+              staticClass: "conf-step__input",
+              attrs: { type: "number", placeholder: "0" },
+              domProps: { value: _vm.rows },
               on: {
-                change: function($event) {
-                  _vm.selected_hall = hall.id
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.rows = $event.target.value
                 }
               }
-            }),
-            _vm._v(" "),
-            _c("span", { staticClass: "conf-step__selector" }, [
-              _vm._v(_vm._s(hall.hall_name))
-            ])
+            })
+          ]),
+          _vm._v(" "),
+          _c("span", { staticClass: "multiplier" }, [_vm._v("x")]),
+          _vm._v(" "),
+          _c("label", { staticClass: "conf-step__label" }, [
+            _vm._v("Мест, шт"),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.places_in_row,
+                  expression: "places_in_row"
+                }
+              ],
+              staticClass: "conf-step__input",
+              attrs: { type: "number", placeholder: "8" },
+              domProps: { value: _vm.places_in_row },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.places_in_row = $event.target.value
+                }
+              }
+            })
           ])
-        }),
-        0
-      ),
-      _vm._v(" "),
-      _c("p", { staticClass: "conf-step__paragraph" }, [
-        _vm._v(
-          "Укажите количество рядов и максимальное количество кресел в ряду:"
-        )
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "conf-step__legend" }, [
-        _c("label", { staticClass: "conf-step__label" }, [
-          _vm._v("Рядов, шт"),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.rows,
-                expression: "rows"
-              }
-            ],
-            staticClass: "conf-step__input",
-            attrs: { type: "text", placeholder: "0" },
-            domProps: { value: _vm.rows },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.rows = $event.target.value
-              }
-            }
-          })
         ]),
         _vm._v(" "),
-        _c("span", { staticClass: "multiplier" }, [_vm._v("x")]),
+        _c("p", { staticClass: "conf-step__paragraph" }, [
+          _vm._v("Теперь вы можете указать типы кресел на схеме зала:")
+        ]),
         _vm._v(" "),
-        _c("label", { staticClass: "conf-step__label" }, [
-          _vm._v("Мест, шт"),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.places_in_row,
-                expression: "places_in_row"
-              }
-            ],
-            staticClass: "conf-step__input",
-            attrs: { type: "text", placeholder: "8" },
-            domProps: { value: _vm.places_in_row },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.places_in_row = $event.target.value
-              }
-            }
-          })
-        ])
-      ]),
-      _vm._v(" "),
-      _c("p", { staticClass: "conf-step__paragraph" }, [
-        _vm._v("Теперь вы можете указать типы кресел на схеме зала:")
-      ]),
-      _vm._v(" "),
-      _vm._m(1),
-      _vm._v(" "),
-      _c("div", { staticClass: "conf-step__hall" }, [
-        _c(
-          "div",
-          { staticClass: "conf-step__hall-wrapper" },
-          _vm._l(_vm.rows, function(row) {
-            return _c(
-              "div",
-              { key: row, staticClass: "conf-step__row" },
-              _vm._l(_vm.places_in_row, function(place) {
-                return _c(
-                  "span",
-                  {
-                    staticClass: "conf-step__chair",
-                    class: "conf-step__chair_" + _vm.classObj(row, place),
-                    on: {
-                      click: function($event) {
-                        return _vm.classAction(row, place)
-                      }
-                    }
-                  },
-                  [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(_vm.totalPlaces) +
-                        "\n                "
-                    )
-                  ]
-                )
-              }),
-              0
-            )
-          }),
-          0
-        )
-      ]),
-      _vm._v(" "),
-      _c("fieldset", { staticClass: "conf-step__buttons text-center" }, [
-        _c(
-          "button",
-          {
-            staticClass: "conf-step__button conf-step__button-regular",
-            on: { click: _vm.cancel }
-          },
-          [_vm._v("Отмена")]
-        ),
+        _vm._m(1),
         _vm._v(" "),
-        _c("input", {
-          staticClass: "conf-step__button conf-step__button-accent",
-          attrs: { type: "submit", value: "Сохранить" },
-          on: { click: _vm.saveAll }
-        })
-      ])
-    ])
+        _vm.selected_hall !== 0
+          ? _c("admin-hall-places-show-component", {
+              attrs: {
+                places_arr: _vm.halldata.places,
+                rows: Number(_vm.rows),
+                places_in_row: Number(_vm.places_in_row),
+                selected_hall: Number(_vm.selected_hall)
+              },
+              on: { update: _vm.update }
+            })
+          : _vm._e()
+      ],
+      1
+    )
   ])
 }
 var staticRenderFns = [
@@ -51019,11 +50874,483 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(62)
 /* template */
 var __vue_template__ = __webpack_require__(63)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/AdminMainComponent.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-c31a8fa8", Component.options)
+  } else {
+    hotAPI.reload("data-v-c31a8fa8", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 62 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: [
+        //get data from Blade
+        // 'halls_string'
+    ],
+    data: function data() {
+        return {
+            is_refresh: false,
+            deleteHallId: 0,
+            hallsdata: [],
+            url: {
+                allHallsData: '/admin/get-all-halls',
+                deleteHall: '/admin/hall/',
+                createHall: '/admin/hall/'
+            },
+            showModalDeleteHall: false,
+            showModalCreadeHall: false,
+            createHallData: {}
+        };
+    },
+
+    mounted: function mounted() {
+        // this.halls = JSON.parse(this.halls_string);
+        this.update();
+    },
+
+
+    methods: {
+        update: function update() {
+            var _this = this;
+
+            // console.log('update');
+            this.is_refresh = true;
+
+            axios.get(this.url.allHallsData).then(function (response) {
+                _this.hallsdata = response.data;
+                _this.is_refresh = false;
+                // console.dir(this.hallsdata);
+            });
+        },
+
+        showHallDeleteForm: function showHallDeleteForm(id) {
+            this.deleteHallId = id;
+            this.showModalDeleteHall = true;
+        },
+
+        deleteHallDo: function deleteHallDo(id) {
+            var _this2 = this;
+
+            axios.delete(this.url.deleteHall + id).then(function (response) {
+                console.log(response);
+                _this2.update();
+                _this2.showModalDeleteHall = false;
+            }).catch(function (error) {
+                _this2.showModalDeleteHall = false;
+                console.log(error.response);
+            });
+        },
+
+        createHallDo: function createHallDo() {
+            var _this3 = this;
+
+            console.dir(this.createHallData);
+
+            axios.post(this.url.createHall, this.createHallData).then(function (response) {
+                console.log(response);
+                _this3.update();
+                _this3.showModalCreadeHall = false;
+                _this3.createHallData.hall_name = '';
+            }).catch(function (error) {
+                _this3.showModalCreadeHall = false;
+                console.log(error.response);
+                _this3.createHallData.hall_name = '';
+            });
+        }
+
+    }
+});
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      _c("section", { staticClass: "conf-step" }, [
+        _vm.showModalDeleteHall
+          ? _c("div", [
+              _c("div", { staticClass: "modal-mask" }, [
+                _c("div", { staticClass: "modal-wrapper" }, [
+                  _c("div", { staticClass: "modal-container" }, [
+                    _c(
+                      "div",
+                      { staticClass: "modal-body" },
+                      [
+                        _vm._t("body", [
+                          _c("p", { staticClass: "conf-step__paragraph" }, [
+                            _vm._v("Удалить зал???")
+                          ]),
+                          _vm._v(" "),
+                          _c("form", { attrs: { method: "post" } }, [
+                            _c("input", {
+                              staticClass: "conf-step__input",
+                              attrs: {
+                                type: "hidden",
+                                name: "id_connection",
+                                required: ""
+                              },
+                              domProps: { value: _vm.deleteHallId }
+                            }),
+                            _vm._v(" "),
+                            _c(
+                              "button",
+                              {
+                                staticClass:
+                                  "conf-step__button conf-step__button-accent",
+                                on: {
+                                  click: function($event) {
+                                    $event.preventDefault()
+                                    return _vm.deleteHallDo(_vm.deleteHallId)
+                                  }
+                                }
+                              },
+                              [_vm._v("Удалить")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "button",
+                              {
+                                staticClass:
+                                  "conf-step__button conf-step__button-regular",
+                                on: {
+                                  click: function($event) {
+                                    _vm.showModalDeleteHall = false
+                                  }
+                                }
+                              },
+                              [_vm._v("Отмена")]
+                            )
+                          ])
+                        ])
+                      ],
+                      2
+                    )
+                  ])
+                ])
+              ])
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.showModalCreadeHall
+          ? _c("div", [
+              _c("div", { staticClass: "modal-mask" }, [
+                _c("div", { staticClass: "modal-wrapper" }, [
+                  _c("div", { staticClass: "modal-container" }, [
+                    _c(
+                      "div",
+                      { staticClass: "modal-body" },
+                      [
+                        _vm._t("body", [
+                          _vm._m(0),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "conf-step__wrapper" }, [
+                            _c("p", { staticClass: "conf-step__paragraph" }, [
+                              _vm._v("Название зала:")
+                            ]),
+                            _vm._v(" "),
+                            _c("form", { attrs: { method: "post" } }, [
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.createHallData.hall_name,
+                                    expression: "createHallData.hall_name"
+                                  }
+                                ],
+                                staticClass: "conf-step__input",
+                                attrs: {
+                                  type: "text",
+                                  name: "hall_name",
+                                  placeholder: "Hall title",
+                                  required: ""
+                                },
+                                domProps: {
+                                  value: _vm.createHallData.hall_name
+                                },
+                                on: {
+                                  input: function($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      _vm.createHallData,
+                                      "hall_name",
+                                      $event.target.value
+                                    )
+                                  }
+                                }
+                              }),
+                              _vm._v(" "),
+                              _c(
+                                "button",
+                                {
+                                  staticClass:
+                                    "conf-step__button conf-step__button-accent",
+                                  on: {
+                                    click: function($event) {
+                                      $event.preventDefault()
+                                      return _vm.createHallDo($event)
+                                    }
+                                  }
+                                },
+                                [_vm._v("Создать зал")]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "button",
+                                {
+                                  staticClass:
+                                    "conf-step__button conf-step__button-regular",
+                                  on: {
+                                    click: function($event) {
+                                      _vm.showModalCreadeHall = false
+                                    }
+                                  }
+                                },
+                                [_vm._v("Отмена")]
+                              )
+                            ])
+                          ])
+                        ])
+                      ],
+                      2
+                    )
+                  ])
+                ])
+              ])
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm._m(1),
+        _vm._v(" "),
+        _c("div", { staticClass: "conf-step__wrapper" }, [
+          _c("p", { staticClass: "conf-step__paragraph" }, [
+            _vm._v("Доступные залы:")
+          ]),
+          _vm._v(" "),
+          _c(
+            "ul",
+            { staticClass: "conf-step__list" },
+            _vm._l(_vm.hallsdata, function(hall) {
+              return _c("li", [
+                _vm._v(
+                  "\n                    " +
+                    _vm._s(hall.hall_name) +
+                    "\n                    "
+                ),
+                _c("button", {
+                  staticClass: "conf-step__button conf-step__button-trash",
+                  on: {
+                    click: function($event) {
+                      return _vm.showHallDeleteForm(hall.id)
+                    }
+                  }
+                })
+              ])
+            }),
+            0
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "conf-step__button conf-step__button-accent",
+              on: {
+                click: function($event) {
+                  _vm.showModalCreadeHall = true
+                }
+              }
+            },
+            [_vm._v("Создать зал")]
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      !_vm.is_refresh
+        ? _c("admin-hall-places-component", { attrs: { halls: _vm.hallsdata } })
+        : _vm._e(),
+      _vm._v(" "),
+      !_vm.is_refresh
+        ? _c("admin-prices-component", { attrs: { halls: _vm.hallsdata } })
+        : _vm._e(),
+      _vm._v(" "),
+      !_vm.is_refresh
+        ? _c("admin-movie-time-component", { attrs: { halls: _vm.hallsdata } })
+        : _vm._e()
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("header", { staticClass: "conf-step__header" }, [
+      _c("h2", { staticClass: "conf-step__title" }, [_vm._v("Создание зала")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "header",
+      { staticClass: "conf-step__header conf-step__header_opened" },
+      [
+        _c("h2", { staticClass: "conf-step__title" }, [
+          _vm._v("Управление залами")
+        ])
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-c31a8fa8", module.exports)
+  }
+}
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(65)
+/* template */
+var __vue_template__ = __webpack_require__(66)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -51062,7 +51389,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 62 */
+/* 65 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51203,7 +51530,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 63 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -51408,15 +51735,15 @@ if (false) {
 }
 
 /***/ }),
-/* 64 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(65)
+var __vue_script__ = __webpack_require__(68)
 /* template */
-var __vue_template__ = __webpack_require__(66)
+var __vue_template__ = __webpack_require__(69)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -51455,7 +51782,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 65 */
+/* 68 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51809,7 +52136,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 66 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -52420,15 +52747,15 @@ if (false) {
 }
 
 /***/ }),
-/* 67 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(68)
+var __vue_script__ = __webpack_require__(71)
 /* template */
-var __vue_template__ = __webpack_require__(69)
+var __vue_template__ = __webpack_require__(72)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -52467,7 +52794,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 68 */
+/* 71 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -52625,7 +52952,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 69 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -52865,19 +53192,19 @@ if (false) {
 }
 
 /***/ }),
-/* 70 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(71)
+  __webpack_require__(74)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(75)
+var __vue_script__ = __webpack_require__(78)
 /* template */
-var __vue_template__ = __webpack_require__(79)
+var __vue_template__ = __webpack_require__(82)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -52916,17 +53243,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 71 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(72);
+var content = __webpack_require__(75);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(73)("a9701e32", content, false, {});
+var update = __webpack_require__(76)("a9701e32", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -52942,7 +53269,7 @@ if(false) {
 }
 
 /***/ }),
-/* 72 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(15)(false);
@@ -52956,7 +53283,7 @@ exports.push([module.i, "\n.drop-area {\n    height: 300px;\n    color: #fff;\n 
 
 
 /***/ }),
-/* 73 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -52975,7 +53302,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
   ) }
 }
 
-var listToStyles = __webpack_require__(74)
+var listToStyles = __webpack_require__(77)
 
 /*
 type StyleObject = {
@@ -53184,7 +53511,7 @@ function applyToTag (styleElement, obj) {
 
 
 /***/ }),
-/* 74 */
+/* 77 */
 /***/ (function(module, exports) {
 
 /**
@@ -53217,12 +53544,12 @@ module.exports = function listToStyles (parentId, list) {
 
 
 /***/ }),
-/* 75 */
+/* 78 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__(76);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__(79);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__);
 
 
@@ -53324,14 +53651,14 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 });
 
 /***/ }),
-/* 76 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(77);
+module.exports = __webpack_require__(80);
 
 
 /***/ }),
-/* 77 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -53356,7 +53683,7 @@ var oldRuntime = hadRuntime && g.regeneratorRuntime;
 // Force reevalutation of runtime.js.
 g.regeneratorRuntime = undefined;
 
-module.exports = __webpack_require__(78);
+module.exports = __webpack_require__(81);
 
 if (hadRuntime) {
   // Restore the original runtime.
@@ -53372,7 +53699,7 @@ if (hadRuntime) {
 
 
 /***/ }),
-/* 78 */
+/* 81 */
 /***/ (function(module, exports) {
 
 /**
@@ -54105,7 +54432,7 @@ if (hadRuntime) {
 
 
 /***/ }),
-/* 79 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -54163,15 +54490,15 @@ if (false) {
 }
 
 /***/ }),
-/* 80 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(81)
+var __vue_script__ = __webpack_require__(84)
 /* template */
-var __vue_template__ = __webpack_require__(82)
+var __vue_template__ = __webpack_require__(85)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -54210,7 +54537,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 81 */
+/* 84 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -54263,7 +54590,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 82 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -54283,22 +54610,15 @@ if (false) {
 }
 
 /***/ }),
-/* 83 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 84 */,
-/* 85 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(86)
+var __vue_script__ = __webpack_require__(87)
 /* template */
-var __vue_template__ = __webpack_require__(87)
+var __vue_template__ = __webpack_require__(88)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -54337,7 +54657,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -54419,7 +54739,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -54456,15 +54776,15 @@ if (false) {
 }
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(89)
+var __vue_script__ = __webpack_require__(90)
 /* template */
-var __vue_template__ = __webpack_require__(90)
+var __vue_template__ = __webpack_require__(91)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -54503,7 +54823,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -54632,7 +54952,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -54748,18 +55068,15 @@ if (false) {
 }
 
 /***/ }),
-/* 91 */,
-/* 92 */,
-/* 93 */,
-/* 94 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(95)
+var __vue_script__ = __webpack_require__(93)
 /* template */
-var __vue_template__ = __webpack_require__(96)
+var __vue_template__ = __webpack_require__(94)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -54798,7 +55115,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 95 */
+/* 93 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -54859,7 +55176,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 96 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -54918,15 +55235,15 @@ if (false) {
 }
 
 /***/ }),
-/* 97 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(98)
+var __vue_script__ = __webpack_require__(96)
 /* template */
-var __vue_template__ = __webpack_require__(99)
+var __vue_template__ = __webpack_require__(97)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -54965,7 +55282,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 98 */
+/* 96 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55021,7 +55338,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 99 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -55069,11 +55386,18 @@ if (false) {
 }
 
 /***/ }),
+/* 98 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 99 */,
 /* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(101)
 /* template */
@@ -55094,7 +55418,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/AdminMainComponent.vue"
+Component.options.__file = "resources/assets/js/components/AdminHallPlacesShowComponent.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -55103,9 +55427,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-c31a8fa8", Component.options)
+    hotAPI.createRecord("data-v-42fb23fa", Component.options)
   } else {
-    hotAPI.reload("data-v-c31a8fa8", Component.options)
+    hotAPI.reload("data-v-42fb23fa", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -55146,135 +55470,98 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: [
-        //get data from Blade
-        // 'halls_string'
-    ],
+    props: {
+        'places_arr': Array,
+        'rows': Number,
+        'places_in_row': Number,
+        'selected_hall': Number
+    },
     data: function data() {
         return {
-            is_refresh: false,
-            deleteHallId: 0,
-            hallsdata: [],
             url: {
-                allHallsData: '/admin/get-all-halls',
-                deleteHall: '/admin/hall/',
-                createHall: '/admin/hall/'
+                updateTypePlace: '/admin/get-update-type-place-doing/'
             },
-            showModalDeleteHall: false,
-            showModalCreadeHall: false,
-            createHallData: {}
+            doing_type_place: 'disabled',
+            doing_type_arr: {},
+            clicks: 0
         };
     },
 
-    mounted: function mounted() {
-        // this.halls = JSON.parse(this.halls_string);
-        this.update();
+    watch: {
+        selected_hall: function selected_hall() {
+            this.update();
+        }
     },
-
 
     methods: {
         update: function update() {
+            this.doing_type_arr = {};
+        },
+
+        //добавление класса месту
+        classObj: function classObj(row, n) {
+            var place = this.places_arr.filter(function (x) {
+                return x["num_row"] === row;
+            }).filter(function (x) {
+                return x["num_place_in_row"] === n;
+            });
+
+            if (this.doing_type_arr.hasOwnProperty(row + '_' + n)) {
+                return this.doing_type_arr[row + '_' + n].type;
+            } else if (place[0]) {
+                return place[0].type;
+            }
+        },
+
+        //при клике менять класс места
+        classAction: function classAction(row, num) {
+            switch (this.doing_type_place) {
+                case 'disabled':
+                    this.doing_type_place = 'standart';
+                    break;
+                case 'standart':
+                    this.doing_type_place = 'vip';
+                    break;
+                case 'vip':
+                    this.doing_type_place = 'disabled';
+                    break;
+                default:
+                    alert('Перебор');
+            }
+
+            this.doing_type_arr[row + '_' + num] = {
+                'row': row,
+                'num': num,
+                'type': this.doing_type_place
+            };
+            this.clicks++;
+        },
+
+        cancel: function cancel() {
+            this.update();
+            this.$emit('update');
+        },
+
+        saveAll: function saveAll() {
             var _this = this;
 
-            // console.log('update');
-            this.is_refresh = true;
+            // console.log(this.url.updateTypePlace  + this.rows + '/' + this.places_in_row + '/' + this.selected_hall);
+            // console.log(this.doing_type_arr);
 
-            axios.get(this.url.allHallsData).then(function (response) {
-                _this.hallsdata = response.data;
-                _this.is_refresh = false;
-                // console.dir(this.hallsdata);
-            });
-        },
-
-        showHallDeleteForm: function showHallDeleteForm(id) {
-            this.deleteHallId = id;
-            this.showModalDeleteHall = true;
-        },
-
-        deleteHallDo: function deleteHallDo(id) {
-            var _this2 = this;
-
-            axios.delete(this.url.deleteHall + id).then(function (response) {
-                console.log(response);
-                _this2.update();
-                _this2.showModalDeleteHall = false;
+            axios.post(this.url.updateTypePlace + this.rows + '/' + this.places_in_row + '/' + this.selected_hall, this.doing_type_arr).then(function (response) {
+                console.dir(response);
+                _this.update();
+                _this.$emit('update');
             }).catch(function (error) {
-                _this2.showModalDeleteHall = false;
                 console.log(error.response);
             });
         },
 
-        createHallDo: function createHallDo() {
-            var _this3 = this;
-
-            console.dir(this.createHallData);
-
-            axios.post(this.url.createHall, this.createHallData).then(function (response) {
-                console.log(response);
-                _this3.update();
-                _this3.showModalCreadeHall = false;
-                _this3.createHallData.hall_name = '';
-            }).catch(function (error) {
-                _this3.showModalCreadeHall = false;
-                console.log(error.response);
-                _this3.createHallData.hall_name = '';
-            });
+        //запуск родительской ф-ции
+        onChange: function onChange() {
+            this.$emit('update', this.arr);
         }
 
     }
@@ -55288,255 +55575,65 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    [
-      _c("section", { staticClass: "conf-step" }, [
-        _vm.showModalDeleteHall
-          ? _c("div", [
-              _c("div", { staticClass: "modal-mask" }, [
-                _c("div", { staticClass: "modal-wrapper" }, [
-                  _c("div", { staticClass: "modal-container" }, [
-                    _c(
-                      "div",
-                      { staticClass: "modal-body" },
-                      [
-                        _vm._t("body", [
-                          _c("p", { staticClass: "conf-step__paragraph" }, [
-                            _vm._v("Удалить зал???")
-                          ]),
-                          _vm._v(" "),
-                          _c("form", { attrs: { method: "post" } }, [
-                            _c("input", {
-                              staticClass: "conf-step__input",
-                              attrs: {
-                                type: "hidden",
-                                name: "id_connection",
-                                required: ""
-                              },
-                              domProps: { value: _vm.deleteHallId }
-                            }),
-                            _vm._v(" "),
-                            _c(
-                              "button",
-                              {
-                                staticClass:
-                                  "conf-step__button conf-step__button-accent",
-                                on: {
-                                  click: function($event) {
-                                    $event.preventDefault()
-                                    return _vm.deleteHallDo(_vm.deleteHallId)
-                                  }
-                                }
-                              },
-                              [_vm._v("Удалить")]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "button",
-                              {
-                                staticClass:
-                                  "conf-step__button conf-step__button-regular",
-                                on: {
-                                  click: function($event) {
-                                    _vm.showModalDeleteHall = false
-                                  }
-                                }
-                              },
-                              [_vm._v("Отмена")]
-                            )
-                          ])
-                        ])
-                      ],
-                      2
-                    )
-                  ])
-                ])
-              ])
-            ])
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.showModalCreadeHall
-          ? _c("div", [
-              _c("div", { staticClass: "modal-mask" }, [
-                _c("div", { staticClass: "modal-wrapper" }, [
-                  _c("div", { staticClass: "modal-container" }, [
-                    _c(
-                      "div",
-                      { staticClass: "modal-body" },
-                      [
-                        _vm._t("body", [
-                          _vm._m(0),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "conf-step__wrapper" }, [
-                            _c("p", { staticClass: "conf-step__paragraph" }, [
-                              _vm._v("Название зала:")
-                            ]),
-                            _vm._v(" "),
-                            _c("form", { attrs: { method: "post" } }, [
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.createHallData.hall_name,
-                                    expression: "createHallData.hall_name"
-                                  }
-                                ],
-                                staticClass: "conf-step__input",
-                                attrs: {
-                                  type: "text",
-                                  name: "hall_name",
-                                  placeholder: "Hall title",
-                                  required: ""
-                                },
-                                domProps: {
-                                  value: _vm.createHallData.hall_name
-                                },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.$set(
-                                      _vm.createHallData,
-                                      "hall_name",
-                                      $event.target.value
-                                    )
-                                  }
-                                }
-                              }),
-                              _vm._v(" "),
-                              _c(
-                                "button",
-                                {
-                                  staticClass:
-                                    "conf-step__button conf-step__button-accent",
-                                  on: {
-                                    click: function($event) {
-                                      $event.preventDefault()
-                                      return _vm.createHallDo($event)
-                                    }
-                                  }
-                                },
-                                [_vm._v("Создать зал")]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "button",
-                                {
-                                  staticClass:
-                                    "conf-step__button conf-step__button-regular",
-                                  on: {
-                                    click: function($event) {
-                                      _vm.showModalCreadeHall = false
-                                    }
-                                  }
-                                },
-                                [_vm._v("Отмена")]
-                              )
-                            ])
-                          ])
-                        ])
-                      ],
-                      2
-                    )
-                  ])
-                ])
-              ])
-            ])
-          : _vm._e(),
-        _vm._v(" "),
-        _vm._m(1),
-        _vm._v(" "),
-        _c("div", { staticClass: "conf-step__wrapper" }, [
-          _c("p", { staticClass: "conf-step__paragraph" }, [
-            _vm._v("Доступные залы:")
-          ]),
-          _vm._v(" "),
-          _c(
-            "ul",
-            { staticClass: "conf-step__list" },
-            _vm._l(_vm.hallsdata, function(hall) {
-              return _c("li", [
-                _vm._v(
-                  "\n                    " +
-                    _vm._s(hall.hall_name) +
-                    "\n                    "
-                ),
-                _c("button", {
-                  staticClass: "conf-step__button conf-step__button-trash",
-                  on: {
-                    click: function($event) {
-                      return _vm.showHallDeleteForm(hall.id)
-                    }
+  return _c("div", [
+    _c("div", { staticClass: "conf-step__hall" }, [
+      _c(
+        "div",
+        { staticClass: "conf-step__hall-wrapper" },
+        _vm._l(_vm.rows, function(row) {
+          return _c(
+            "div",
+            { key: row, staticClass: "conf-step__row" },
+            _vm._l(_vm.places_in_row, function(place) {
+              return _c("span", {
+                staticClass: "conf-step__chair",
+                class: "conf-step__chair_" + _vm.classObj(row, place),
+                on: {
+                  click: function($event) {
+                    return _vm.classAction(row, place)
                   }
-                })
-              ])
+                },
+                model: {
+                  value: _vm.clicks,
+                  callback: function($$v) {
+                    _vm.clicks = $$v
+                  },
+                  expression: "clicks"
+                }
+              })
             }),
             0
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "conf-step__button conf-step__button-accent",
-              on: {
-                click: function($event) {
-                  _vm.showModalCreadeHall = true
-                }
-              }
-            },
-            [_vm._v("Создать зал")]
           )
-        ])
-      ]),
+        }),
+        0
+      )
+    ]),
+    _vm._v(" "),
+    _c("fieldset", { staticClass: "conf-step__buttons text-center" }, [
+      _c(
+        "button",
+        {
+          staticClass: "conf-step__button conf-step__button-regular",
+          on: { click: _vm.cancel }
+        },
+        [_vm._v("Отмена")]
+      ),
       _vm._v(" "),
-      !_vm.is_refresh
-        ? _c("admin-hall-places-component", { attrs: { halls: _vm.hallsdata } })
-        : _vm._e(),
-      _vm._v(" "),
-      !_vm.is_refresh
-        ? _c("admin-prices-component", { attrs: { halls: _vm.hallsdata } })
-        : _vm._e(),
-      _vm._v(" "),
-      !_vm.is_refresh
-        ? _c("admin-movie-time-component", { attrs: { halls: _vm.hallsdata } })
-        : _vm._e()
-    ],
-    1
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("header", { staticClass: "conf-step__header" }, [
-      _c("h2", { staticClass: "conf-step__title" }, [_vm._v("Создание зала")])
+      _c("input", {
+        staticClass: "conf-step__button conf-step__button-accent",
+        attrs: { type: "submit", value: "Сохранить" },
+        on: { click: _vm.saveAll }
+      })
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "header",
-      { staticClass: "conf-step__header conf-step__header_opened" },
-      [
-        _c("h2", { staticClass: "conf-step__title" }, [
-          _vm._v("Управление залами")
-        ])
-      ]
-    )
-  }
-]
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-c31a8fa8", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-42fb23fa", module.exports)
   }
 }
 
