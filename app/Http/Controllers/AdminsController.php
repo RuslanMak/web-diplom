@@ -169,8 +169,13 @@ class AdminsController extends Controller
         $connections->save();
 //        dd($connections->id);
 
-        Place::where('id_hall', '=', $connections->id_hall)
-            ->update(array('id_connections' => $connections->id));
+        $prices_arr = Place::where('id_hall', '=', $connections->id_hall)->get();
+
+        foreach ($prices_arr as $price) {
+            $new = $price->replicate();
+            $new->id_connections= $connections->id;
+            $new->save();
+        }
     }
 
     public function deleteMovieFromHall(Request $request)
@@ -199,6 +204,9 @@ class AdminsController extends Controller
         $hall->	places_in_row = $nums;
         $hall->save();
 
+//        $connection = DB::table('connections')->select('id', 'id_hall')->get();
+        $connections = Connection::where('id_hall', '=', $id_hall)->get();
+
         foreach ($request->input() as $key=>$placeArr) {
 //            return $placeArr['type'];
             $place = Place::where('id_hall', '=', $id_hall)
@@ -210,18 +218,20 @@ class AdminsController extends Controller
                 $place[0]->	type = $placeArr['type'];
                 $place[0]->save();
             } else {
-                $newPlace = new Place();
-                $newPlace->id_hall = $id_hall;
-                $newPlace->num_row = $placeArr['row'];
-                $newPlace->num_place_in_row = $placeArr['num'];
-                $newPlace->type = $placeArr['type'];
-                $newPlace->price = 0;
-                $newPlace->id_connections = 0;
-                $newPlace->status = '';
-                $newPlace->id_user = 0;
-                $newPlace->admin_doing_type = '';
+                foreach ($connections as $connection) {
+                    $newPlace = new Place();
+                    $newPlace->id_hall = $id_hall;
+                    $newPlace->num_row = $placeArr['row'];
+                    $newPlace->num_place_in_row = $placeArr['num'];
+                    $newPlace->type = $placeArr['type'];
+                    $newPlace->price = 0;
+                    $newPlace->id_connections = $connection->id;
+                    $newPlace->status = '';
+                    $newPlace->id_user = 0;
+                    $newPlace->admin_doing_type = '';
 //            dd($newPlace);
-                $newPlace->save();
+                    $newPlace->save();
+                }
             }
         }
 

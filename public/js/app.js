@@ -50408,6 +50408,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: [
@@ -50418,7 +50431,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             halldata: [],
             is_refresh: false,
             totalPlaces: 0,
-            rows: 0
+            rows: 0,
+            price_vip: 0,
+            price_standart: 0
         };
     },
     mounted: function mounted() {
@@ -50433,9 +50448,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             axios.get('/start/get-json/' + this.connectionid).then(function (response) {
                 // console.log(response)
                 _this.halldata = response.data;
-                _this.is_refresh = false;
                 _this.rows = _this.halldata.hall.rows;
                 console.dir(_this.halldata);
+                // console.dir(this.halldata.places.find(el=> el.type === 'standart').price);
+
+                _this.price_vip = _this.halldata.places.find(function (el) {
+                    return el.type === 'vip';
+                }).price;
+                _this.price_standart = _this.halldata.places.find(function (el) {
+                    return el.type === 'standart';
+                }).price;
+                _this.is_refresh = false;
                 // console.log(this.halldata.user_id);
             });
         },
@@ -50486,35 +50509,90 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "buying-scheme__wrapper" },
-    _vm._l(_vm.rows, function(row) {
-      return _c(
-        "div",
-        { staticClass: "buying-scheme__row" },
-        _vm._l(_vm.halldata.hall.places_in_row, function(n) {
-          return _c(
-            "span",
-            {
-              staticClass: "buying-scheme__chair",
-              class: "buying-scheme__chair_" + _vm.classObj(row, n),
-              on: {
-                click: function($event) {
-                  return _vm.classAction(row, n)
+  return _c("div", [
+    _c(
+      "div",
+      { staticClass: "buying-scheme__wrapper" },
+      _vm._l(_vm.rows, function(row) {
+        return _c(
+          "div",
+          { staticClass: "buying-scheme__row" },
+          _vm._l(_vm.halldata.hall.places_in_row, function(n) {
+            return _c(
+              "span",
+              {
+                staticClass: "buying-scheme__chair",
+                class: "buying-scheme__chair_" + _vm.classObj(row, n),
+                on: {
+                  click: function($event) {
+                    return _vm.classAction(row, n)
+                  }
                 }
-              }
-            },
-            [_vm._v("\n            " + _vm._s(_vm.totalPlaces) + "\n        ")]
-          )
-        }),
-        0
-      )
-    }),
-    0
-  )
+              },
+              [
+                _vm._v(
+                  "\n            " + _vm._s(_vm.totalPlaces) + "\n        "
+                )
+              ]
+            )
+          }),
+          0
+        )
+      }),
+      0
+    ),
+    _vm._v(" "),
+    _c("div", { staticClass: "buying-scheme__legend" }, [
+      _c("div", { staticClass: "col" }, [
+        _c("p", { staticClass: "buying-scheme__legend-price" }, [
+          _c("span", {
+            staticClass: "buying-scheme__chair buying-scheme__chair_standart"
+          }),
+          _vm._v(" Свободно ("),
+          _c("span", { staticClass: "buying-scheme__legend-value" }, [
+            _vm._v(_vm._s(_vm.price_standart))
+          ]),
+          _vm._v("руб)")
+        ]),
+        _vm._v(" "),
+        _c("p", { staticClass: "buying-scheme__legend-price" }, [
+          _c("span", {
+            staticClass: "buying-scheme__chair buying-scheme__chair_vip"
+          }),
+          _vm._v(" Свободно VIP ("),
+          _c("span", { staticClass: "buying-scheme__legend-value" }, [
+            _vm._v(_vm._s(_vm.price_vip))
+          ]),
+          _vm._v("руб)")
+        ])
+      ]),
+      _vm._v(" "),
+      _vm._m(0)
+    ])
+  ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col" }, [
+      _c("p", { staticClass: "buying-scheme__legend-price" }, [
+        _c("span", {
+          staticClass: "buying-scheme__chair buying-scheme__chair_taken"
+        }),
+        _vm._v(" Занято")
+      ]),
+      _vm._v(" "),
+      _c("p", { staticClass: "buying-scheme__legend-price" }, [
+        _c("span", {
+          staticClass: "buying-scheme__chair buying-scheme__chair_selected"
+        }),
+        _vm._v(" Выбрано")
+      ])
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -50637,9 +50715,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             selected_hall: 0,
             // halls: [],
             url: {
-                updateRowNum: '/admin/post-api-row/',
+                // updateRowNum: '/admin/post-api-row/',
                 getApiPlaces: '/admin/get-api-places/',
-                updatePlaceInRowNum: '/admin/get-update-place-in-row/',
+                // updatePlaceInRowNum: '/admin/get-update-place-in-row/',
                 doingTypePlace: '/admin/get-update-type-place-doing/',
                 cancelUrl: '/admin/get-cancel-change/',
                 saveUrl: '/admin/get-save-change/'
@@ -51441,6 +51519,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: [
@@ -51451,7 +51532,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             halldata: [],
             is_refresh: false,
-            selected_hall: 1,
+            selected_hall: 0,
             // halls: [],
             url: {
                 getApiPlaces: '/admin/get-api-places/',
@@ -51592,118 +51673,139 @@ var render = function() {
             0
           ),
           _vm._v(" "),
-          _c("p", { staticClass: "conf-step__paragraph" }, [
-            _vm._v("Установите цены для типов кресел:")
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "conf-step__legend" }, [
-            _c("input", {
-              attrs: { type: "hidden", name: "id_standart_place" },
-              domProps: { value: _vm.dataForm.id_standart_place }
-            }),
-            _vm._v(" "),
-            _c("label", { staticClass: "conf-step__label" }, [
-              _vm._v("Цена, рублей"),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.dataForm.standart_place,
-                    expression: "dataForm.standart_place"
-                  }
-                ],
-                staticClass: "conf-step__input",
-                attrs: {
-                  type: "text",
-                  name: "standart_place",
-                  placeholder: "0"
-                },
-                domProps: { value: _vm.dataForm.standart_place },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(
-                      _vm.dataForm,
-                      "standart_place",
-                      $event.target.value
-                    )
-                  }
-                }
-              })
-            ]),
-            _vm._v("\n                за "),
-            _c("span", {
-              staticClass: "conf-step__chair conf-step__chair_standart"
-            }),
-            _vm._v(" обычные кресла\n            ")
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "conf-step__legend" }, [
-            _c("input", {
-              attrs: { type: "hidden", name: "id_vip_place" },
-              domProps: { value: _vm.dataForm.id_vip_place }
-            }),
-            _vm._v(" "),
-            _c("label", { staticClass: "conf-step__label" }, [
-              _vm._v("Цена, рублей"),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.dataForm.vip_place,
-                    expression: "dataForm.vip_place"
-                  }
-                ],
-                staticClass: "conf-step__input",
-                attrs: { type: "text", name: "vip_place", placeholder: "0" },
-                domProps: { value: _vm.dataForm.vip_place },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.dataForm, "vip_place", $event.target.value)
-                  }
-                }
-              })
-            ]),
-            _vm._v("\n                за "),
-            _c("span", {
-              staticClass: "conf-step__chair conf-step__chair_vip"
-            }),
-            _vm._v(" VIP кресла\n            ")
-          ]),
-          _vm._v(" "),
-          _c("fieldset", { staticClass: "conf-step__buttons text-center" }, [
-            _c(
-              "button",
-              {
-                staticClass: "conf-step__button conf-step__button-regular",
-                on: {
-                  click: function($event) {
-                    $event.preventDefault()
-                    return _vm.update($event)
-                  }
-                }
-              },
-              [_vm._v("Отмена")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "conf-step__button conf-step__button-accent",
-              attrs: { type: "submit", value: "Сохранить" },
-              on: {
-                click: function($event) {
-                  $event.preventDefault()
-                  return _vm.saveBtn()
-                }
-              }
-            })
-          ])
+          _vm.selected_hall != 0
+            ? _c("div", [
+                _c("p", { staticClass: "conf-step__paragraph" }, [
+                  _vm._v("Установите цены для типов кресел:")
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "conf-step__legend" }, [
+                  _c("input", {
+                    attrs: { type: "hidden", name: "id_standart_place" },
+                    domProps: { value: _vm.dataForm.id_standart_place }
+                  }),
+                  _vm._v(" "),
+                  _c("label", { staticClass: "conf-step__label" }, [
+                    _vm._v("Цена, рублей"),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.dataForm.standart_place,
+                          expression: "dataForm.standart_place"
+                        }
+                      ],
+                      staticClass: "conf-step__input",
+                      attrs: {
+                        type: "number",
+                        step: "0.01",
+                        min: "0",
+                        name: "standart_place",
+                        placeholder: "0"
+                      },
+                      domProps: { value: _vm.dataForm.standart_place },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.dataForm,
+                            "standart_place",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v("\n                    за "),
+                  _c("span", {
+                    staticClass: "conf-step__chair conf-step__chair_standart"
+                  }),
+                  _vm._v(" обычные кресла\n                ")
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "conf-step__legend" }, [
+                  _c("input", {
+                    attrs: { type: "hidden", name: "id_vip_place" },
+                    domProps: { value: _vm.dataForm.id_vip_place }
+                  }),
+                  _vm._v(" "),
+                  _c("label", { staticClass: "conf-step__label" }, [
+                    _vm._v("Цена, рублей"),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.dataForm.vip_place,
+                          expression: "dataForm.vip_place"
+                        }
+                      ],
+                      staticClass: "conf-step__input",
+                      attrs: {
+                        type: "number",
+                        step: "0.01",
+                        min: "0",
+                        name: "vip_place",
+                        placeholder: "0"
+                      },
+                      domProps: { value: _vm.dataForm.vip_place },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.dataForm,
+                            "vip_place",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v("\n                    за "),
+                  _c("span", {
+                    staticClass: "conf-step__chair conf-step__chair_vip"
+                  }),
+                  _vm._v(" VIP кресла\n                ")
+                ]),
+                _vm._v(" "),
+                _c(
+                  "fieldset",
+                  { staticClass: "conf-step__buttons text-center" },
+                  [
+                    _c(
+                      "button",
+                      {
+                        staticClass:
+                          "conf-step__button conf-step__button-regular",
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.update($event)
+                          }
+                        }
+                      },
+                      [_vm._v("Отмена")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      staticClass: "conf-step__button conf-step__button-accent",
+                      attrs: { type: "submit", value: "Сохранить" },
+                      on: {
+                        click: function($event) {
+                          $event.preventDefault()
+                          return _vm.saveBtn()
+                        }
+                      }
+                    })
+                  ]
+                )
+              ])
+            : _vm._e()
         ]
       )
     ])
@@ -54903,7 +55005,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var day = void 0;
             var days = [];
             this.paginatedData.forEach(function (date) {
+
                 var corentDate = date.start_time.slice(0, 10);
+                var dateOnly = corentDate.slice(-2);
 
                 if (day !== corentDate) {
                     day = corentDate;
@@ -54914,6 +55018,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
                     days.push({
                         'date': corentDate,
+                        'dayNum': dateOnly,
                         'dayIs': dayOfWeek
                     });
                 }
@@ -54992,7 +55097,7 @@ var render = function() {
                         _vm._v(_vm._s(day.dayIs))
                       ]),
                       _c("span", { staticClass: "page-nav__day-number" }, [
-                        _vm._v(_vm._s(day.date))
+                        _vm._v(_vm._s(day.dayNum))
                       ])
                     ]
                   )
@@ -55012,7 +55117,7 @@ var render = function() {
                         _vm._v(_vm._s(day.dayIs))
                       ]),
                       _c("span", { staticClass: "page-nav__day-number" }, [
-                        _vm._v(_vm._s(day.date))
+                        _vm._v(_vm._s(day.dayNum))
                       ])
                     ]
                   )
@@ -55389,17 +55494,21 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(103)
+}
 var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(99)
 /* template */
-var __vue_template__ = __webpack_require__(100)
+var __vue_template__ = __webpack_require__(105)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
-var __vue_styles__ = null
+var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = null
+var __vue_scopeId__ = "data-v-42fb23fa"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -55504,20 +55613,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 return this.doing_type_arr[row + '_' + n].type;
             } else if (place[0]) {
                 return place[0].type;
+            } else {
+                return 'doing_class';
             }
         },
 
         //при клике менять класс места
-        classAction: function classAction(row, num) {
-            switch (this.doing_type_place) {
+        classAction: function classAction(row, num, the_class) {
+            var newClass = void 0;
+            switch (the_class) {
                 case 'disabled':
-                    this.doing_type_place = 'standart';
+                    newClass = 'standart';
                     break;
                 case 'standart':
-                    this.doing_type_place = 'vip';
+                    newClass = 'vip';
                     break;
                 case 'vip':
-                    this.doing_type_place = 'disabled';
+                    newClass = 'disabled';
+                    break;
+                case 'doing_class':
+                    newClass = 'standart';
                     break;
                 default:
                     alert('Перебор');
@@ -55526,7 +55641,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.doing_type_arr[row + '_' + num] = {
                 'row': row,
                 'num': num,
-                'type': this.doing_type_place
+                'type': newClass
             };
             this.clicks++;
         },
@@ -55560,7 +55675,55 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 100 */
+/* 100 */,
+/* 101 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 102 */,
+/* 103 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(104);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(76)("d6600824", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-42fb23fa\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./AdminHallPlacesShowComponent.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-42fb23fa\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./AdminHallPlacesShowComponent.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 104 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(15)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.conf-step__chair_doing_class[data-v-42fb23fa] {\n    background-color: red;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -55582,7 +55745,7 @@ var render = function() {
                 class: "conf-step__chair_" + _vm.classObj(row, place),
                 on: {
                   click: function($event) {
-                    return _vm.classAction(row, place)
+                    _vm.classAction(row, place, _vm.classObj(row, place))
                   }
                 },
                 model: {
@@ -55628,12 +55791,6 @@ if (false) {
     require("vue-hot-reload-api")      .rerender("data-v-42fb23fa", module.exports)
   }
 }
-
-/***/ }),
-/* 101 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

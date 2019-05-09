@@ -60,9 +60,9 @@
                 selected_hall: 0,
                 // halls: [],
                 url: {
-                    updateRowNum: '/admin/post-api-row/',
+                    // updateRowNum: '/admin/post-api-row/',
                     getApiPlaces: '/admin/get-api-places/',
-                    updatePlaceInRowNum: '/admin/get-update-place-in-row/',
+                    // updatePlaceInRowNum: '/admin/get-update-place-in-row/',
                     doingTypePlace: '/admin/get-update-type-place-doing/',
                     cancelUrl: '/admin/get-cancel-change/',
                     saveUrl: '/admin/get-save-change/'

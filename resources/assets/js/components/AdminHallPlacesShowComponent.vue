@@ -7,7 +7,7 @@
                     <span v-for="place in places_in_row"
                           class="conf-step__chair"
                           v-bind:class="'conf-step__chair_' + classObj(row, place)"
-                          @click="classAction(row, place)"
+                          @click="classAction(row, place, classObj(row, place))"
                           v-model="clicks">
                     </span>
                 </div>
@@ -61,20 +61,26 @@
                     return this.doing_type_arr[row + '_' + n].type;
                 } else if (place[0]) {
                     return place[0].type;
+                } else {
+                    return 'doing_class';
                 }
             },
 
             //при клике менять класс места
-            classAction: function(row, num) {
-                switch (this.doing_type_place) {
+            classAction: function(row, num, the_class) {
+                let newClass;
+                switch (the_class) {
                     case 'disabled':
-                        this.doing_type_place = 'standart';
+                        newClass = 'standart';
                         break;
                     case 'standart':
-                        this.doing_type_place = 'vip';
+                        newClass = 'vip';
                         break;
                     case 'vip':
-                        this.doing_type_place = 'disabled';
+                        newClass = 'disabled';
+                        break;
+                    case 'doing_class':
+                        newClass = 'standart';
                         break;
                     default:
                         alert( 'Перебор' );
@@ -84,7 +90,7 @@
                         {
                             'row': row,
                             'num': num,
-                            'type': this.doing_type_place
+                            'type': newClass
                         };
                 this.clicks++;
 
@@ -118,3 +124,10 @@
         }
     }
 </script>
+
+
+<style scoped>
+    .conf-step__chair_doing_class {
+        background-color: red;
+    }
+</style>

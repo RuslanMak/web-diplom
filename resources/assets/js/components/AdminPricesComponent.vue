@@ -22,24 +22,27 @@
                     </li>
                 </ul>
 
-                <p class="conf-step__paragraph">Установите цены для типов кресел:</p>
-                <div class="conf-step__legend">
-                    <input type="hidden" name="id_standart_place" :value="dataForm.id_standart_place">
-                    <label class="conf-step__label">Цена, рублей<input type="text" class="conf-step__input" name="standart_place" placeholder="0" v-model="dataForm.standart_place"></label>
-                    за <span class="conf-step__chair conf-step__chair_standart"></span> обычные кресла
-                </div>
-                <div class="conf-step__legend">
-                    <input type="hidden" name="id_vip_place" :value="dataForm.id_vip_place">
-                    <label class="conf-step__label">Цена, рублей<input type="text" class="conf-step__input" name="vip_place" placeholder="0" v-model="dataForm.vip_place"></label>
-                    за <span class="conf-step__chair conf-step__chair_vip"></span> VIP кресла
+                <div v-if="selected_hall != 0">
+                    <p class="conf-step__paragraph">Установите цены для типов кресел:</p>
+                    <div class="conf-step__legend">
+                        <input type="hidden" name="id_standart_place" :value="dataForm.id_standart_place">
+                        <label class="conf-step__label">Цена, рублей<input type="number" step="0.01" min="0"  class="conf-step__input" name="standart_place" placeholder="0" v-model="dataForm.standart_place"></label>
+                        за <span class="conf-step__chair conf-step__chair_standart"></span> обычные кресла
+                    </div>
+                    <div class="conf-step__legend">
+                        <input type="hidden" name="id_vip_place" :value="dataForm.id_vip_place">
+                        <label class="conf-step__label">Цена, рублей<input type="number" step="0.01" min="0"  class="conf-step__input" name="vip_place" placeholder="0" v-model="dataForm.vip_place"></label>
+                        за <span class="conf-step__chair conf-step__chair_vip"></span> VIP кресла
+                    </div>
+
+                    <fieldset class="conf-step__buttons text-center">
+                        <button v-on:click.prevent="update" class="conf-step__button conf-step__button-regular">Отмена</button>
+                        <input v-on:click.prevent="saveBtn()" type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">
+                        <!--<input v-on:click="saveBtn()" type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">-->
+                        <!--<input type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">-->
+                    </fieldset>
                 </div>
 
-                <fieldset class="conf-step__buttons text-center">
-                    <button v-on:click.prevent="update" class="conf-step__button conf-step__button-regular">Отмена</button>
-                    <input v-on:click.prevent="saveBtn()" type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">
-                    <!--<input v-on:click="saveBtn()" type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">-->
-                    <!--<input type="submit" value="Сохранить" class="conf-step__button conf-step__button-accent">-->
-                </fieldset>
             </form>
         </div>
     </section>
@@ -56,7 +59,7 @@
             return {
                 halldata: [],
                 is_refresh: false,
-                selected_hall: 1,
+                selected_hall: 0,
                 // halls: [],
                 url: {
                     getApiPlaces: '/admin/get-api-places/',

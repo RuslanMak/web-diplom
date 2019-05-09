@@ -19,7 +19,7 @@ class CreatePlacesTable extends Migration
             $table->integer('num_row');
             $table->integer('num_place_in_row');
             $table->string('type');
-            $table->integer('price');
+            $table->float('price');
         });
     }
 

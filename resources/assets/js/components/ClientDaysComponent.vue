@@ -9,11 +9,11 @@
 
             <template v-for="(day, index) in nowDay()">
                 <a v-if="pageNumber === 0 && index === 0" class="page-nav__day page-nav__day_today" href="#" v-on:click="selectDay(day.date)">
-                    <span class="page-nav__day-week">{{ day.dayIs }}</span><span class="page-nav__day-number">{{ day.date }}</span>
+                    <span class="page-nav__day-week">{{ day.dayIs }}</span><span class="page-nav__day-number">{{ day.dayNum }}</span>
                 </a>
 
                 <a v-else class="page-nav__day" href="#" v-on:click="selectDay(day.date)">
-                    <span class="page-nav__day-week">{{ day.dayIs }}</span><span class="page-nav__day-number">{{ day.date }}</span>
+                    <span class="page-nav__day-week">{{ day.dayIs }}</span><span class="page-nav__day-number">{{ day.dayNum }}</span>
                 </a>
             </template>
 
@@ -72,7 +72,9 @@
                 let day;
                 let days = [];
                 this.paginatedData.forEach(date => {
+
                     let corentDate = date.start_time.slice(0, 10);
+                    let dateOnly = corentDate.slice(-2);
 
                     if(day !== corentDate) {
                         day = corentDate;
@@ -83,6 +85,7 @@
 
                         days.push( {
                             'date': corentDate,
+                            'dayNum': dateOnly,
                             'dayIs': dayOfWeek
                         });
                     }
