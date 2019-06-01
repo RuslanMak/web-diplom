@@ -58,7 +58,7 @@
                                     <input class="conf-step__input" type="hidden" name="id_hall" :value="modalTimeData.id" placeholder="hall id" required>
                                     <input class="conf-step__input" type="text" name="movie_name" :value="modalTimeData.name" placeholder="Movie name" disabled>
                                     <input class="conf-step__input" type="hidden" name="id_movie" v-model="modalTimeData.id" placeholder="id_movie" required>
-                                    <input class="conf-step__input" type="datetime-local" name="start_time" v-model="modalTimeData.start_time" placeholder="Runtime" required>
+                                    <input class="conf-step__input" type="datetime-local" name="start_time" v-model="modalTimeData.start_time" placeholder="2019-06-12T19:30" required>
 
                                     <button class="conf-step__button conf-step__button-accent" type="submit" @click.prevent="saveTimeM">Установить дату</button>
                                     <!--<button class="conf-step__button conf-step__button-accent" type="submit">Установить дату</button>-->
@@ -226,13 +226,13 @@
             },
 
             timeOnly: function (date) {
-                let d = new Date(date);
+                let d = new Date(date.replace(/-/g, "/"));
                 let datestring = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
                 return datestring;
             },
 
             timeToPx: function (date) {
-                let d = new Date(date).setFullYear(1970, 1, 1);
+                let d = new Date(date.replace(/-/g, "/")).setFullYear(1970, 1, 1);
                 let procentTine = (d-2667601000) * 100 / 79199000;
                 let marginLeft = Math.round(procentTine * 660 / 100);
                 return marginLeft;
